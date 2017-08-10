@@ -1,0 +1,20 @@
+{
+  "name": "transaction",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "proposal":{
+      "type": "transactionProposal",
+      "required": true,
+      "description": "A proposal"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "hidden": ["id"]
+}

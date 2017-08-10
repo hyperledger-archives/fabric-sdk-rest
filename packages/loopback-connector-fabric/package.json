@@ -1,0 +1,26 @@
+{
+  "name": "loopback-connector-fabric",
+  "version": "1.0.0",
+  "description": "Loopback Connector for Hyperledger Fabric v1.0",
+  "engines": {
+    "node": ">=4"
+  },
+  "keywords": [
+    "StrongLoop",
+    "LoopBack",
+    "Hyperledger",
+    "Fabric",
+    "DataSource",
+    "Connector"
+  ],
+  "main": "index.js",
+  "dependencies": {
+    "loopback-connector": "^3.0.0",
+    "fabric-client": "^1.0.0-alpha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MartinCocks/fabric-sdk-rest"
+  },    
+  "license": "Apache-2.0"
+}

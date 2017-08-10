@@ -1,0 +1,22 @@
+{
+  "name": "ChannelQueryResponse",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "channels": {
+      "type": [
+        "object"
+      ],
+      "required": true,
+      "description": "An array of ChannelInfo"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "hidden": ["id"]
+}

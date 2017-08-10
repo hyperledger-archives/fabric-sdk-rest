@@ -1,0 +1,24 @@
+{
+  "name": "peer",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "url": {
+      "type": "string",
+      "required": true,
+      "description": "The url of the peer"
+    },
+    "opts": {
+      "type": "boolean",
+      "description": "This is TODO"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "hidden": ["id"]
+}

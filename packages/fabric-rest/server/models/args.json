@@ -1,0 +1,22 @@
+{
+  "name": "args",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "args": {
+      "type": [
+        "string"
+      ],
+      "required": true,
+      "description": "An array of arguements"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "hidden": ["id"]
+}

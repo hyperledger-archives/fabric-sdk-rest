@@ -1,0 +1,30 @@
+{
+  "name": "transactionProposal",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "chaincodeId": {
+      "type": "string",
+      "required": true
+    },
+    "fcn": {
+      "type": "string",
+      "required": true
+    },
+    "args": {
+      "type": [
+        "string"
+      ],
+      "required": true,
+      "description": "An array of arguements"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "hidden": ["id"]
+}

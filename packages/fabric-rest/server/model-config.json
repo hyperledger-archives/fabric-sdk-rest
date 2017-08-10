@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "sources": [
+      "loopback/common/models",
+      "loopback/server/models",
+      "../common/models",
+      "./models"
+    ],
+    "mixins": [
+      "loopback/common/mixins",
+      "loopback/server/mixins",
+      "../common/mixins",
+      "./mixins"
+    ]
+  },
+  "swagger_fabric_1_0": {
+    "dataSource": "fabricDataSource",
+    "public": true
+  },
+  "args": {
+    "dataSource": null,
+    "public": true
+  },
+  "block": {
+    "dataSource": null,
+    "public": false
+  },
+  "channel": {
+    "dataSource": null,
+    "public": false
+  },
+  "ChannelQueryResponse": {
+    "dataSource": null,
+    "public": false
+  },
+  "transactionProposal": {
+    "dataSource": null,
+    "public": false
+  },
+  "proposalResult": {
+    "dataSource": null,
+    "public": false
+  },
+  "ProcessedTransaction": {
+    "dataSource": null,
+    "public": false
+  },
+  "peer": {
+    "dataSource": null,
+    "public": false
+  },
+  "transaction": {
+    "dataSource": null,
+    "public": false
+  },
+  "channelInfo": {
+    "dataSource": null,
+    "public": false
+  },
+  "ChaincodeInfo": {
+    "dataSource": null,
+    "public": false
+  },
+  "ChaincodeInstallRequest": {
+    "dataSource": null,
+    "public": false
+  },
+  "chaincodeInstantiate": {
+    "dataSource": null,
+    "public": false
+  },
+  "ChaincodeQueryResponse": {
+    "dataSource": null,
+    "public": false
+  },
+  "TODO": {
+    "dataSource": null,
+    "public": false
+  }
+}

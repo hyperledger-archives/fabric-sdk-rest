@@ -1,0 +1,22 @@
+{
+  "name": "ChaincodeQueryResponse",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "chaincodes": {
+      "type": [
+        "object"
+      ],
+      "required": true,
+      "description": "An array of ChaincodeInfo"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "hidden": ["id"]
+}

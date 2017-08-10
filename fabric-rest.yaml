@@ -1,0 +1,604 @@
+#
+swagger: '2.0'
+info:
+  title: DRAFT Hyperledger Fabric REST API
+  version: "0.7"
+  description: Hyperledger Fabric REST API definition
+basePath: /fabric/1_0
+schemes: [https]
+paths:
+##############################################
+# LIFECYCLE API end points                   #
+##############################################
+  /channels/{channelName}/transactions:
+    post:
+      description: Commit a transaction, if no proposal responses propose and commit.
+      parameters:
+        - name: channelName
+          in: path
+          description: Name of the channel
+          required: true
+          type: string
+        - name: transaction
+          in: body
+          description: The transaction to commit and any proposal response.
+          required: true
+          schema:
+            $ref: '#/definitions/transactionCommit'
+      responses:
+        '200':
+          description: Successful response
+##
+  /channels/{channelName}/endorse:
+    post:
+      description: Send a proposal to the channel's peers. This could be for either chaincode or a transaction.
+      parameters:
+        - name: channelName
+          in: path
+          description: Name of the channel
+          required: true
+          type: string
+        - name: peers
+          in: query
+          description: Peers to send proposal to
+          required: false
+          type: array
+          items:
+            type: integer
+        - name: transaction
+          in: body
+          description: The proposal.
+          required: true
+          schema:
+            $ref: '#/definitions/transactionProposal'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/proposalResult'
+##
+  /chaincodes:
+    post:
+      description: Install chaincode onto the named peers
+      parameters:
+        - name: peers
+          in: query
+          description: Peers to install chaincode on
+          required: true
+          type: array
+          items:
+            type: integer
+        - name: chaincode
+          in: body
+          description: The chaincode install data.
+          required: true
+          schema:
+            $ref: '#/definitions/ChaincodeInstallRequest'
+      responses:
+        '200':
+          description: Successful response
+##
+  /channels/{channelName}/chaincodes:
+    post:
+      description: Instantiate new chaincode in the channel for the named peers
+      parameters:
+        - name: channelName
+          in: path
+          description: Name of the channel
+          required: true
+          type: string
+        - name: peers
+          in: query
+          description: Peers to instantiate chaincode on
+          required: true
+          type: array
+          items:
+            type: integer
+        - name: chaincode
+          in: body
+          description: The chaincode instantiate data.
+          required: true
+          schema:
+            $ref: '#/definitions/chaincodeInstantiate'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/proposalResult'
+#
+    put:
+      description: Instantiate updated chaincode in the channel for the named peers
+      parameters:
+        - name: channelName
+          in: path
+          description: Name of the channel
+          required: true
+          type: string
+        - name: peers
+          in: query
+          description: Peers to instantiate chaincode on
+          required: true
+          type: array
+          items:
+            type: integer
+        - name: chaincode
+          in: body
+          description: The chaincode instantiate data.
+          required: true
+          schema:
+            $ref: '#/definitions/chaincodeInstantiate'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/proposalResult'
+#
+    get:
+      description: Query all chaincode instantiated on the channel
+      parameters:
+        - name: channelName
+          in: path
+          description: Name of the channel
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Returns a ChaincodeQueryResponse
+          schema:
+            $ref: '#/definitions/ChaincodeQueryResponse'
+##############################################
+# CHANNEL MANAGEMENT API end points          #
+##############################################
+  /channels:
+    get:
+      description: Get the names of known channels from the primary peer
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ChannelQueryResponse'
+##
+  /channels/{channelName}:
+    get:
+      description: Get information about the named channel
+      parameters:
+        - name: channelName
+          in: path
+          description: Name of the channel
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/channelInfo'
+#
+    post:
+      description: Create the named channel
+      parameters:
+        - name: channelName
+          in: path
+          description: Name of the channel to create
+          required: true
+          type: string
+        - name: channel
+          in: body
+          description: The channel with values to use
+          required: true
+          schema:
+            $ref: '#/definitions/channel'
+      responses:
+        '200':
+          description: Successful response
+#
+    put:
+      description: Update the named channel
+      parameters:
+        - name: channelName
+          in: path
+          description: Name of the channel to update
+          required: true
+          type: string
+        - name: channel
+          in: body
+          description: The channel with values to update
+          required: true
+          schema:
+            $ref: '#/definitions/channel'
+      responses:
+        '200':
+          description: Successful response
+##
+  /channels/{channelName}/peers:
+    post:
+      description: Join a Peer to the channel
+      parameters:
+        - name: channelName
+          in: path
+          description: Name of the channel to join the peer to
+          required: true
+          type: string
+        - name: peer
+          in: body
+          description: The peer information
+          required: true
+          schema:
+            $ref: '#/definitions/peer'
+      responses:
+        '200':
+          description: Successful response
+##############################################
+# QUERY API end points                       #
+##############################################
+  /channels/{channelName}/transactions/{transactionID}:
+    get:
+      description: Query a transaction on a channel by ID
+      parameters:
+        - name: channelName
+          in: path
+          description: Name of the channel
+          required: true
+          type: string
+        - name: transactionID
+          in: path
+          description: The transaction ID to query
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ProcessedTransaction'
+##
+  /channels/{channelName}/blocks:
+    get:
+      description: Query a block on a channel by ID or Hash
+      parameters:
+        - name: channelName
+          in: path
+          description: Name of the channel
+          required: true
+          type: string
+        - name: blockId
+          in: query
+          description: Query data
+          required: false
+          type: integer
+        - name: blockHash
+          in: query
+          description: Query data
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/block'
+##
+# Query all chaincode defined previously
+# /channels/{channelName}/chaincodes:
+##
+  /channels/{channelName}/chaincodes/{id}:
+    get:
+      description: Query chaincode instantiated on a channel by ID
+      parameters:
+        - name: channelName
+          in: path
+          description: Name of the channel
+          required: true
+          type: string
+        - name: id
+          in: path
+          description: Chaincode ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ChaincodeInfo'
+##
+  /chaincodes/{id}:
+    get:
+      description: Query chaincode installed on a peer by ID
+      parameters:
+        - name: id
+          in: path
+          description: Chaincode ID
+          required: true
+          type: string
+        - name: peers
+          in: query
+          description: Peers to query for installed chaincode
+          required: true
+          type: array
+          items:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ChaincodeInfo'
+## Alternate Query ledger style
+  /channels/{channelName}/ledger:
+    post:
+      description: Query the channel's ledger using one of the query parameters
+      parameters:
+        - name: channelName
+          in: path
+          description: Name of the channel
+          required: true
+          type: string
+        - name: chaincodeId
+          in: query
+          description: Chaincode ID to look for
+          required: false
+          type: string
+        - name: blockId
+          in: query
+          description: Block ID to look for
+          required: false
+          type: integer
+        - name: blockHash
+          in: query
+          description: Block Hash to look for
+          required: false
+          type: string
+        - name: txnId
+          in: query
+          description: Transaction ID to look for
+          required: false
+          type: string
+        - name: args
+          in: body
+          description: Optional args for query by chaincode
+          required: false
+          schema:
+           $ref: '#/definitions/args'
+      responses:
+        '200':
+          description: Successful response containing an object
+##
+# A rich query to database is not supported by the SDK currently
+#
+##
+
+#######################################################
+# Definitions section                                 #
+#######################################################
+definitions:
+  args:
+    description: Array of arguements
+    properties:
+      fcn:
+        type: string
+      args:
+        type: array
+        description: An array of arguements
+        items:
+          type: object
+    required:
+      - args
+
+  block:
+    description: The data contained in a block
+    properties:
+      data:
+        type: array
+        description: Byte array of the block TODO check type
+        items:
+          type: string
+          format: byte
+
+  channel:
+    description: A description of a Hyperledger Fabric Channel
+    properties:
+      name:
+        type: string
+        description: The name of the channel
+      securityEnabled:
+        type: boolean
+        description: Is security enabled
+      preFetchMode:
+        type: boolean
+        description: Is prefetch mode on
+      devMode:
+        type: boolean
+        description: Is devMode on
+      tCertBatchSize:
+        type: integer
+        description: The TCert batch size
+      primaryPeer:
+        $ref: '#/definitions/peer'
+      peers:
+        type: array
+        description: The array of peers in this channel
+        items:
+          $ref: '#/definitions/peer'
+      orderers:
+        type: array
+        description: The array of orderers in this channel
+        items:
+          $ref: '#/definitions/TODO'
+      consensusType:
+        type: string
+        description: This is TODO
+      initialEpoch:
+        type: integer
+        description: This is TODO
+      initialMaxMessageCount:
+        type: integer
+        description: This is TODO
+      initialAbsoluteMaxBytes:
+        type: integer
+        description: This is TODO
+      initialPreferredMaxBytes:
+        type: integer
+        description: This is TODO
+      initialTransactionID:
+        type: integer
+        description: This is TODO
+      readOnly:
+        type: boolean
+        description: Is access to this channel read only
+    required:
+      - name
+
+  ChannelQueryResponse:
+    description: An array of ChannelInfo
+    properties:
+      channels:
+        type: array
+        description: An array of Channel names
+        items:
+          type: object
+          properties:
+            channel_id:
+              type: string
+          required:
+            - channel_id
+    required:
+      - channels
+
+  proposalResult:
+    description: Array of proposalResult
+    properties:
+      results:
+        type: array
+        description: An array of proposal results from peers TODO name and type
+        items:
+          type: string
+    required:
+      - results
+
+
+  peer:
+    description: Peer information
+    properties:
+      url:
+        type: string
+        description: The url of the peer
+      opts:
+        type: boolean
+        description: This is TODO
+    required:
+      - url
+
+  transactionProposal:
+    description: Transaction proposal
+    properties:
+      chaincodeId:
+        type: string
+      args:
+        type: array
+        description: An array of arguements
+        items:
+          type: object
+      txId:
+        type: object
+        description: If not specified for a proposal it will be created dynamically.
+      fcn:
+        type: string
+    required:
+      - chaincodeId
+      - args
+
+  transactionCommit:
+    description: Commit a transaction, if proposalResponses empty do endorse first.
+    properties:
+      proposalResponses:
+        type: array
+        description: An array of proposal results from peers
+        items:
+          type: object
+      proposal:
+        $ref: '#/definitions/transactionProposal'
+    required:
+      - proposalResponses
+      - proposal
+
+  channelInfo:
+    description: Information about a channel
+    properties:
+      inputData:
+        type: boolean
+        description: This is TODO
+    required:
+      - inputData
+
+  ChaincodeInstallRequest:
+    description: Chaincode install details
+    properties:
+      chaincodePath:
+        type: string
+      chaincodeId:
+        type: string
+      chaincodeVersion:
+        type: string
+      chaincodePackage:
+        type: string
+        format: byte
+        description: Base64 encoded archive file. The archive is expected to be a gzip and must not contain files flagged as executable.
+      chaincodetype:
+        type: string
+    required:
+      - chaincodePath
+      - chaincodeId
+      - chaincodeVersion
+      - chaincodePackage
+
+  chaincodeInstantiate:
+    description: Chaincode instantiate details
+    properties:
+      chaincodeId:
+        type: string
+      inputData:
+        type: boolean
+        description: This is TODO
+    required:
+      - chaincodeId
+      - inputData
+
+  ChaincodeQueryResponse:
+    description: Array of ChaincodeInfo
+    properties:
+      chaincodes:
+        type: array
+        description: An array of ChaincodeInfo
+        items:
+          $ref: '#/definitions/ChaincodeInfo'
+    required:
+      - chaincodes
+
+  ChaincodeInfo:
+    description: Information about a piece of chaincode
+    properties:
+      name:
+        type: string
+      version:
+        type: string
+      path:
+        type: string
+      input:
+        type: string
+      escc:
+        type: string
+      vscc:
+        type: string
+
+  ProcessedTransaction:
+    description: Output from querying a transaction
+    properties:
+      validationCode:
+        type: integer
+      transactionEnvelope:
+        type: object
+
+  TODO:
+    description: Needs defining
+    properties:
+      todo:
+        type: boolean
+        description: This is TODO
+    required:
+      - todo

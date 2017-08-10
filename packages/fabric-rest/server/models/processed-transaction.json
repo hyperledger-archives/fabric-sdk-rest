@@ -1,0 +1,24 @@
+{
+  "name": "ProcessedTransaction",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "validationCode": {
+      "type": "string",
+      "required": true,
+      "description": "The validation code"
+    },
+    "transactionEnvelope": {
+      "type": "object",
+      "description": "Encapsulates the transaction and the signature over it."
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "hidden": ["id"]
+}

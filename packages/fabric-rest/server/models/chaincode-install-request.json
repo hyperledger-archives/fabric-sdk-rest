@@ -1,0 +1,36 @@
+{
+  "name": "ChaincodeInstallRequest",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "chaincodePath": {
+      "type": "string",
+      "required": true
+    },
+    "chaincodeId": {
+      "type": "string",
+      "required": true
+    },
+    "chaincodeVersion": {
+      "type": "string",
+      "required": true
+    },
+    "chaincodePackage": {
+      "type": "string",
+      "required": false,
+      "description":"Optional. Byte array of the archive content for the chaincode source."
+    },
+    "chaincodeType": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "hidden": ["id"]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "block",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "data": {
+      "type": [
+        "string"
+      ],
+      "description": "Byte array of the block TODO check type"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "hidden": ["id"]
+}

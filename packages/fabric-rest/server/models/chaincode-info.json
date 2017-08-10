@@ -1,0 +1,33 @@
+{
+  "name": "ChaincodeInfo",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "input": {
+      "type": "string"
+    },
+    "escc": {
+      "type": "string"
+    },
+    "vscc": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "hidden": ["id"]
+}

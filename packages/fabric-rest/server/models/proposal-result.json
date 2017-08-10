@@ -1,0 +1,22 @@
+{
+  "name": "proposalResult",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "results": {
+      "type": [
+        "string"
+      ],
+      "required": true,
+      "description": "An array of proposal results from peers TODO name and type"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "hidden": ["id"]
+}

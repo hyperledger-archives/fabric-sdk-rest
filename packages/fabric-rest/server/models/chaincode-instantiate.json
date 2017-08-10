@@ -1,0 +1,38 @@
+{
+  "name": "chaincodeInstantiate",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "chaincodeId": {
+      "type": "string",
+      "required": true
+    },
+    "chaincodeVersion": {
+      "type": "string",
+      "required": true
+    },
+    "chaincodeType": {
+      "type": "string",
+      "required": false
+    },
+    "fcn": {
+      "type": "string",
+      "required": false
+    },
+    "args": {
+      "type": [
+        "string"
+      ],
+      "required": false,
+      "description": "Optional, array of arguements"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "hidden": ["id"]
+}
