@@ -42,9 +42,13 @@ This table provides a rough guide to what has been implemented.
     configuration
 
 ## Contributing
-At this time only contributions will be accepted from authorized collaborators. If this project
-is accepted into the Hyperledger Fabric project it will assume their contributions rules at that
-time.
+We welcome contributions to the Hyperledger Fabric SDK REST Project in
+many forms.
+
+There’s always plenty to do! Check [the Hyperledger Fabric
+documentation on how to contribute to this
+project](http://hyperledger-fabric.readthedocs.io/en/latest/CONTRIBUTING.html)
+for the full details.
 
 ## Developer Installation
 Install the prerequisites.
