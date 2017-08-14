@@ -1,11 +1,6 @@
 # Hyperledger Fabric REST API, fabric-sdk-rest
 
-## License
-
-This project is licensed under [Apache License Version 2.0](LICENSE).
-
 ## Overview
-
 **This project is a work in progress** The Hyperledger Fabric REST API server is provided
 by two node.js modules. The first defines a loopback connector for Hyperledger Fabric and
 the second defines how to expose those capabilities over REST. The connector uses the
@@ -17,7 +12,6 @@ The design for this item can be found [on Google Docs][gd]. Comments on the desi
 welcome.
 
 ## Endpoint implementation status
-
 This table provides a rough guide to what has been implemented.
 
 | Verb | REST Endpoint | Implementation Status | Test Available |
@@ -40,7 +34,6 @@ This table provides a rough guide to what has been implemented.
 | POST | /channels/{channelName}/ledger                       | Done, manual test, test script run | PARTIAL |
 
 ## Dependencies
-
 - `fabric-client` node module
 - Node v6.9.x
 - A Hyperledger Fabric v1.0 network to connect to
@@ -49,13 +42,11 @@ This table provides a rough guide to what has been implemented.
     configuration
 
 ## Contributing
-
 At this time only contributions will be accepted from authorized collaborators. If this project
 is accepted into the Hyperledger Fabric project it will assume their contributions rules at that
 time.
 
 ## Developer Installation
-
 Install the prerequisites.
 
 To use the source version of the fabric loopback connector run `npm link` in the
@@ -67,9 +58,7 @@ npm install loopback-connector-fabric
 npm install fabric-rest
 ```
 
-
 ## Configuration
-
 For a simple configuration that works with the fabric-sample/fabcar we have provided a
 `setup.sh` script.
 
@@ -80,7 +69,6 @@ the server must be configured to run as a user with administrator access on the 
 standard work the server can be configured with any user that is known to the peer.
 
 ### Sample configuration
-
 The settings in `datasources.json` (generated from the template) are used to configure
 the known hyperledger fabric network and channels to the REST server by using the
 capabilities provided by fabric-sdk-node. `datasources.json.template` along with
@@ -100,9 +88,7 @@ have their own certificate authorities and can be started using docker images.
 | Org2, peer0  | 0.0.0.0:9051     |
 | Org2, peer1  | 0.0.0.0:10051    |
 
-
 ## Running the REST API
-
 From within the `fabric-rest` project folder open a terminal and run `node .`. The
 messages to the terminal will confirm when the LoopBack server is running. Try out the
 API manually using the [LoopBack API Explorer interface][explorer], for your given
@@ -122,9 +108,7 @@ HTTP Basic authentication is provided using [Passport][] as standard, with a def
 username and password combination of `chris:secret`. This should be passed on all URL
 invocations.
 
-
 ## Testing the REST API
-
 The `tests` directory contains a python wrapper for the REST API, and modules to run
 tests against the REST API server for specific Fabric sample networks. For example, after
 starting the `fabcar` sample network, run
@@ -141,17 +125,12 @@ First channel name test: passed
 Car color test: passed
 ```
 
-
 ## Fabric Examples: Input for Testing
 
-
 ### Fabcar
-
 Browse to the [Loopback Explorer][explorer] interface.
 
-
 #### Query ledger using chaincode for all cars
-
 Issue a `POST` request to `/fabric/1_0/channels/{channelName}/ledger` with the following
 values by default:
 
@@ -164,9 +143,7 @@ values by default:
 Request body
 : `{"fcn": "queryAllCars","args": []}`
 
-
 #### Query ledger using chaincode for one car
-
 Issue a `POST` request to `/fabric/1_0/channels/{channelName}/ledger` with the following
 values by default:
 
@@ -179,9 +156,7 @@ values by default:
 Request body
 : `{"fcn": "queryCar","args": ["CAR4"]}`
 
-
 ### Propose a transaction
-
 `channel`
 : `mychannel`
 
@@ -192,18 +167,14 @@ Request body
 __Passing the response from this on to the transaction end point will not work at this
 time, it requires session management or new SDK functionality to be implemented__
 
-
 ### End to End transaction
-
 `channel`
 : `mychannel`
 
 Request body
 : `{"proposalResponses":[],"proposal":{"chaincodeId": "fabcar", "fcn": "createCar", "args": ["CAR10", "Chevy", "Volt", "Red", "Nick"]}}`
 
-
 ## Logging
-
 The logging used relies on the logger being set for fabric-sdk-node. The following
 assumes that the default Winston logger is used and the command to start the REST server
 is run from within the `fabric-rest` directory.
@@ -220,6 +191,14 @@ The following will send error, info and debug messages to a file, and just error
 to the console. `node . --hfc-logging
 '{"error":"console","debug":"/tmp/fabricRestDebug.log"}'`
 
+## License
+<a rel="license"
+href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative
+Commons License" style="border-width:0"
+src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br
+/>This work is licensed under a <a rel="license"
+href="http://creativecommons.org/licenses/by/4.0/">Creative Commons
+Attribution 4.0 International License</a>.
 
 
 
