@@ -483,7 +483,8 @@ class HFCSDKConnector extends Connector {
       logger.debug("getChannelsChannelName() - created client instance");
       //3. Initialize the Channel and query it's Info
       var theChannel = aClient.getChannel(channelName);
-      theChannel.initialize();
+      return theChannel.initialize();
+    }).then( (ignored) =>{
       response = theChannel;
       return theChannel.queryInfo();
     }).then( (channelInfo) =>{
@@ -495,10 +496,69 @@ class HFCSDKConnector extends Connector {
       response.queryInfo = channelInfo;
       return Promise.resolve( response );
     }).catch((err)=>{
-      if(err instanceof Error) err.statusCode = 501;
+      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
       return Promise.reject(err);
     });
   }
+
+  /**
+  * Create/get a peer instance and call Channel.joinChannel
+  * ref: https://fabric-sdk-node.github.io/global.html#JoinChannelRequest
+  * @returns {Promise}
+  *
+  * @param {string} channelName Name of the channel to GET
+  * @param {object} peerInfo Information about the peer to join to a channel
+  * @param {object} lbConnector The loopback connector object
+  */
+  postChannelsChannelNamePeers(channelName, peerInfo, lbConnector){
+    var joinChannelRequest = {};
+    var response = {};
+
+    var theChannel;
+    var theClient;
+
+    //1. Get a new client instance.
+    return Common.getClientWithChannels(lbConnector.settings).then( (aClient) =>{
+      logger.debug("postChannelsChannelNamePeers() - created client instance");
+      //2. Get and initialize the Channel
+      theClient = aClient; //Store in wider scope for use in follow on step.
+      theChannel = theClient.getChannel(channelName);
+      return theChannel.initialize();
+    }).then( (ignored) =>{
+      var request = {};
+      request.txId = theClient.newTransactionID();
+      //4. Get the channel genesis block
+      return theChannel.getGenesisBlock(request);
+    }).then( (genesisBlock) =>{
+      //TODO Should allow configured peers to be look3ed up instead?
+      //3. Create a peer instance with input info
+      var aPeer = new Peer(peerInfo.url,peerInfo.opts);
+
+      joinChannelRequest.targets = [aPeer];
+      //joinChannelRequest.block TODO does SDK set this? It isn't clear so try without first.
+      joinChannelRequest.txId = theClient.newTransactionID();
+      joinChannelRequest.block = genesisBlock;
+      //5. Join the peer to the channel
+      return theChannel.joinChannel(joinChannelRequest);
+    }).then((results) => {
+      var proposalResponses = results[0];
+      //Do some internal checking to help debug.
+      var failed = Common.countFailedProposalResponses(proposalResponses);
+      if(failed == 0){
+        var resp = {};
+        resp.joinResults = results;
+        return Promise.resolve(resp);
+      } else {
+        var err = new Error("Failed to join peer to channel");
+        err.statusCode = 400;
+        return Promise.reject(err);
+      }
+    }).catch((err)=>{
+      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
+      return Promise.reject(err);
+    });
+  }
+
 
   /**
   * @returns {Promise}
@@ -530,7 +590,7 @@ class HFCSDKConnector extends Connector {
       }
       return Promise.resolve( response );
     }).catch((err)=>{
-      if(err instanceof Error) err.statusCode = 501;
+      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
       return Promise.reject(err);
     });
   }
@@ -549,14 +609,15 @@ class HFCSDKConnector extends Connector {
       logger.debug("getChannelsChannelNameChaincodes() - created client instance");
       //3. Initialize the Channel and query it's Info
       var theChannel = aClient.getChannel(channelName);
-      theChannel.initialize();
+      return theChannel.initialize();
+    }).then( (ignored) =>{
       return theChannel.queryInstantiatedChaincodes();
     }).then( (installedChaincodes) =>{
       logger.debug("getChannelsChannelNameChaincodes() - queried channel for chaincode okay");
       response = installedChaincodes; //Indirection not needed here.
       return Promise.resolve( response );
     }).catch((err)=>{
-      if(err instanceof Error) err.statusCode = 501;
+      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
       return Promise.reject(err);
     });
   }

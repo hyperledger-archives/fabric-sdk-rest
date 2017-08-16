@@ -254,12 +254,16 @@ SwaggerApi.putChannelsChannelName = function(channelName, channel, callback) {
  * @param {any} result Result object
  */
 SwaggerApi.postChannelsChannelNamePeers = function(channelName, peer, callback) {
-  // Replace the code below with your implementation.
-  // Please make sure the callback is invoked.
-  process.nextTick(function() {
-    var err = new Error('Not implemented');
-    callback(err);
-  });
+  var datasource = SwaggerApi.app.datasources.fabricDataSource;
+  var connector = datasource.connector;
+  connector.postChannelsChannelNamePeers(channelName, peer, connector).then(
+    function(response){
+      callback(null,response);
+    },
+    function(err){
+      callback(err);
+    }
+  );
 
 }
 
@@ -530,7 +534,7 @@ SwaggerApi.remoteMethod('getChannelsChannelNameChaincodes',
        http: { source: 'path' } } ],
   returns:
    [ { description: 'Successful response',
-       type: 'TODO',
+       type: 'ChaincodeQueryResponse',
        arg: 'data',
        root: true } ],
   http: { verb: 'get', path: '/channels/:channelName/chaincodes' },
@@ -615,7 +619,10 @@ SwaggerApi.remoteMethod('postChannelsChannelNamePeers',
        description: 'The peer information',
        required: true,
        http: { source: 'body' } } ],
-  returns: [],
+  returns: [{ description: 'Successful response with data specific to the request',
+      type: 'object',
+      arg: 'data',
+      root: true } ],
   http: { verb: 'post', path: '/channels/:channelName/peers' },
   description: 'Join a Peer to the channel' }
 );
@@ -686,7 +693,7 @@ SwaggerApi.remoteMethod('getChannelsChannelNameChaincodesId',
        http: { source: 'path' } } ],
   returns:
    [ { description: 'Successful response',
-       type: 'TODO',
+       type: 'ChaincodeInfo',
        arg: 'data',
        root: true } ],
   http: { verb: 'get', path: '/channels/:channelName/chaincodes/:id' },
@@ -708,7 +715,7 @@ SwaggerApi.remoteMethod('getChaincodesId',
        http: { source: 'query' } } ],
   returns:
    [ { description: 'Successful response',
-       type: 'TODO',
+       type: 'ChaincodeInfo',
        arg: 'data',
        root: true } ],
   http: { verb: 'get', path: '/chaincodes/:id' },
@@ -749,8 +756,8 @@ SwaggerApi.remoteMethod('postChannelsChannelNameLedger',
        required: false,
        http: { source: 'body' } } ],
   returns:
-   [ { description: 'Successful response',
-       type: 'TODO',
+   [ { description: 'Successful response with data specific to the query',
+       type: 'object',
        arg: 'data',
        root: true } ],
   http: { verb: 'post', path: '/channels/:channelName/ledger' },

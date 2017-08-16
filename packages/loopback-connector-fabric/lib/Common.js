@@ -24,7 +24,7 @@
 
  //This module requires fabric-client so safe to use the same logger as set for sdk.
  const sdkutils = require('fabric-client/lib/utils');
- var logger = sdkutils.getLogger('fabric-client/lib/Common.js');
+ var logger = sdkutils.getLogger('loopback-connector-fabric/lib/Common.js');
 
 //Use this file for common utility functions
 
@@ -37,20 +37,34 @@
 exports.countFailedProposalResponses = function(proposalResponses){
   var failedCount = 0;
   var all_good = true;
-  //Do some internal checking to help debug.
-  for (var i in proposalResponses) {
-    if (proposalResponses && proposalResponses[i].response &&
-      proposalResponses[i].response.status === 200) {
-      logger.info("Proposal was good, peer index is " + i);
+  if(Array.isArray(proposalResponses)){
+    //Response from multiple peers
+    //Do some internal checking to help debug.
+    for (var i in proposalResponses) {
+      if (proposalResponses && proposalResponses[i].response &&
+        proposalResponses[i].response.status === 200) {
+        logger.info("Proposal was good, peer index is " + i);
+      } else {
+        // One bad response does not make an error as request could still meet endorsement policy.
+        logger.info("Proposal failed, peer index is " + i);
+        failedCount += 1;
+      }
+    }
+  } else {
+    //Response from one peer.
+    if (proposalResponses && proposalResponses.response &&
+      proposalResponses.response.status === 200) {
+      logger.info("Proposal was good" );
     } else {
-      logger.error("Proposal was bad, peer index is " + i);
+      logger.error("Proposal failed" );
       failedCount += 1;
     }
+
   }
   if (failedCount == 0) {
     logger.info("Successfully sent Proposal and received ProposalResponse: Status - 200");
   } else {
-    logger.debug("Failed to send Proposal or receive valid response. Response null or status is not 200.");
+    logger.error("Failed to send Proposal or receive valid response. Response null or status is not 200.");
     logger.debug( JSON.stringify(proposalResponses) );
   }
   return failedCount;
