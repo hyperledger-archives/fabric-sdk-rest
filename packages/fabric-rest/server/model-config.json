@@ -49,6 +49,10 @@
     "dataSource": null,
     "public": false
   },
+  "PeerOpts": {
+    "dataSource": null,
+    "public": false
+  },
   "transaction": {
     "dataSource": null,
     "public": false
@@ -70,10 +74,6 @@
     "public": false
   },
   "ChaincodeQueryResponse": {
-    "dataSource": null,
-    "public": false
-  },
-  "TODO": {
     "dataSource": null,
     "public": false
   }

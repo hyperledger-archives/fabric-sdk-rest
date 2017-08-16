@@ -27,7 +27,9 @@ paths:
             $ref: '#/definitions/transactionCommit'
       responses:
         '200':
-          description: Successful response
+          description: Successful response or array of proposal responses
+          schema:
+            $ref: '#/definitions/transactionResponse'
 ##
   /channels/{channelName}/endorse:
     post:
@@ -479,10 +481,21 @@ definitions:
         type: string
         description: The url of the peer
       opts:
-        type: boolean
-        description: This is TODO
+        $ref: '#/definitions/peerOpts'
     required:
       - url
+
+  peerOpts:
+    description: Peer options
+    properties:
+      pem:
+        type: string
+        description: The url of the peer
+      ssl-target-name-override:
+        type: string
+        description: Optional override for use in test environments
+    required:
+      - pem
 
   transactionProposal:
     description: Transaction proposal
@@ -516,6 +529,45 @@ definitions:
     required:
       - proposalResponses
       - proposal
+
+  transactionResponse:
+    description: Response from committing a transaction.
+    properties:
+      status:
+        type: string
+        description: SUCCESS returned if orderer has accepted this request
+      txId:
+        $ref: '#/definitions/txId'
+    required:
+      - status
+      - txId
+
+  txId:
+    description: Transaction ID data.
+    properties:
+      _nonce:
+        $ref: '#/definitions/nonce'
+      _transaction_id:
+        type: string
+        description: The transaction ID used when this request was submitted
+    required:
+      - _nonce
+      - _transaction_id
+
+  nonce:
+    description: Nonce data.
+    properties:
+      type:
+        type: string
+        description: The type of this object, Buffer
+      data:
+        type: array
+        description: An array of integers, 0 to 255, representing bytes.
+        items:
+          type: integer
+    required:
+      - type
+      - data
 
   channelInfo:
     description: Information about a channel

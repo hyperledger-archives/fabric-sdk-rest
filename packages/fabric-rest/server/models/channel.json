@@ -38,7 +38,7 @@
     },
     "orderers": {
       "type": [
-        "TODO"
+        "peer"
       ],
       "description": "The array of orderers in this channel"
     },

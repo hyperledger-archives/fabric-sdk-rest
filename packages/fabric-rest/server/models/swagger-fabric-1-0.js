@@ -45,7 +45,7 @@ SwaggerApi.postChannelsChannelNameTransactions = function(channelName, transacti
  * Send a proposal to the channel's peers. This could be for either chaincode or a transaction.
  * @param {string} channelName Name of the channel
  * @param {integer[]} peers Peers to send proposal to
- * @param {TODO} transaction The proposal.
+ * @param {proposal} transaction The proposal.
  * @callback {Function} callback Callback function
  * @param {Error|string} err Error object
  * @param {proposalResult} result Result object
@@ -414,8 +414,8 @@ SwaggerApi.remoteMethod('postChannelsChannelNameTransactions',
        description: 'The transaction to commit and any proposal response.',
        required: true,
        http: { source: 'body' } } ],
-  returns: [{ description: 'Successful response',
-      type: 'TODO',
+  returns: [{ description: 'Successful response or array of proposal responses',
+      type: 'any',
       arg: 'data',
       root: true }],
   http: { verb: 'post', path: '/channels/:channelName/transactions', status: 202 },
@@ -436,7 +436,7 @@ SwaggerApi.remoteMethod('postChannelsChannelNameEndorse',
        required: false,
        http: { source: 'query' } },
      { arg: 'transaction',
-       type: 'TODO',
+       type: 'transaction',
        description: 'The proposal.',
        required: true,
        http: { source: 'body' } } ],
