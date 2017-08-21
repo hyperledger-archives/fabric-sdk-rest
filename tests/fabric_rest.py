@@ -48,7 +48,6 @@ class FabricRest:
         """Get the names of known channels from the primary peer"""
         return self._call_endpoint("GET", "/api/fabric/1_0/channels")
 
-
     # POST /fabric/1_0/chaincodes
     def install_chaincode(self, chaincode_id, chaincode_path, archive_bytes, chaincode_version, peers):
         """Install chaincode onto the named peers"""
@@ -57,7 +56,6 @@ class FabricRest:
             url += "peers=" + peers
         data='{"chaincodeId":"'+chaincode_id+'","chaincodePath":"'+ chaincode_path+'","chaincodePackage":"'+ archive_bytes+'","chaincodeVersion":"'+ chaincode_version+'"}'
         return self._call_endpoint("POST", url, data)
-
 
     # POST /fabric/1_0/chaincodes
     def install_chaincode_file(self, chaincode_id, chaincode_path, chaincode_version, peers):
@@ -90,9 +88,11 @@ class FabricRest:
 
 
     # POST /fabric/1_0/channels/{channelName}
-    def create_channel(self):
-        """Create the named channel"""
-        pass
+    def create_channel(self, channel_name, channel_config_base64):
+        """Create a channel"""
+        url = "/api/fabric/1_0/channels/" +channel_name
+        data='{"envelope":"'+channel_config_base64+'"}'  #No signatures passed in as one org test
+        return self._call_endpoint("POST", url, data)
 
 
     # GET /fabric/1_0/channels/{channelName}/blocks
@@ -114,9 +114,11 @@ class FabricRest:
 
 
     # POST /fabric/1_0/channels/{channelName}/chaincodes
-    def init_new_chaincode(self):
+    def instantiate_chaincode(self,channel_name,chaincode_id,chaincode_version):
         """Instantiate new chaincode in the channel for the named peers"""
-        pass
+        url = "/api/fabric/1_0/channels/" +channel_name+ "/chaincodes?peers=%5B0%5D"
+        data='{"chaincodeId":"'+chaincode_id+'","chaincodeVersion":"'+chaincode_version+'"}'
+        return self._call_endpoint("POST", url, data)
 
 
     # GET /fabric/1_0/channels/{channelName}/chaincodes/{id}
@@ -145,15 +147,16 @@ class FabricRest:
 
 
     # POST /fabric/1_0/channels/{channelName}/peers
-    def join_channel(self):
-        """Join a Peer to the channel"""
-        pass
-
+    def join_channel(self, channel_name, peer_data):
+        """Join a channel"""
+        url = "/api/fabric/1_0/channels/" +channel_name +"/peers"
+        return self._call_endpoint("POST", url, peer_data)
 
     # POST /fabric/1_0/channels/{channelName}/transactions
-    def commit_transaction(self):
+    def commit_transaction(self,channel,data):
         """Commit a transaction, if no proposal responses propose and commit."""
-        pass
+        url = "/api/fabric/1_0/channels/" + channel + "/transactions"
+        return self._call_endpoint("POST", url, data)
 
 
     # GET /fabric/1_0/channels/{channelName}/transactions/{transactionID}

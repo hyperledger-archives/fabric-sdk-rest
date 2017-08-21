@@ -212,17 +212,23 @@ SwaggerApi.getChannelsChannelName = function(channelName, callback) {
 /**
  * Create the named channel
  * @param {string} channelName Name of the channel to create
- * @param {channel} channel The channel with values to use
+ * @param {channelRequest} channelRequest The channel with values to use
  * @callback {Function} callback Callback function
  * @param {Error|string} err Error object
  * @param {any} result Result object
  */
-SwaggerApi.postChannelsChannelName = function(channelName, channel, callback) {
-  // Replace the code below with your implementation.
-  // Please make sure the callback is invoked.
+SwaggerApi.postChannelsChannelName = function(channelName, channelRequest, callback) {
   process.nextTick(function() {
-    var err = new Error('Not implemented');
-    callback(err);
+    var datasource = SwaggerApi.app.datasources.fabricDataSource;
+    var connector = datasource.connector;
+    connector.postChannelsChannelName(channelName, channelRequest, connector).then(
+      function(response){
+        callback(null,response);
+      },
+      function(err){
+        callback(err);
+      }
+    );
   });
 
 }
@@ -230,17 +236,23 @@ SwaggerApi.postChannelsChannelName = function(channelName, channel, callback) {
 /**
  * Update the named channel
  * @param {string} channelName Name of the channel to update
- * @param {channel} channel The channel with values to update
+ * @param {channelRequest} channelRequest The channel with values to use
  * @callback {Function} callback Callback function
  * @param {Error|string} err Error object
  * @param {any} result Result object
  */
-SwaggerApi.putChannelsChannelName = function(channelName, channel, callback) {
-  // Replace the code below with your implementation.
-  // Please make sure the callback is invoked.
+SwaggerApi.putChannelsChannelName = function(channelName, channelRequest, callback) {
   process.nextTick(function() {
-    var err = new Error('Not implemented');
-    callback(err);
+    var datasource = SwaggerApi.app.datasources.fabricDataSource;
+    var connector = datasource.connector;
+    connector.putChannelsChannelName(channelName, channelRequest, connector).then(
+      function(response){
+        callback(null,response);
+      },
+      function(err){
+        callback(err);
+      }
+    );
   });
 
 }
@@ -583,9 +595,12 @@ SwaggerApi.remoteMethod('postChannelsChannelName',
        description: 'The channel with values to use',
        required: true,
        http: { source: 'body' } } ],
-  returns: [],
-  http: { verb: 'post', path: '/channels/:channelName' },
-  description: 'Create the named channel' }
+  returns: [ { description: 'Successful response',
+      type: 'channelResponse',
+      arg: 'data',
+      root: true } ],
+  http: { verb: 'post', path: '/channels/:channelName', status: 202 },
+  description: 'Request creation of the named channel' }
 );
 
 SwaggerApi.remoteMethod('putChannelsChannelName',
@@ -601,9 +616,12 @@ SwaggerApi.remoteMethod('putChannelsChannelName',
        description: 'The channel with values to update',
        required: true,
        http: { source: 'body' } } ],
-  returns: [],
-  http: { verb: 'put', path: '/channels/:channelName' },
-  description: 'Update the named channel' }
+  returns: [ { description: 'Successful response',
+      type: 'channelResponse',
+      arg: 'data',
+      root: true } ],
+  http: { verb: 'put', path: '/channels/:channelName', status: 202 },
+  description: 'Request an update the named channel' }
 );
 
 SwaggerApi.remoteMethod('postChannelsChannelNamePeers',

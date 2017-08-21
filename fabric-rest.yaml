@@ -176,7 +176,7 @@ paths:
             $ref: '#/definitions/channelInfo'
 #
     post:
-      description: Create the named channel
+      description: Request the creation of the named channel
       parameters:
         - name: channelName
           in: path
@@ -188,10 +188,12 @@ paths:
           description: The channel with values to use
           required: true
           schema:
-            $ref: '#/definitions/channel'
+            $ref: '#/definitions/channelCreate'
       responses:
-        '200':
-          description: Successful response
+        '202':
+          description: The orderer has accepted the request
+          schema:
+            $ref: '#/definitions/channelResponse'
 #
     put:
       description: Update the named channel
@@ -206,10 +208,12 @@ paths:
           description: The channel with values to update
           required: true
           schema:
-            $ref: '#/definitions/channel'
+            $ref: '#/definitions/channelUpdate'
       responses:
-        '200':
-          description: Successful response
+        '202':
+          description: The orderer has accepted the request
+          schema:
+            $ref: '#/definitions/channelResponse'
 ##
   /channels/{channelName}/peers:
     post:
@@ -446,6 +450,36 @@ definitions:
     required:
       - name
 
+  channelCreate:
+    description: The details needed to create a Hyperledger Fabric Channel
+    properties:
+      envelope:
+        type: string
+        format: byte
+        description: The envelope describing the channel encoded in a base64 string. This envelope would have been created by the command line tool configtxgen or configtxlator
+      signatures:
+        type: array
+        description: An optional array of additional signatures required to create the channel
+        items:
+          type: object
+    required:
+      - envelope
+
+  channelUpdate:
+    description: The details needed to create a Hyperledger Fabric Channel
+    properties:
+      config:
+        type: string
+        format: byte
+        description: The config describing the channel update encoded in a base64 string. This config would have been created by the command line tool configtxgen or configtxlator
+      signatures:
+        type: array
+        description: An optional array of additional signatures required to update the channel
+        items:
+          type: object
+    required:
+      - config
+
   ChannelQueryResponse:
     description: An array of ChannelInfo
     properties:
@@ -473,7 +507,6 @@ definitions:
     required:
       - results
 
-
   peer:
     description: Peer information
     properties:
@@ -481,21 +514,19 @@ definitions:
         type: string
         description: The url of the peer
       opts:
-        $ref: '#/definitions/peerOpts'
+        type: object
+        description: Peer options
+        properties:
+          pem:
+            type: string
+            description: The url of the peer
+          ssl-target-name-override:
+            type: string
+            description: Optional override for use in test environments
+        required:
+          - pem
     required:
       - url
-
-  peerOpts:
-    description: Peer options
-    properties:
-      pem:
-        type: string
-        description: The url of the peer
-      ssl-target-name-override:
-        type: string
-        description: Optional override for use in test environments
-    required:
-      - pem
 
   transactionProposal:
     description: Transaction proposal
@@ -529,6 +560,18 @@ definitions:
     required:
       - proposalResponses
       - proposal
+
+  channelResponse:
+    description: Response from a create or update channel.
+    properties:
+      response:
+        type: object
+        description: The response from the orderer
+      txId:
+        $ref: '#/definitions/txId'
+    required:
+      - response
+      - txId
 
   transactionResponse:
     description: Response from committing a transaction.
@@ -572,11 +615,11 @@ definitions:
   channelInfo:
     description: Information about a channel
     properties:
-      inputData:
-        type: boolean
+      data:
+        type: object
         description: This is TODO
     required:
-      - inputData
+      - data
 
   ChaincodeInstallRequest:
     description: Chaincode install details
@@ -604,12 +647,19 @@ definitions:
     properties:
       chaincodeId:
         type: string
-      inputData:
-        type: boolean
-        description: This is TODO
+      chaincodeVersion:
+        type: string
+      chaincodeType:
+        type: string
+      fcn:
+        type: string
+      args:
+        type: array
+        items:
+          type: object
     required:
       - chaincodeId
-      - inputData
+      - chaincodeVersion
 
   ChaincodeQueryResponse:
     description: Array of ChaincodeInfo

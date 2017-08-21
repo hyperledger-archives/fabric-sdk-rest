@@ -50,17 +50,6 @@ class TestFabCar(unittest.TestCase):
         self.assertEqual(empty_result, {})
 
 
-    def test_chaincode_install(self):
-        """Test to confirm that installing chaincode on a peer works."""
-        # install chaincode: id, path(in archive), archive as base64 string, version, peers
-        archiveFile = open('input/installTest.tar.gz', 'rb')
-        archiveInb64 = base64.b64encode(archiveFile.read())
-        #install_result = restserver.install_chaincode("marbles","marbles02/marbles_chaincode.go",archiveInb64,"1.1","%5B0%5D")["peerResponses"]
-        install_result = restserver.install_chaincode("marbles","marbles02",archiveInb64,"1.0","%5B0%5D")["peerResponses"]
-        #install_result = restserver.install_chaincode_file("marbles","marbles02/marbles_chaincode.go","1.0","%5B0%5D")["peerResponses"]
-        # print install_result
-
-
 if __name__ == "__main__":
     if len(argv) > 1:
         hostname = argv[1]

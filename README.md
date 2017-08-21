@@ -24,9 +24,9 @@ This table provides a rough guide to what has been implemented.
 | GET  | ^^                                                   | Done | NO |
 | GET  | /channels                                            | Done | YES |
 | GET  | /channels/{channelName}                              | Done, needs output validation | NO |
-| POST | ^^                                                   | TODO | ??? |
+| POST | ^^                                                   | Done | Creates mychannel of basic-network |
 | PUT  | ^^                                                   | TODO | ??? |
-| POST | /channels/{channelName}/peers                        | TODO | ??? |
+| POST | /channels/{channelName}/peers                        | Done | Join one peer to mychannel |
 | GET  | /channels/{channelName}/transactions/{transactionID} | Done, manual test, test script run | NO |
 | GET  | /channels/{channelName}/blocks                       | Done, manual test, test script run | NO |
 | GET  | /channels/{channelName}/chaincodes/{id}              | Done | YES |
@@ -122,12 +122,16 @@ python test_fabcar.py
 ```
 
 The default hostname and port values for the REST API, `localhost` and `3000`, can be
-specified as arguments 1 and 2 respectively. Correct output will be, for example,
+specified as arguments 1 and 2 respectively.
 
-```
-First channel name test: passed
-Car color test: passed
-```
+To test creating a new channel, joining a peer, and installing and instantiating
+the fabcar chaincode the automated test `test_channel_setup.py` requires some set up.
+- Set an environment variable for the location of the fabric-samples directory. `export FABRIC_SAMPLES_DIR=xxxx`
+- Comment out the `docker exec` commands in the file `fabric-samples/basic-network/start.sh`
+- Run that `start.sh` script to start the sample `basic-network` without a channel defined
+Now the test can be run using the command `python test_channel_setup.py`. To rerun
+this test, first `start.sh` must be run to redefine the basic-network without any artifacts.
+
 
 ## Fabric Examples: Input for Testing
 

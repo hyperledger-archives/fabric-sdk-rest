@@ -155,6 +155,125 @@ class HFCSDKConnector extends Connector {
     });
   }
 
+  /**
+   * Create the named channel
+   * @param {string} channelName Name of the channel to create
+   * @param {channelRequest} channelRequest The channel with values to use
+   * @param {object} lbConnector The loopback connector object
+   *
+   */
+  postChannelsChannelName(channelName, channelRequest, lbConnector){
+    var newChannelReq = {};
+    var response = {};
+    var theClient;
+
+    //1. Get client
+    var clientPromise = Common.getClient(lbConnector.settings);
+    //2. Get Orderer
+    var ordererPromise = Common.getOrderer(lbConnector.settings);
+
+    //3. Convert base64 input to Buffer
+    var envelope = Buffer.from(channelRequest.envelope, 'base64');
+
+    return Promise.all([clientPromise,ordererPromise]).then( (data)=>{
+      theClient = data[0];
+      newChannelReq.orderer = data[1];
+
+    	newChannelReq.config = theClient.extractChannelConfig(envelope);
+
+      //4. Sign request for current org
+      var signature = theClient.signChannelConfig(newChannelReq.config);
+
+      //5. Create new txId for this request
+      newChannelReq.txId = theClient.newTransactionID();
+      //Caller may want to query or log the transaction by ID
+      response.txId = newChannelReq.txId;
+
+      //6. Sort out array of signatures.
+      //  If some passed in create new array and append new sig to the end.
+      //  Else just create a single element array with the new sig.
+      if(channelRequest.signatures !== undefined && channelRequest.signatures.length > 0){
+        newChannelReq.signatures = new Array(channelRequest.signatures.length+1);
+        channelRequest.signatures.forEach( function(sig,index){
+          newChannelReq.signatures[index] = sig;
+        });
+        newChannelReq.signatures[channelRequest.signatures.length] = signature;
+      } else {
+        newChannelReq.signatures = [signature];
+      }
+      //7. Set other parms and call Client createChannel
+      newChannelReq.name = channelName;
+      logger.debug("postChannelsChannelName() - " + JSON.stringify(newChannelReq) );
+      return theClient.createChannel(newChannelReq);
+    }).then((newChannelResponse)=>{
+      //8. Return new channel response with txId
+      response.response = newChannelResponse;
+      return Promise.resolve(response);
+    }).catch((err)=>{
+      logger.debug("postChannelsChannelName() - Error caught");
+      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
+      return Promise.reject(err);
+    });
+  }
+
+  /**
+   * Update the named channel
+   * @param {string} channelName Name of the channel to create
+   * @param {channelRequest} channelRequest The channel with values to use
+   * @param {object} lbConnector The loopback connector object
+   *
+   */
+  putChannelsChannelName(channelName, channelRequest, lbConnector){
+    var updateChannelReq = {};
+    var response = {};
+    var theClient;
+
+    //1. Get client
+    var clientPromise = Common.getClient(lbConnector.settings);
+    //2. Get Orderer
+    var ordererPromise = Common.getOrderer(lbConnector.settings);
+
+    //3. Convert base64 input to Buffer
+    updateChannelReq.config = Buffer.from(channelRequest.config, 'base64');
+
+    return Promise.all([clientPromise,ordererPromise]).then( (data)=>{
+      theClient = data[0];
+      updateChannelReq.orderer = data[1];
+
+      //4. Sign request for current org
+      var signature = theClient.signChannelConfig(updateChannelReq.config);
+
+      //5. Create new txId for this request
+      updateChannelReq.txId = theClient.newTransactionID();
+      //Caller may want to query or log the transaction by ID
+      response.txId = updateChannelReq.txId;
+
+      //6. Sort out array of signatures.
+      //  If some passed in create new array and append new sig to the end.
+      //  Else just create a single element array with the new sig.
+      if(channelRequest.signatures != undefined && channelRequest.signatures.length > 0){
+        updateChannelReq.signatures = new Array(channelRequest.signatures.length+1);
+        channelRequest.signatures.forEach( function(sig,index){
+          updateChannelReq.signatures[index] = sig;
+        });
+        updateChannelReq.signatures[channelRequest.signatures.length] = signature;
+      } else {
+        updateChannelReq.signatures = [signature];
+      }
+      //7. Set other parms and call Client createChannel
+      updateChannelReq.name = channelName;
+      return theClient.updateChannel(updateChannelReq);
+    }).then((updateChannelResponse)=>{
+      //8. Return new channel response with txId
+      response.response = updateChannelResponse;
+      return Promise.resolve(response);
+    }).catch((err)=>{
+      logger.debug("postChannelsChannelName() - Error caught");
+      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
+      return Promise.reject(err);
+    });
+  }
+
 
   /**
    * Instantiate new chaincode proposal
@@ -477,12 +596,13 @@ class HFCSDKConnector extends Connector {
   */
   getChannelsChannelName(channelName, lbConnector){
     var response = {};
+    var theChannel;
 
     //1. Get a new client instance.
     return Common.getClientWithChannels(lbConnector.settings).then( (aClient) =>{
       logger.debug("getChannelsChannelName() - created client instance");
       //3. Initialize the Channel and query it's Info
-      var theChannel = aClient.getChannel(channelName);
+      theChannel = aClient.getChannel(channelName);
       return theChannel.initialize();
     }).then( (ignored) =>{
       response = theChannel;
@@ -603,12 +723,13 @@ class HFCSDKConnector extends Connector {
   */
   getChannelsChannelNameChaincodes(channelName, lbConnector){
     var response = {};
+    var theChannel;
 
     //1. Get a new client instance.
     return Common.getClientWithChannels(lbConnector.settings).then( (aClient) =>{
       logger.debug("getChannelsChannelNameChaincodes() - created client instance");
       //3. Initialize the Channel and query it's Info
-      var theChannel = aClient.getChannel(channelName);
+      theChannel = aClient.getChannel(channelName);
       return theChannel.initialize();
     }).then( (ignored) =>{
       return theChannel.queryInstantiatedChaincodes();
