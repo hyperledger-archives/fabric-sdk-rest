@@ -10,6 +10,11 @@
       "type": "object",
       "required": true,
       "description": "A response object"
+    },
+    "transactionID": {
+      "type": "string",
+      "required": true,
+      "description": "The transaction ID of the request"
     }
   },
   "validations": [],
