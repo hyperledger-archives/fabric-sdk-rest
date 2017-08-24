@@ -13,19 +13,23 @@
       "./mixins"
     ]
   },
-  "swagger_fabric_1_0": {
+  "fabric_1_0": {
     "dataSource": "fabricDataSource",
     "public": true
   },
   "args": {
     "dataSource": null,
-    "public": true
+    "public": false
   },
   "block": {
     "dataSource": null,
     "public": false
   },
   "channel": {
+    "dataSource": null,
+    "public": false
+  },
+  "channelResponse": {
     "dataSource": null,
     "public": false
   },

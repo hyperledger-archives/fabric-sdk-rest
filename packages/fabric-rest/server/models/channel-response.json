@@ -1,0 +1,20 @@
+{
+  "name": "channelResponse",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "response": {
+      "type": "object",
+      "required": true,
+      "description": "A response object"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "hidden": ["id"]
+}
