@@ -6,12 +6,16 @@
     "validateUpsert": true
   },
   "properties": {
-    "results": {
+    "proposalResponses": {
       "type": [
-        "string"
+        "object"
       ],
       "required": true,
-      "description": "An array of proposal results from peers TODO name and type"
+      "description": "An array of ProposalResponse objects"
+    },
+    "proposal": {
+      "type": "object",
+      "description": "The original proposal, one of ChaincodeInvokeRequest, ChaincodeInstantiateUpgradeRequest, ChaincodeInstantiateUpgradeRequest, ChaincodeInstallRequest"
     }
   },
   "validations": [],
