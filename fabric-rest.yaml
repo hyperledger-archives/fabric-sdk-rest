@@ -1,4 +1,8 @@
+# Copyright IBM Corp. All Rights Reserved.
 #
+# SPDX-License-Identifier: Apache-2.0
+#
+
 swagger: '2.0'
 info:
   title: DRAFT Hyperledger Fabric REST API
