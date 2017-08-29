@@ -31,9 +31,7 @@ paths:
             $ref: '#/definitions/transactionCommit'
       responses:
         '200':
-          description: Successful response or array of proposal responses
-          schema:
-            $ref: '#/definitions/transactionResponse'
+          description: Successful response
 ##
   /channels/{channelName}/endorse:
     post:
@@ -59,7 +57,7 @@ paths:
             $ref: '#/definitions/transactionProposal'
       responses:
         '200':
-          description: Successful response
+          description: Responses from the peers the endorsement request was sent to
           schema:
             $ref: '#/definitions/proposalResult'
 ##
@@ -82,7 +80,9 @@ paths:
             $ref: '#/definitions/ChaincodeInstallRequest'
       responses:
         '200':
-          description: Successful response
+          description: Responses from the peers the install request was sent to
+          schema:
+            $ref: '#/definitions/proposalResult'
 ##
   /channels/{channelName}/chaincodes:
     post:
@@ -108,7 +108,7 @@ paths:
             $ref: '#/definitions/chaincodeInstantiate'
       responses:
         '200':
-          description: Successful response
+          description: Responses from the peers the instantiate request was sent to
           schema:
             $ref: '#/definitions/proposalResult'
 #
@@ -135,7 +135,7 @@ paths:
             $ref: '#/definitions/chaincodeInstantiate'
       responses:
         '200':
-          description: Successful response
+          description: Responses from the peers the instantiate request was sent to
           schema:
             $ref: '#/definitions/proposalResult'
 #
@@ -180,7 +180,7 @@ paths:
             $ref: '#/definitions/channelInfo'
 #
     post:
-      description: Request the creation of the named channel
+      description: Create the named channel
       parameters:
         - name: channelName
           in: path
@@ -192,12 +192,10 @@ paths:
           description: The channel with values to use
           required: true
           schema:
-            $ref: '#/definitions/channelCreate'
+            $ref: '#/definitions/channel'
       responses:
-        '202':
-          description: The orderer has accepted the request
-          schema:
-            $ref: '#/definitions/channelResponse'
+        '200':
+          description: Successful response
 #
     put:
       description: Update the named channel
@@ -212,12 +210,10 @@ paths:
           description: The channel with values to update
           required: true
           schema:
-            $ref: '#/definitions/channelUpdate'
+            $ref: '#/definitions/channel'
       responses:
-        '202':
-          description: The orderer has accepted the request
-          schema:
-            $ref: '#/definitions/channelResponse'
+        '200':
+          description: Successful response
 ##
   /channels/{channelName}/peers:
     post:
@@ -454,36 +450,6 @@ definitions:
     required:
       - name
 
-  channelCreate:
-    description: The details needed to create a Hyperledger Fabric Channel
-    properties:
-      envelope:
-        type: string
-        format: byte
-        description: The envelope describing the channel encoded in a base64 string. This envelope would have been created by the command line tool configtxgen or configtxlator
-      signatures:
-        type: array
-        description: An optional array of additional signatures required to create the channel
-        items:
-          type: object
-    required:
-      - envelope
-
-  channelUpdate:
-    description: The details needed to create a Hyperledger Fabric Channel
-    properties:
-      config:
-        type: string
-        format: byte
-        description: The config describing the channel update encoded in a base64 string. This config would have been created by the command line tool configtxgen or configtxlator
-      signatures:
-        type: array
-        description: An optional array of additional signatures required to update the channel
-        items:
-          type: object
-    required:
-      - config
-
   ChannelQueryResponse:
     description: An array of ChannelInfo
     properties:
@@ -511,6 +477,7 @@ definitions:
     required:
       - results
 
+
   peer:
     description: Peer information
     properties:
@@ -518,17 +485,8 @@ definitions:
         type: string
         description: The url of the peer
       opts:
-        type: object
-        description: Peer options
-        properties:
-          pem:
-            type: string
-            description: The url of the peer
-          ssl-target-name-override:
-            type: string
-            description: Optional override for use in test environments
-        required:
-          - pem
+        type: boolean
+        description: This is TODO
     required:
       - url
 
@@ -565,65 +523,14 @@ definitions:
       - proposalResponses
       - proposal
 
-  channelResponse:
-    description: Response from a create or update channel.
-    properties:
-      response:
-        type: object
-        description: The response from the orderer
-      txId:
-        $ref: '#/definitions/txId'
-    required:
-      - response
-      - txId
-
-  transactionResponse:
-    description: Response from committing a transaction.
-    properties:
-      status:
-        type: string
-        description: SUCCESS returned if orderer has accepted this request
-      txId:
-        $ref: '#/definitions/txId'
-    required:
-      - status
-      - txId
-
-  txId:
-    description: Transaction ID data.
-    properties:
-      _nonce:
-        $ref: '#/definitions/nonce'
-      _transaction_id:
-        type: string
-        description: The transaction ID used when this request was submitted
-    required:
-      - _nonce
-      - _transaction_id
-
-  nonce:
-    description: Nonce data.
-    properties:
-      type:
-        type: string
-        description: The type of this object, Buffer
-      data:
-        type: array
-        description: An array of integers, 0 to 255, representing bytes.
-        items:
-          type: integer
-    required:
-      - type
-      - data
-
   channelInfo:
     description: Information about a channel
     properties:
-      data:
-        type: object
+      inputData:
+        type: boolean
         description: This is TODO
     required:
-      - data
+      - inputData
 
   ChaincodeInstallRequest:
     description: Chaincode install details
@@ -651,19 +558,12 @@ definitions:
     properties:
       chaincodeId:
         type: string
-      chaincodeVersion:
-        type: string
-      chaincodeType:
-        type: string
-      fcn:
-        type: string
-      args:
-        type: array
-        items:
-          type: object
+      inputData:
+        type: boolean
+        description: This is TODO
     required:
       - chaincodeId
-      - chaincodeVersion
+      - inputData
 
   ChaincodeQueryResponse:
     description: Array of ChaincodeInfo

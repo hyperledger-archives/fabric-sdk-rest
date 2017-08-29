@@ -14,24 +14,24 @@ welcome.
 ## Endpoint implementation status
 This table provides a rough guide to what has been implemented.
 
-| Verb | REST Endpoint | Implementation Status | Test Available |
-| :--: | :--           | :--    | :-- |
-| POST | /channels/{channelName}/transactions                 | End to End done but does not accept proposalResponses | NO |
-| POST | /channels/{channelName}/endorse                      | Done, manual test, test script run | NO |
-| POST | /chaincodes                                          | Done, needs more testing | YES but needs enhancing |
-| POST | /channels/{channelName}/chaincodes                   | Done | NO |
-| PUT  | ^^                                                   | Basic impl, test script run | NO |
-| GET  | ^^                                                   | Done | NO |
-| GET  | /channels                                            | Done | YES |
-| GET  | /channels/{channelName}                              | Done, needs output validation | NO |
-| POST | ^^                                                   | Done | Creates mychannel of basic-network |
-| PUT  | ^^                                                   | TODO | ??? |
-| POST | /channels/{channelName}/peers                        | Done | Join one peer to mychannel |
-| GET  | /channels/{channelName}/transactions/{transactionID} | Done, manual test, test script run | NO |
-| GET  | /channels/{channelName}/blocks                       | Done, manual test, test script run | NO |
-| GET  | /channels/{channelName}/chaincodes/{id}              | Done | YES |
-| GET  | /chaincodes/{id}                                     | Done, manual test, test script run | NO |
-| POST | /channels/{channelName}/ledger                       | Done, manual test, test script run | PARTIAL |
+| Verb   | REST Endpoint                                          | Implementation Status                                 | Test Available                     |
+| :--:   | :--                                                    | :--                                                   | :--                                |
+| `POST` | `/channels/{channelName}/transactions`                 | End to End done but does not accept proposalResponses | NO                                 |
+| `POST` | `/channels/{channelName}/endorse`                      | Done, manual test, test script run                    | NO                                 |
+| `POST` | `/chaincodes`                                          | Done, needs more testing                              | YES but needs enhancing            |
+| `POST` | `/channels/{channelName}/chaincodes`                   | Done                                                  | NO                                 |
+| `PUT`  | ^^                                                     | Basic impl, test script run                           | NO                                 |
+| `GET`  | ^^                                                     | Done                                                  | NO                                 |
+| `GET`  | `/channels`                                            | Done                                                  | YES                                |
+| `GET`  | `/channels/{channelName}`                              | Done, needs output validation                         | NO                                 |
+| `POST` | ^^                                                     | Done                                                  | Creates mychannel of basic-network |
+| `PUT`  | ^^                                                     | TODO                                                  | ???                                |
+| `POST` | `/channels/{channelName}/peers`                        | Done                                                  | Join one peer to mychannel         |
+| `GET`  | `/channels/{channelName}/transactions/{transactionID}` | Done, manual test, test script run                    | NO                                 |
+| `GET`  | `/channels/{channelName}/blocks`                       | Done, manual test, test script run                    | NO                                 |
+| `GET`  | `/channels/{channelName}/chaincodes/{id}`              | Done                                                  | YES                                |
+| `GET`  | `/chaincodes/{id}`                                     | Done, manual test, test script run                    | NO                                 |
+| `POST` | `/channels/{channelName}/ledger`                       | Done, manual test, test script run                    | PARTIAL                            |
 
 ## Dependencies
 - `fabric-client` node module

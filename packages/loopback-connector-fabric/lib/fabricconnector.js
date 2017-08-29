@@ -176,7 +176,7 @@ class HFCSDKConnector extends Connector {
       //5. Create new txId for this request
       newChannelReq.txId = theClient.newTransactionID();
       //Caller may want to query or log the transaction by ID
-      response.txId = newChannelReq.txId;
+      response.transactionID = newChannelReq.txId.getTransactionID();
 
       //6. Sort out array of signatures.
       //  If some passed in create new array and append new sig to the end.
@@ -195,7 +195,7 @@ class HFCSDKConnector extends Connector {
       logger.debug("postChannelsChannelName() - " + JSON.stringify(newChannelReq) );
       return theClient.createChannel(newChannelReq);
     }).then((newChannelResponse)=>{
-      //8. Return new channel response with txId
+      //8. Return new channel response with transaciton ID
       response.response = newChannelResponse;
       return Promise.resolve(response);
     }).catch((err)=>{
@@ -235,7 +235,7 @@ class HFCSDKConnector extends Connector {
       //5. Create new txId for this request
       updateChannelReq.txId = theClient.newTransactionID();
       //Caller may want to query or log the transaction by ID
-      response.txId = updateChannelReq.txId;
+      response.transactionID = updateChannelReq.txId.getTransactionID();
 
       //6. Sort out array of signatures.
       //  If some passed in create new array and append new sig to the end.
@@ -253,7 +253,7 @@ class HFCSDKConnector extends Connector {
       updateChannelReq.name = channelName;
       return theClient.updateChannel(updateChannelReq);
     }).then((updateChannelResponse)=>{
-      //8. Return new channel response with txId
+      //8. Return new channel response with transaction ID
       response.response = updateChannelResponse;
       return Promise.resolve(response);
     }).catch((err)=>{
@@ -313,8 +313,8 @@ class HFCSDKConnector extends Connector {
       //7. Once the proposal results are available we can send to the orderer.
       return theChannel.sendTransaction(tranRequest);
     }).then( (ordererResponse)=>{
-      //REST caller may need to know txId for later query
-      ordererResponse.txId = request.txId;
+      //REST caller may need to know transaction ID for later query
+      ordererResponse.transactionID = request.txId.getTransactionID();
       return Promise.resolve(ordererResponse);
     }).catch((err)=>{
       logger.debug("postChannelsChannelNameChaincodes() - Error caught");
@@ -399,8 +399,8 @@ class HFCSDKConnector extends Connector {
       //8. Once the proposal results are available we can send to the orderer.
       return theChannel.sendTransaction(tranRequest);
     }).then( (ordererResponse)=>{
-      //REST caller may need to know txId for later query
-      ordererResponse.txId = request.txId;
+      //REST caller may need to know transaction ID for later query
+      ordererResponse.transactionID = request.txId.getTransactionID();
       return Promise.resolve(ordererResponse);
     }).catch((err)=>{
       logger.debug("putChannelsChannelNameChaincodes() - Error caught");
@@ -526,14 +526,12 @@ class HFCSDKConnector extends Connector {
       return theChannel.sendTransaction(tranReq);
     }).then( (broadcastResponse)=>{
       //6. Format out the status returned on the broadcastResponse.status fields
-      var finalResp = {};
-      finalResp.status = broadcastResponse.status;
-      finalResp.txId = txId;
-      logger.debug(JSON.stringify(finalResp));
+      response.status = broadcastResponse.status;
+      response.transactionID = txId.getTransactionID();
       if(broadcastResponse.status === "SUCCESS"){
-        return Promise.resolve(finalResp);
+        return Promise.resolve(response);
       } else {
-        return Promise.reject(finalResp);
+        return Promise.reject(response);
       }
     }).catch((err)=>{
       logger.debug("postChannelsChannelNameTransactions() - Error caught");

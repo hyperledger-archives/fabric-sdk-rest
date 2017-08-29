@@ -1,5 +1,5 @@
 {
-  "name": "swagger_fabric_1_0",
+  "name": "fabric_1_0",
   "base": "Model",
   "idInjection": false,
   "options": {

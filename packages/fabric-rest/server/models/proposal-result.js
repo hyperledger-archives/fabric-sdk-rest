@@ -1,5 +1,5 @@
 'use strict';
 
-module.exports = function(Proposalresult) {
+module.exports = function(proposalResult) {
 
 };
