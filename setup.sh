@@ -57,9 +57,9 @@ project_dir="$(cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd)/fabric-sdk-rest
 
 # Update private key in datasources.json
 if [[ -n $update_keys ]]; then
-    cd "${fabric_network_dir}/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore"
+    cd "${fabric_network_dir%/}/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore"
     privatekeyUser="$(ls *_sk)"
-    cd "${fabric_network_dir}/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore"
+    cd "${fabric_network_dir%/}/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore"
     privatekeyAdmin="$(ls *_sk)"
 
     if [[ -n $debug ]]; then
