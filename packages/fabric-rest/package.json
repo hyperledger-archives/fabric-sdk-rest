@@ -26,8 +26,8 @@
     "nsp": "^2.1.0"
   },
   "repository": {
-    "type": "git",
-    "url": "https://github.com/MartinCocks/fabric-sdk-rest"
+    "type": "gerrit",
+    "url": "https://gerrit.hyperledger.org/r/#/admin/projects/fabric-sdk-rest"
   },
   "license": "Apache-2.0",
   "description": "fabric-rest"

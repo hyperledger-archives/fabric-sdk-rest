@@ -110,7 +110,7 @@ paths:
         '200':
           description: Responses from the peers the instantiate request was sent to
           schema:
-            $ref: '#/definitions/proposalResult'
+            $ref: '#/definitions/ordererResponse'
 #
     put:
       description: Instantiate updated chaincode in the channel for the named peers
@@ -137,7 +137,7 @@ paths:
         '200':
           description: Responses from the peers the instantiate request was sent to
           schema:
-            $ref: '#/definitions/proposalResult'
+            $ref: '#/definitions/ordererResponse'
 #
     get:
       description: Query all chaincode instantiated on the channel
@@ -196,6 +196,8 @@ paths:
       responses:
         '200':
           description: Successful response
+          schema:
+            $ref: '#/definitions/channelResponse'
 #
     put:
       description: Update the named channel
@@ -214,6 +216,8 @@ paths:
       responses:
         '200':
           description: Successful response
+          schema:
+            $ref: '#/definitions/channelResponse'
 ##
   /channels/{channelName}/peers:
     post:
@@ -465,6 +469,35 @@ definitions:
             - channel_id
     required:
       - channels
+
+  channelResponse:
+    description: The response from the channel create or update
+    properties:
+      response:
+        type: object
+        description: The response object
+      transactionID:
+        type: string
+        description: The transaction ID used for the request
+    required:
+      - transactionID
+
+  ordererResponse:
+    description: The response from the orderer
+    properties:
+      status:
+        type: string
+        description: The response from the orderer
+      transactionID:
+        type: string
+        description: The transaction ID used for the request
+      peerResponses:
+        type: array
+        description: An array of proposal results if endorsement step failed
+        items:
+          type: string
+    required:
+      - transactionID
 
   proposalResult:
     description: Array of proposalResult

@@ -41,6 +41,10 @@
     "dataSource": null,
     "public": false
   },
+  "ordererResponse": {
+    "dataSource": null,
+    "public": false
+  },
   "proposalResult": {
     "dataSource": null,
     "public": false
