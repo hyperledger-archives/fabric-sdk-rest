@@ -16,7 +16,8 @@ paths:
 ##############################################
   /channels/{channelName}/transactions:
     post:
-      description: Commit a transaction, if no proposal responses propose and commit.
+      # description: Commit a transaction, if no proposal responses propose and commit.
+      description: Endorse and commit a transaction using configured peers
       parameters:
         - name: channelName
           in: path
@@ -35,33 +36,34 @@ paths:
           schema:
             $ref: '#/definitions/ordererResponse'
 ##
-  /channels/{channelName}/endorse:
-    post:
-      description: Send a proposal to the channel's peers. This could be for either chaincode or a transaction.
-      parameters:
-        - name: channelName
-          in: path
-          description: Name of the channel
-          required: true
-          type: string
-        - name: peers
-          in: query
-          description: Peers to send proposal to
-          required: false
-          type: array
-          items:
-            type: integer
-        - name: transaction
-          in: body
-          description: The proposal.
-          required: true
-          schema:
-            $ref: '#/definitions/transactionProposal'
-      responses:
-        '200':
-          description: Responses from the peers the endorsement request was sent to
-          schema:
-            $ref: '#/definitions/proposalResult'
+#### NOT SUPPORTED
+  # /channels/{channelName}/endorse:
+  #   post:
+  #     description: Send a proposal to the channel's peers. This could be for either chaincode or a transaction.
+  #     parameters:
+  #       - name: channelName
+  #         in: path
+  #         description: Name of the channel
+  #         required: true
+  #         type: string
+  #       - name: peers
+  #         in: query
+  #         description: Peers to send proposal to
+  #         required: false
+  #         type: array
+  #         items:
+  #           type: integer
+  #       - name: transaction
+  #         in: body
+  #         description: The proposal.
+  #         required: true
+  #         schema:
+  #           $ref: '#/definitions/transactionProposal'
+  #     responses:
+  #       '200':
+  #         description: Responses from the peers the endorsement request was sent to
+  #         schema:
+  #           $ref: '#/definitions/proposalResult'
 ##
   /chaincodes:
     post:
@@ -535,27 +537,28 @@ definitions:
         description: An array of arguements
         items:
           type: object
-      txId:
-        type: object
-        description: If not specified for a proposal it will be created dynamically.
       fcn:
         type: string
+      # A REST client does not need to create this field, just be told what is used
+      # txId:
+      #   type: object
+      #   description: If not specified for a proposal it will be created dynamically.
     required:
       - chaincodeId
       - args
 
   transactionCommit:
-    description: Commit a transaction, if proposalResponses empty do endorse first.
+    # description: Commit a transaction, if proposalResponses empty do endorse first.
+    description: Endorse and commit a transaction using configured peers
     properties:
-      proposalResponses:
-        type: array
-        description: An array of proposal results from peers
-        items:
-          type: object
+      # proposalResponses:
+      #   type: array
+      #   description: An array of proposal results from peers
+      #   items:
+      #     type: object
       proposal:
         $ref: '#/definitions/transactionProposal'
     required:
-      - proposalResponses
       - proposal
 
   channelInfo:

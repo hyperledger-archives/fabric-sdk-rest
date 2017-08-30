@@ -6,9 +6,9 @@
 module.exports = function(SwaggerApi) {
 
 /**
- * Commit a transaction, if no proposal responses propose and commit.
+ * Endorse and commit a transaction using configured peers
  * @param {string} channelName Name of the channel
- * @param {transaction} transaction The transaction to commit and any proposal response.
+ * @param {transaction} transaction The transaction to endorse and commit
  * @callback {Function} callback Callback function
  * @param {Error|string} err Error object
  * @param {any} result Result object
@@ -82,7 +82,7 @@ SwaggerApi.postChaincodes = function(peers, chaincode, callback) {
  * @param {chaincodeInstantiate} chaincode The chaincode instantiate data.
  * @callback {Function} callback Callback function
  * @param {Error|string} err Error object
- * @param {proposalResult} result Result object
+ * @param {ordererResponse} result Result object
  */
 SwaggerApi.postChannelsChannelNameChaincodes = function(channelName, peers, chaincode, callback) {
 
@@ -108,7 +108,7 @@ SwaggerApi.postChannelsChannelNameChaincodes = function(channelName, peers, chai
  * @param {chaincodeInstantiate} chaincode The chaincode instantiate data.
  * @callback {Function} callback Callback function
  * @param {Error|string} err Error object
- * @param {proposalResult} result Result object
+ * @param {ordererResponse} result Result object
  */
 SwaggerApi.putChannelsChannelNameChaincodes = function(channelName, peers, chaincode, callback) {
 
@@ -400,8 +400,6 @@ SwaggerApi.postChannelsChannelNameLedger = function(channelName, chaincodeId, bl
 
 }
 
-
-
 SwaggerApi.remoteMethod('postChannelsChannelNameTransactions',
   { isStatic: true,
   accepts:
@@ -411,8 +409,8 @@ SwaggerApi.remoteMethod('postChannelsChannelNameTransactions',
        required: true,
        http: { source: 'path' } },
      { arg: 'transaction',
-       type: 'transaction',
-       description: 'The transaction to commit and any proposal response.',
+       type: 'transactionProposal',
+       description: 'The transaction to endorse and commit.',
        required: true,
        http: { source: 'body' } } ],
   returns: [{ description: 'Successful response or array of proposal responses',
@@ -420,35 +418,35 @@ SwaggerApi.remoteMethod('postChannelsChannelNameTransactions',
       arg: 'data',
       root: true }],
   http: { verb: 'post', path: '/channels/:channelName/transactions', status: 202 },
-  description: 'Commit a transaction, if no proposal responses propose and commit.' }
+  description: 'Endorse and commit a transaction using configured peers.' }
 );
 
-SwaggerApi.remoteMethod('postChannelsChannelNameEndorse',
-  { isStatic: true,
-  accepts:
-   [ { arg: 'channelName',
-       type: 'string',
-       description: 'Name of the channel',
-       required: true,
-       http: { source: 'path' } },
-     { arg: 'peers',
-       type: [ 'integer' ],
-       description: 'Peers to send proposal to',
-       required: false,
-       http: { source: 'query' } },
-     { arg: 'transaction',
-       type: 'transaction',
-       description: 'The proposal.',
-       required: true,
-       http: { source: 'body' } } ],
-  returns:
-   [ { description: 'Successful response',
-       type: 'proposalResult',
-       arg: 'data',
-       root: true } ],
-  http: { verb: 'post', path: '/channels/:channelName/endorse', status: 202 },
-  description: 'Send a proposal to the channel\'s peers. This could be for either chaincode or a transaction.' }
-);
+// SwaggerApi.remoteMethod('postChannelsChannelNameEndorse',
+//   { isStatic: true,
+//   accepts:
+//    [ { arg: 'channelName',
+//        type: 'string',
+//        description: 'Name of the channel',
+//        required: true,
+//        http: { source: 'path' } },
+//      { arg: 'peers',
+//        type: [ 'integer' ],
+//        description: 'Peers to send proposal to',
+//        required: false,
+//        http: { source: 'query' } },
+//      { arg: 'transaction',
+//        type: 'transaction',
+//        description: 'The proposal.',
+//        required: true,
+//        http: { source: 'body' } } ],
+//   returns:
+//    [ { description: 'Successful response',
+//        type: 'proposalResult',
+//        arg: 'data',
+//        root: true } ],
+//   http: { verb: 'post', path: '/channels/:channelName/endorse', status: 202 },
+//   description: 'Send a proposal to the channel\'s peers. This could be for either chaincode or a transaction.' }
+// );
 
 SwaggerApi.remoteMethod('postChaincodes',
   { isStatic: true,

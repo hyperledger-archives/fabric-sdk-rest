@@ -18,8 +18,8 @@ This table provides a rough guide to what has been implemented.
 
 | Verb   | REST Endpoint                                          | Implementation Status                                 | Test Available                     |
 | :--:   | :--                                                    | :--                                                   | :--                                |
-| `POST` | `/channels/{channelName}/transactions`                 | End to End done but does not accept proposalResponses | NO                                 |
-| `POST` | `/channels/{channelName}/endorse`                      | Done, manual test, test script run                    | NO                                 |
+| `POST` | `/channels/{channelName}/transactions`                 | End to End done                                       | NO                                 |
+| `POST` | ~~/channels/{channelName}/endorse~~                    | COMMENTED OUT, Needs clear use case to add back in    | NO                                 |
 | `POST` | `/chaincodes`                                          | Done, needs more testing                              | YES but needs enhancing            |
 | `POST` | `/channels/{channelName}/chaincodes`                   | Done                                                  | NO                                 |
 | `PUT`  | ^^                                                     | Basic impl, test script run                           | NO                                 |
