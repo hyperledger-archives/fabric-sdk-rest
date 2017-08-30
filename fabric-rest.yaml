@@ -30,8 +30,10 @@ paths:
           schema:
             $ref: '#/definitions/transactionCommit'
       responses:
-        '200':
-          description: Successful response
+        '202':
+          description: Response from the orderer or failure responses from peers
+          schema:
+            $ref: '#/definitions/ordererResponse'
 ##
   /channels/{channelName}/endorse:
     post:
@@ -107,8 +109,8 @@ paths:
           schema:
             $ref: '#/definitions/chaincodeInstantiate'
       responses:
-        '200':
-          description: Responses from the peers the instantiate request was sent to
+        '202':
+          description: Response from the orderer or failure responses from peers
           schema:
             $ref: '#/definitions/ordererResponse'
 #
@@ -134,8 +136,8 @@ paths:
           schema:
             $ref: '#/definitions/chaincodeInstantiate'
       responses:
-        '200':
-          description: Responses from the peers the instantiate request was sent to
+        '202':
+          description: Response from the orderer or failure responses from peers
           schema:
             $ref: '#/definitions/ordererResponse'
 #
