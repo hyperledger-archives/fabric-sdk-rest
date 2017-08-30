@@ -96,7 +96,7 @@ or to push the commits and automatically notify one or more of the
 project maintainers of the code review,
 
 ```bash
-git push origin HEAD:refs/for/dev%r=chrispoole@uk.ibm.com,cocksmar@uk.ibm.com
+git push origin HEAD:refs/for/dev%r=chrispoole@uk.ibm.com,r=cocksmar@uk.ibm.com
 ```
 
 If this has worked, you'll see a message from Gerrit like
