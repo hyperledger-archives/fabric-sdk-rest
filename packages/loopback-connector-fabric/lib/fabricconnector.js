@@ -41,7 +41,7 @@ class HFCSDKConnector extends Connector {
    * @param {ChaincodeInstallRequest} chaincode The chaincode install data. https://fabric-sdk-node.github.io/global.html#ChaincodeInstallRequest
    * @param {object} lbConnector The loopback connector object
    *
-   * @returns {any} result Result object
+   * @returns {installResult} result Result object
    */
   postChaincodes(peers, chaincode, lbConnector){
     if(chaincode.chaincodePackage === undefined){
@@ -81,7 +81,7 @@ class HFCSDKConnector extends Connector {
       //Do some internal checking to help debug.
       var failed = Common.countFailedProposalResponses(proposalResponses);
       var resp = {};
-      resp.peerResponses = results;
+      resp.peerResponses = results[0];
       //Always send results from Peers even if not all worked.
       return Promise.resolve(resp);
     }).catch((err)=>{

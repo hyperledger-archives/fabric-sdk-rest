@@ -1,0 +1,22 @@
+{
+  "name": "installResult",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "peerResponses": {
+      "type": [
+        "object"
+      ],
+      "required": true,
+      "description": "An array of ProposalResponse objects, ref https://fabric-sdk-node.github.io/global.html#ProposalResponse"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "hidden": ["id"]
+}

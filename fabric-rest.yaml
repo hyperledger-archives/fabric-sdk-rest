@@ -86,7 +86,7 @@ paths:
         '200':
           description: Responses from the peers the install request was sent to
           schema:
-            $ref: '#/definitions/proposalResult'
+            $ref: '#/definitions/installResult'
 ##
   /channels/{channelName}/chaincodes:
     post:
@@ -507,16 +507,16 @@ definitions:
     required:
       - transactionID
 
-  proposalResult:
-    description: Array of proposalResult
+  installResult:
+    description: Array of responses from the peers
     properties:
-      results:
+      peerResponses:
         type: array
-        description: An array of proposal results from peers TODO name and type
+        description: An array of ProposalResponse objects, ref https://fabric-sdk-node.github.io/global.html#ProposalResponse
         items:
-          type: string
+          type: object
     required:
-      - results
+      - peerResponses
 
 
   peer:
