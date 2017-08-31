@@ -386,6 +386,7 @@ definitions:
     properties:
       fcn:
         type: string
+        description: A function name relevant to the chaincode
       args:
         type: array
         description: An array of arguements
@@ -395,14 +396,17 @@ definitions:
       - args
 
   block:
-    description: The data contained in a block
+    description: The data contained in a Block, ref https://fabric-sdk-node.github.io/global.html#Block
     properties:
+      header:
+        type: object
+        description: The block header
       data:
-        type: array
-        description: Byte array of the block TODO check type
-        items:
-          type: string
-          format: byte
+        type: object
+        description: The data contained in the block
+      metadata:
+        type: object
+        description: The metadata for the block
 
   channel:
     description: A description of a Hyperledger Fabric Channel
