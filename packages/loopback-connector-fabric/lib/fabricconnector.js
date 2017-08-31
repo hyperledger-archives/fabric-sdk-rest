@@ -41,7 +41,7 @@ class HFCSDKConnector extends Connector {
    * @param {ChaincodeInstallRequest} chaincode The chaincode install data. https://fabric-sdk-node.github.io/global.html#ChaincodeInstallRequest
    * @param {object} lbConnector The loopback connector object
    *
-   * @returns {any} result Result object
+   * @returns {installResult} result Result object
    */
   postChaincodes(peers, chaincode, lbConnector){
     if(chaincode.chaincodePackage === undefined){
@@ -81,7 +81,7 @@ class HFCSDKConnector extends Connector {
       //Do some internal checking to help debug.
       var failed = Common.countFailedProposalResponses(proposalResponses);
       var resp = {};
-      resp.peerResponses = results;
+      resp.peerResponses = results[0];
       //Always send results from Peers even if not all worked.
       return Promise.resolve(resp);
     }).catch((err)=>{
@@ -646,6 +646,7 @@ class HFCSDKConnector extends Connector {
       joinChannelRequest.txId = theClient.newTransactionID();
       joinChannelRequest.block = genesisBlock;
       //5. Join the peer to the channel
+      logger.debug("postChannelsChannelNamePeers() - about to joinChannel()");
       return theChannel.joinChannel(joinChannelRequest);
     }).then((results) => {
       var proposalResponses = results[0];
@@ -653,7 +654,8 @@ class HFCSDKConnector extends Connector {
       var failed = Common.countFailedProposalResponses(proposalResponses);
       if(failed == 0){
         var resp = {};
-        resp.joinResults = results;
+        resp.peerResponses = results[0];
+        logger.debug(JSON.stringify(resp));
         return Promise.resolve(resp);
       } else {
         var err = new Error("Failed to join peer to channel");

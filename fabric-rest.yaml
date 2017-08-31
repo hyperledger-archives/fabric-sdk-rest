@@ -86,7 +86,7 @@ paths:
         '200':
           description: Responses from the peers the install request was sent to
           schema:
-            $ref: '#/definitions/proposalResult'
+            $ref: '#/definitions/installResult'
 ##
   /channels/{channelName}/chaincodes:
     post:
@@ -240,7 +240,9 @@ paths:
             $ref: '#/definitions/peer'
       responses:
         '200':
-          description: Successful response
+          description: Successful response from the peer
+          schema:
+            $ref: '#/definitions/installResult'
 ##############################################
 # QUERY API end points                       #
 ##############################################
@@ -507,17 +509,16 @@ definitions:
     required:
       - transactionID
 
-  proposalResult:
-    description: Array of proposalResult
+  installResult:
+    description: Array of responses from the peers
     properties:
-      results:
+      peerResponses:
         type: array
-        description: An array of proposal results from peers TODO name and type
+        description: An array of ProposalResponse objects, ref https://fabric-sdk-node.github.io/global.html#ProposalResponse
         items:
-          type: string
+          type: object
     required:
-      - results
-
+      - peerResponses
 
   peer:
     description: Peer information
@@ -526,8 +527,17 @@ definitions:
         type: string
         description: The url of the peer
       opts:
-        type: boolean
-        description: This is TODO
+        type: object
+        description: The options for the peer
+        properties:
+          pem:
+            type: string
+            description: The pem to use with the peer
+          ssl-target-name-override:
+            type: string
+            description: Optional override for use in test environments
+        required:
+          - pem
     required:
       - url
 
@@ -587,7 +597,7 @@ definitions:
         type: string
         format: byte
         description: Base64 encoded archive file. The archive is expected to be a gzip and must not contain files flagged as executable.
-      chaincodetype:
+      chaincodeType:
         type: string
     required:
       - chaincodePath
@@ -600,12 +610,20 @@ definitions:
     properties:
       chaincodeId:
         type: string
-      inputData:
-        type: boolean
-        description: This is TODO
+      chaincodeVersion:
+        type: string
+      chaincodeType:
+        type: string
+      fcn:
+        type: string
+      args:
+        type: array
+        description: An array of arguements
+        items:
+          type: object
     required:
       - chaincodeId
-      - inputData
+      - chaincodeVersion
 
   ChaincodeQueryResponse:
     description: Array of ChaincodeInfo
