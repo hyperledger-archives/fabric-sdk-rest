@@ -193,12 +193,12 @@ paths:
           type: string
         - name: channel
           in: body
-          description: The channel with values to use
+          description: The contents of a generated channel configuration file encoded in base64
           required: true
           schema:
             $ref: '#/definitions/channel'
       responses:
-        '200':
+        '202':
           description: Successful response
           schema:
             $ref: '#/definitions/channelResponse'
@@ -213,12 +213,12 @@ paths:
           type: string
         - name: channel
           in: body
-          description: The channel with values to update
+          description: The contents of a generated channel configuration file encoded in base64
           required: true
           schema:
             $ref: '#/definitions/channel'
       responses:
-        '200':
+        '202':
           description: Successful response
           schema:
             $ref: '#/definitions/channelResponse'
@@ -411,58 +411,13 @@ definitions:
         description: The metadata for the block
 
   channel:
-    description: A description of a Hyperledger Fabric Channel
+    description: The envelope needed to create a Hyperledger Fabric Channel encoded as a base64 string
     properties:
-      name:
+      envelope:
         type: string
-        description: The name of the channel
-      securityEnabled:
-        type: boolean
-        description: Is security enabled
-      preFetchMode:
-        type: boolean
-        description: Is prefetch mode on
-      devMode:
-        type: boolean
-        description: Is devMode on
-      tCertBatchSize:
-        type: integer
-        description: The TCert batch size
-      primaryPeer:
-        $ref: '#/definitions/peer'
-      peers:
-        type: array
-        description: The array of peers in this channel
-        items:
-          $ref: '#/definitions/peer'
-      orderers:
-        type: array
-        description: The array of orderers in this channel
-        items:
-          $ref: '#/definitions/TODO'
-      consensusType:
-        type: string
-        description: This is TODO
-      initialEpoch:
-        type: integer
-        description: This is TODO
-      initialMaxMessageCount:
-        type: integer
-        description: This is TODO
-      initialAbsoluteMaxBytes:
-        type: integer
-        description: This is TODO
-      initialPreferredMaxBytes:
-        type: integer
-        description: This is TODO
-      initialTransactionID:
-        type: integer
-        description: This is TODO
-      readOnly:
-        type: boolean
-        description: Is access to this channel read only
+        description: The contents of a generated channel configuration file encoded in base64
     required:
-      - name
+      - envelope
 
   ChannelQueryResponse:
     description: An array of ChannelInfo
@@ -483,13 +438,14 @@ definitions:
   channelResponse:
     description: The response from the channel create or update
     properties:
-      response:
-        type: object
-        description: The response object
+      status:
+        type: string
+        description: Has the orderer accepted this request for processing?
       transactionID:
         type: string
         description: The transaction ID used for the request
     required:
+      - status
       - transactionID
 
   ordererResponse:
@@ -659,12 +615,3 @@ definitions:
         type: integer
       transactionEnvelope:
         type: object
-
-  TODO:
-    description: Needs defining
-    properties:
-      todo:
-        type: boolean
-        description: This is TODO
-    required:
-      - todo
