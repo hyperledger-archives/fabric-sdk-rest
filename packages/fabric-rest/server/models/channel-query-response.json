@@ -8,7 +8,7 @@
   "properties": {
     "channels": {
       "type": [
-        "object"
+        "channelID"
       ],
       "required": true,
       "description": "An array of ChannelInfo"

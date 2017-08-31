@@ -6,11 +6,17 @@
     "validateUpsert": true
   },
   "properties": {
+    "header": {
+      "type": "object",
+      "description": "The block header"
+    },
     "data": {
-      "type": [
-        "string"
-      ],
-      "description": "Byte array of the block TODO check type"
+      "type": "object",
+      "description": "The data contained in the block"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "The metadata for the block"
     }
   },
   "validations": [],
