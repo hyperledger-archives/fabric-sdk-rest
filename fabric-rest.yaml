@@ -240,7 +240,9 @@ paths:
             $ref: '#/definitions/peer'
       responses:
         '200':
-          description: Successful response
+          description: Successful response from the peer
+          schema:
+            $ref: '#/definitions/installResult'
 ##############################################
 # QUERY API end points                       #
 ##############################################
@@ -518,7 +520,6 @@ definitions:
     required:
       - peerResponses
 
-
   peer:
     description: Peer information
     properties:
@@ -526,8 +527,17 @@ definitions:
         type: string
         description: The url of the peer
       opts:
-        type: boolean
-        description: This is TODO
+        type: object
+        description: The options for the peer
+        properties:
+          pem:
+            type: string
+            description: The pem to use with the peer
+          ssl-target-name-override:
+            type: string
+            description: Optional override for use in test environments
+        required:
+          - pem
     required:
       - url
 

@@ -52,7 +52,7 @@ class TestChannelSetup(unittest.TestCase):
         pem_for_peer = pem_file.read()
         pem_for_peer = pem_for_peer.replace('\n','') #Strip newline chars from PEM.
         peerData = "{\"url\": \"grpc://0.0.0.0:7051\",\"opts\":{\"pem\":\""+ pem_for_peer +"\",\"ssl-target-name-override\": \"peer0\"}}"
-        join_result = restserver.join_channel("mychannel",peerData)["joinResults"][0]["response"]["status"]
+        join_result = restserver.join_channel("mychannel",peerData)["peerResponses"]["response"]["status"]
         self.assertEqual(join_result,200)
 
     def test_ac_chaincode_install_marbles02(self):
