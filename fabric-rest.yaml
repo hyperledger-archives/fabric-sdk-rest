@@ -587,7 +587,7 @@ definitions:
         type: string
         format: byte
         description: Base64 encoded archive file. The archive is expected to be a gzip and must not contain files flagged as executable.
-      chaincodetype:
+      chaincodeType:
         type: string
     required:
       - chaincodePath
@@ -600,12 +600,20 @@ definitions:
     properties:
       chaincodeId:
         type: string
-      inputData:
-        type: boolean
-        description: This is TODO
+      chaincodeVersion:
+        type: string
+      chaincodeType:
+        type: string
+      fcn:
+        type: string
+      args:
+        type: array
+        description: An array of arguements
+        items:
+          type: object
     required:
       - chaincodeId
-      - inputData
+      - chaincodeVersion
 
   ChaincodeQueryResponse:
     description: Array of ChaincodeInfo
