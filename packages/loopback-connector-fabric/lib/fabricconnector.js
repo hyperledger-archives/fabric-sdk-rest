@@ -195,8 +195,8 @@ class HFCSDKConnector extends Connector {
       logger.debug("postChannelsChannelName() - " + JSON.stringify(newChannelReq) );
       return theClient.createChannel(newChannelReq);
     }).then((newChannelResponse)=>{
-      //8. Return new channel response with transaciton ID
-      response.response = newChannelResponse;
+      //8. Return new channel response status with transaciton ID
+      response.status = newChannelResponse.status;
       return Promise.resolve(response);
     }).catch((err)=>{
       logger.debug("postChannelsChannelName() - Error caught");
@@ -253,8 +253,8 @@ class HFCSDKConnector extends Connector {
       updateChannelReq.name = channelName;
       return theClient.updateChannel(updateChannelReq);
     }).then((updateChannelResponse)=>{
-      //8. Return new channel response with transaction ID
-      response.response = updateChannelResponse;
+      //8. Return new channel response status with transaciton ID
+      response.status = updateChannelResponse.status;
       return Promise.resolve(response);
     }).catch((err)=>{
       logger.debug("postChannelsChannelName() - Error caught");

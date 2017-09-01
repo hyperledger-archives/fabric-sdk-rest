@@ -6,10 +6,10 @@
     "validateUpsert": true
   },
   "properties": {
-    "response": {
-      "type": "object",
+    "status": {
+      "type": "string",
       "required": true,
-      "description": "A response object"
+      "description": "Has the orderer accepted this request for processing?"
     },
     "transactionID": {
       "type": "string",

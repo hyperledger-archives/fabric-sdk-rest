@@ -37,7 +37,7 @@ class TestChannelSetup(unittest.TestCase):
         config_file_loc = fs_dir + '/basic-network/config/channel.tx'
         config_file = open(config_file_loc, 'rb')
         configInb64 = base64.b64encode(config_file.read())
-        create_result = restserver.create_channel("mychannel",configInb64)["response"]["status"]
+        create_result = restserver.create_channel("mychannel",configInb64)["status"]
         self.assertEqual(create_result,"SUCCESS")
         time.sleep(5) #Allow orderer to finish this task before next tests run
 
