@@ -124,7 +124,7 @@ class FabricRest:
 
 
     # POST /fabric/1_0/channels/{channelName}/ledger
-    def query_ledger(self, channel, data, chaincode_id=None, block_id=None, block_hash=None, txn_id=None):
+    def query_ledger(self, channel, data=None, chaincode_id=None, block_id=None, block_hash=None, txn_id=None):
         """Query the channel's ledger.
 
         Query the /ledger endpoint for a given channel, passing data for the query, and any
@@ -133,6 +133,12 @@ class FabricRest:
         url = "/api/fabric/1_0/channels/" + channel + "/ledger?"
         if chaincode_id:
             url += "chaincodeId=" + chaincode_id
+        if block_id:
+            url += "blockId=" + block_id
+        if block_hash:
+            url += "blockHash=" + block_hash
+        if txn_id:
+            url += "txnId=" + txn_id
         return self._call_endpoint("POST", url, data)
 
 
