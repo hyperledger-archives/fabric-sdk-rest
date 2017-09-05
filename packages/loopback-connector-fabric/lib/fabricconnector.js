@@ -790,14 +790,21 @@ class HFCSDKConnector extends Connector {
     }).then( (queryResult) =>{
       logger.debug("postChannelsChannelNameLedger() - queried channel for " + queryType);
       try{
-        response = Common.formatBufferResponse(queryResult[0]);
+        if(queryResult instanceof Array && queryResult[0] instanceof Buffer){
+          // Query by chaincode result, format nicely for REST client.
+          response = Common.formatBufferResponse(queryResult[0]);
+        } else {
+          response = queryResult;
+        }
       } catch(err){
         logger.debug("postChannelsChannelNameLedger() - return 404");
         return Promise.reject(err);
       }
       return Promise.resolve( response );
     }).catch((err)=>{
-      if(err instanceof Error && !err.statusCode) err.statusCode = 500;
+      if(err instanceof Error && err.message.indexOf("error Entry not found in index") > -1){
+        err.statusCode = 404; //If block not found return a 404 instead of 500.
+      } else if(err instanceof Error && !err.statusCode) err.statusCode = 500;
       return Promise.reject(err);
     });
   }

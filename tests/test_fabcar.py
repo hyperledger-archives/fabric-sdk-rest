@@ -24,6 +24,16 @@ class TestFabCar(unittest.TestCase):
         first_channel = restserver.get_channels()["channels"][0]["channel_id"]
         self.assertEqual(first_channel, "mychannel")
 
+    def test_query_blockid(self):
+        """Test to confirm that a block is returned by the query."""
+        block_header = restserver.query_ledger("mychannel", block_id="1")["header"]
+        #Test will fail if header not part of response.
+
+    def test_query_blockid_404(self):
+        """Test to confirm that a block is returned by the query."""
+        status_code = restserver.query_ledger("mychannel", block_id="99999")["error"]["statusCode"]
+        self.assertEqual(status_code, 404)
+
 
     def test_car_color(self):
         """Test to confirm that the first car returned from a ledger query is the color blue."""
