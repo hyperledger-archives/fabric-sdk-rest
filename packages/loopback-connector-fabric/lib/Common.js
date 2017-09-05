@@ -18,6 +18,14 @@
 //Use this file for common utility functions
 
 /**
+* Log entry to a function
+*/
+var logEntry = function(aLogger,aFunction){
+  aLogger.debug(new Date().toISOString() + " >>> "+aFunction.name);
+}
+exports.logEntry = logEntry
+
+/**
 * Check proposalResponses and return number that failed.
 *
 * @param {proposalResponses} proposalResponses The responses from a proposal
