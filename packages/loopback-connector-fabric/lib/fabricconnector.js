@@ -14,7 +14,8 @@ var Common = require('./Common.js');
 
 //This module requires fabric-client so safe to use the same logger as set for sdk.
 const sdkutils = require('fabric-client/lib/utils');
-var logger = sdkutils.getLogger('fabricconnector.js');
+
+var logger = sdkutils.getLogger(__filename.slice(__dirname.length + 1));
 
 
 //A class that extends Connector to allow functions to be called from a Model.
@@ -44,6 +45,7 @@ class HFCSDKConnector extends Connector {
    * @returns {installResult} result Result object
    */
   postChaincodes(peers, chaincode, lbConnector){
+    Common.logEntry(logger,this.postChaincodes);
     if(chaincode.chaincodePackage === undefined){
       logger.debug("postChaincodes() - no chaincodePackage in request");
       var err = new Error("Bad Request");
@@ -99,6 +101,7 @@ class HFCSDKConnector extends Connector {
    *
    */
   getChaincodesId(id, peers, lbConnector){
+    Common.logEntry(logger,this.getChaincodesId);
     //1. Get client and known peers
     var clientPromise = Common.getClient(lbConnector.settings);
     var peerArrayPromise;
@@ -152,6 +155,7 @@ class HFCSDKConnector extends Connector {
    *
    */
   postChannelsChannelName(channelName, channelRequest, lbConnector){
+    Common.logEntry(logger,this.postChannelsChannelName);
     var newChannelReq = {};
     var response = {};
     var theClient;
@@ -213,6 +217,7 @@ class HFCSDKConnector extends Connector {
    *
    */
   putChannelsChannelName(channelName, channelRequest, lbConnector){
+    Common.logEntry(logger,this.putChannelsChannelName);
     var updateChannelReq = {};
     var response = {};
     var theClient;
@@ -274,6 +279,7 @@ class HFCSDKConnector extends Connector {
    * @returns {Promise} Resolving to the result
    */
   postChannelsChannelNameChaincodes(channelName, peers, chaincode, lbConnector){
+    Common.logEntry(logger,this.postChannelsChannelNameChaincodes);
     var request = {};
     var theClient;
     var theChannel;
@@ -334,6 +340,7 @@ class HFCSDKConnector extends Connector {
    * @returns {Promise} Resolving to the result
    */
   putChannelsChannelNameChaincodes(channelName, peers, chaincode, lbConnector){
+    Common.logEntry(logger,this.putChannelsChannelNameChaincodes);
     // Check that chaincode exists, then do the same as postChannelsChannelNameChaincodes.
     var request = {};
     var theClient;
@@ -420,6 +427,7 @@ class HFCSDKConnector extends Connector {
    * @returns {Promise}
    */
   postChannelsChannelNameEndorse(channelName, peers, transaction, lbConnector){
+    Common.logEntry(logger,this.postChannelsChannelNameEndorse);
     var errMsg = "";
     var response = {};
 
@@ -467,6 +475,7 @@ class HFCSDKConnector extends Connector {
    * @returns {Promise}
    */
   postChannelsChannelNameTransactions(channelName, transaction, lbConnector){
+    Common.logEntry(logger,this.postChannelsChannelNameTransactions);
     var errMsg = "";
     var response = {};
     var theChannel;
@@ -547,6 +556,8 @@ class HFCSDKConnector extends Connector {
   * @returns Promise
   */
   getChannels(lbConnector){
+    Common.logEntry(logger,this.getChannels);
+
     var clientPromise = Common.getClient(lbConnector.settings);
     var peerPromise   = Common.getPeer(lbConnector.settings);
 
@@ -582,6 +593,7 @@ class HFCSDKConnector extends Connector {
   * @param {object} lbConnector The loopback connector object
   */
   getChannelsChannelName(channelName, lbConnector){
+    Common.logEntry(logger,this.getChannelsChannelName);
     var response = {};
     var theChannel;
 
@@ -618,6 +630,7 @@ class HFCSDKConnector extends Connector {
   * @param {object} lbConnector The loopback connector object
   */
   postChannelsChannelNamePeers(channelName, peerInfo, lbConnector){
+    Common.logEntry(logger,this.postChannelsChannelNamePeers);
     var joinChannelRequest = {};
     var response = {};
 
@@ -677,6 +690,7 @@ class HFCSDKConnector extends Connector {
   * @param {object} lbConnector The loopback connector object
   */
   getChannelsChannelNameChaincodesId(channelName, id, lbConnector){
+    Common.logEntry(logger,this.getChannelsChannelNameChaincodesId);
     var response = {};
 
     //1. Get a new client instance.
@@ -711,6 +725,7 @@ class HFCSDKConnector extends Connector {
   * @param {object} lbConnector The loopback connector object
   */
   getChannelsChannelNameChaincodes(channelName, lbConnector){
+    Common.logEntry(logger,this.getChannelsChannelNameChaincodes);
     var response = {};
     var theChannel;
 
@@ -745,11 +760,11 @@ class HFCSDKConnector extends Connector {
   * @param {object} lbConnector The loopback connector object
   */
   postChannelsChannelNameLedger(channelName, chaincodeId, blockId, blockHash, txnId, body, lbConnector){
+    Common.logEntry(logger,this.postChannelsChannelNameLedger);
     var response = {};
     var queryRequest = {};
     var queryType = "NOT SET"
     var queryParmCount = 0;
-    logger.debug(">postChannelsChannelNameLedger()");
 
     //Validate that the number of query parameters is valid
     if(chaincodeId !== undefined && chaincodeId !== null){ queryParmCount++; queryType = "chaincodeId"}
@@ -820,10 +835,10 @@ class HFCSDKConnector extends Connector {
   * @param {object} lbConnector The loopback connector object
   */
   getChannelsChannelNameBlocks(channelName, blockId, blockHash, lbConnector){
+    Common.logEntry(logger,this.getChannelsChannelNameBlocks);
     var response = {};
     var queryType = "NOT SET"
     var queryParmCount = 0;
-    logger.debug(">getChannelsChannelNameBlocks()");
 
     //Validate that the number of query parameters is valid
     if(blockId !== undefined && blockId !== null){ queryParmCount++; queryType = "blockId"}
@@ -864,8 +879,8 @@ class HFCSDKConnector extends Connector {
 
 
   getChannelsChannelNameTransactionsTransactionID(channelName, transactionID, lbConnector){
+    Common.logEntry(logger,this.getChannelsChannelNameTransactionsTransactionID);
     var response = {};
-    logger.debug("getChannelsChannelNameTransactionsTransactionID()");
 
     //1. Get a new client instance.
     return Common.getClientWithChannels(lbConnector.settings).then( (aClient) =>{
