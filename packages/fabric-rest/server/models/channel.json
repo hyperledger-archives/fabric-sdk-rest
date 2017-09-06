@@ -6,69 +6,10 @@
     "validateUpsert": true
   },
   "properties": {
-    "name": {
+    "envelope": {
       "type": "string",
       "required": true,
-      "description": "The name of the channel"
-    },
-    "securityEnabled": {
-      "type": "boolean",
-      "description": "Is security enabled"
-    },
-    "preFetchMode": {
-      "type": "boolean",
-      "description": "Is prefetch mode on"
-    },
-    "devMode": {
-      "type": "boolean",
-      "description": "Is devMode on"
-    },
-    "tCertBatchSize": {
-      "type": "number",
-      "description": "The TCert batch size"
-    },
-    "primaryPeer": {
-      "type": "peer"
-    },
-    "peers": {
-      "type": [
-        "peer"
-      ],
-      "description": "The array of peers in this channel"
-    },
-    "orderers": {
-      "type": [
-        "peer"
-      ],
-      "description": "The array of orderers in this channel"
-    },
-    "consensusType": {
-      "type": "string",
-      "description": "This is TODO"
-    },
-    "initialEpoch": {
-      "type": "number",
-      "description": "This is TODO"
-    },
-    "initialMaxMessageCount": {
-      "type": "number",
-      "description": "This is TODO"
-    },
-    "initialAbsoluteMaxBytes": {
-      "type": "number",
-      "description": "This is TODO"
-    },
-    "initialPreferredMaxBytes": {
-      "type": "number",
-      "description": "This is TODO"
-    },
-    "initialTransactionID": {
-      "type": "number",
-      "description": "This is TODO"
-    },
-    "readOnly": {
-      "type": "boolean",
-      "description": "Is access to this channel read only"
+      "description": "The contents of a generated channel configuration file encoded in base64"
     }
   },
   "validations": [],

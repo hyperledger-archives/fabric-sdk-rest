@@ -40,7 +40,7 @@ while getopts :sdukf:ah opt; do
               ;;
         k)    update_keys=true
               ;;
-        f)    fabric_network_dir="$OPTARG"
+        f)    fabric_network_dir="${OPTARG%/}"
               ;;
         a)    run_as_admin=true
               ;;

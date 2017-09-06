@@ -16,7 +16,8 @@ paths:
 ##############################################
   /channels/{channelName}/transactions:
     post:
-      description: Commit a transaction, if no proposal responses propose and commit.
+      # description: Commit a transaction, if no proposal responses propose and commit.
+      description: Endorse and commit a transaction using configured peers
       parameters:
         - name: channelName
           in: path
@@ -30,36 +31,39 @@ paths:
           schema:
             $ref: '#/definitions/transactionCommit'
       responses:
-        '200':
-          description: Successful response
+        '202':
+          description: Response from the orderer or failure responses from peers
+          schema:
+            $ref: '#/definitions/ordererResponse'
 ##
-  /channels/{channelName}/endorse:
-    post:
-      description: Send a proposal to the channel's peers. This could be for either chaincode or a transaction.
-      parameters:
-        - name: channelName
-          in: path
-          description: Name of the channel
-          required: true
-          type: string
-        - name: peers
-          in: query
-          description: Peers to send proposal to
-          required: false
-          type: array
-          items:
-            type: integer
-        - name: transaction
-          in: body
-          description: The proposal.
-          required: true
-          schema:
-            $ref: '#/definitions/transactionProposal'
-      responses:
-        '200':
-          description: Responses from the peers the endorsement request was sent to
-          schema:
-            $ref: '#/definitions/proposalResult'
+#### NOT SUPPORTED
+  # /channels/{channelName}/endorse:
+  #   post:
+  #     description: Send a proposal to the channel's peers. This could be for either chaincode or a transaction.
+  #     parameters:
+  #       - name: channelName
+  #         in: path
+  #         description: Name of the channel
+  #         required: true
+  #         type: string
+  #       - name: peers
+  #         in: query
+  #         description: Peers to send proposal to
+  #         required: false
+  #         type: array
+  #         items:
+  #           type: integer
+  #       - name: transaction
+  #         in: body
+  #         description: The proposal.
+  #         required: true
+  #         schema:
+  #           $ref: '#/definitions/transactionProposal'
+  #     responses:
+  #       '200':
+  #         description: Responses from the peers the endorsement request was sent to
+  #         schema:
+  #           $ref: '#/definitions/proposalResult'
 ##
   /chaincodes:
     post:
@@ -82,7 +86,7 @@ paths:
         '200':
           description: Responses from the peers the install request was sent to
           schema:
-            $ref: '#/definitions/proposalResult'
+            $ref: '#/definitions/installResult'
 ##
   /channels/{channelName}/chaincodes:
     post:
@@ -107,10 +111,10 @@ paths:
           schema:
             $ref: '#/definitions/chaincodeInstantiate'
       responses:
-        '200':
-          description: Responses from the peers the instantiate request was sent to
+        '202':
+          description: Response from the orderer or failure responses from peers
           schema:
-            $ref: '#/definitions/proposalResult'
+            $ref: '#/definitions/ordererResponse'
 #
     put:
       description: Instantiate updated chaincode in the channel for the named peers
@@ -134,10 +138,10 @@ paths:
           schema:
             $ref: '#/definitions/chaincodeInstantiate'
       responses:
-        '200':
-          description: Responses from the peers the instantiate request was sent to
+        '202':
+          description: Response from the orderer or failure responses from peers
           schema:
-            $ref: '#/definitions/proposalResult'
+            $ref: '#/definitions/ordererResponse'
 #
     get:
       description: Query all chaincode instantiated on the channel
@@ -189,13 +193,15 @@ paths:
           type: string
         - name: channel
           in: body
-          description: The channel with values to use
+          description: The contents of a generated channel configuration file encoded in base64
           required: true
           schema:
             $ref: '#/definitions/channel'
       responses:
-        '200':
+        '202':
           description: Successful response
+          schema:
+            $ref: '#/definitions/channelResponse'
 #
     put:
       description: Update the named channel
@@ -207,13 +213,15 @@ paths:
           type: string
         - name: channel
           in: body
-          description: The channel with values to update
+          description: The contents of a generated channel configuration file encoded in base64
           required: true
           schema:
             $ref: '#/definitions/channel'
       responses:
-        '200':
+        '202':
           description: Successful response
+          schema:
+            $ref: '#/definitions/channelResponse'
 ##
   /channels/{channelName}/peers:
     post:
@@ -232,7 +240,9 @@ paths:
             $ref: '#/definitions/peer'
       responses:
         '200':
-          description: Successful response
+          description: Successful response from the peer
+          schema:
+            $ref: '#/definitions/installResult'
 ##############################################
 # QUERY API end points                       #
 ##############################################
@@ -378,6 +388,7 @@ definitions:
     properties:
       fcn:
         type: string
+        description: A function name relevant to the chaincode
       args:
         type: array
         description: An array of arguements
@@ -387,68 +398,26 @@ definitions:
       - args
 
   block:
-    description: The data contained in a block
+    description: The data contained in a Block, ref https://fabric-sdk-node.github.io/global.html#Block
     properties:
+      header:
+        type: object
+        description: The block header
       data:
-        type: array
-        description: Byte array of the block TODO check type
-        items:
-          type: string
-          format: byte
+        type: object
+        description: The data contained in the block
+      metadata:
+        type: object
+        description: The metadata for the block
 
   channel:
-    description: A description of a Hyperledger Fabric Channel
+    description: The envelope needed to create a Hyperledger Fabric Channel encoded as a base64 string
     properties:
-      name:
+      envelope:
         type: string
-        description: The name of the channel
-      securityEnabled:
-        type: boolean
-        description: Is security enabled
-      preFetchMode:
-        type: boolean
-        description: Is prefetch mode on
-      devMode:
-        type: boolean
-        description: Is devMode on
-      tCertBatchSize:
-        type: integer
-        description: The TCert batch size
-      primaryPeer:
-        $ref: '#/definitions/peer'
-      peers:
-        type: array
-        description: The array of peers in this channel
-        items:
-          $ref: '#/definitions/peer'
-      orderers:
-        type: array
-        description: The array of orderers in this channel
-        items:
-          $ref: '#/definitions/TODO'
-      consensusType:
-        type: string
-        description: This is TODO
-      initialEpoch:
-        type: integer
-        description: This is TODO
-      initialMaxMessageCount:
-        type: integer
-        description: This is TODO
-      initialAbsoluteMaxBytes:
-        type: integer
-        description: This is TODO
-      initialPreferredMaxBytes:
-        type: integer
-        description: This is TODO
-      initialTransactionID:
-        type: integer
-        description: This is TODO
-      readOnly:
-        type: boolean
-        description: Is access to this channel read only
+        description: The contents of a generated channel configuration file encoded in base64
     required:
-      - name
+      - envelope
 
   ChannelQueryResponse:
     description: An array of ChannelInfo
@@ -466,17 +435,46 @@ definitions:
     required:
       - channels
 
-  proposalResult:
-    description: Array of proposalResult
+  channelResponse:
+    description: The response from the channel create or update
     properties:
-      results:
+      status:
+        type: string
+        description: Has the orderer accepted this request for processing?
+      transactionID:
+        type: string
+        description: The transaction ID used for the request
+    required:
+      - status
+      - transactionID
+
+  ordererResponse:
+    description: The response from the orderer
+    properties:
+      status:
+        type: string
+        description: The response from the orderer
+      transactionID:
+        type: string
+        description: The transaction ID used for the request
+      peerResponses:
         type: array
-        description: An array of proposal results from peers TODO name and type
+        description: An array of proposal results if endorsement step failed
         items:
           type: string
     required:
-      - results
+      - transactionID
 
+  installResult:
+    description: Array of responses from the peers
+    properties:
+      peerResponses:
+        type: array
+        description: An array of ProposalResponse objects, ref https://fabric-sdk-node.github.io/global.html#ProposalResponse
+        items:
+          type: object
+    required:
+      - peerResponses
 
   peer:
     description: Peer information
@@ -485,8 +483,17 @@ definitions:
         type: string
         description: The url of the peer
       opts:
-        type: boolean
-        description: This is TODO
+        type: object
+        description: The options for the peer
+        properties:
+          pem:
+            type: string
+            description: The pem to use with the peer
+          ssl-target-name-override:
+            type: string
+            description: Optional override for use in test environments
+        required:
+          - pem
     required:
       - url
 
@@ -500,27 +507,28 @@ definitions:
         description: An array of arguements
         items:
           type: object
-      txId:
-        type: object
-        description: If not specified for a proposal it will be created dynamically.
       fcn:
         type: string
+      # A REST client does not need to create this field, just be told what is used
+      # txId:
+      #   type: object
+      #   description: If not specified for a proposal it will be created dynamically.
     required:
       - chaincodeId
       - args
 
   transactionCommit:
-    description: Commit a transaction, if proposalResponses empty do endorse first.
+    # description: Commit a transaction, if proposalResponses empty do endorse first.
+    description: Endorse and commit a transaction using configured peers
     properties:
-      proposalResponses:
-        type: array
-        description: An array of proposal results from peers
-        items:
-          type: object
+      # proposalResponses:
+      #   type: array
+      #   description: An array of proposal results from peers
+      #   items:
+      #     type: object
       proposal:
         $ref: '#/definitions/transactionProposal'
     required:
-      - proposalResponses
       - proposal
 
   channelInfo:
@@ -545,7 +553,7 @@ definitions:
         type: string
         format: byte
         description: Base64 encoded archive file. The archive is expected to be a gzip and must not contain files flagged as executable.
-      chaincodetype:
+      chaincodeType:
         type: string
     required:
       - chaincodePath
@@ -558,12 +566,20 @@ definitions:
     properties:
       chaincodeId:
         type: string
-      inputData:
-        type: boolean
-        description: This is TODO
+      chaincodeVersion:
+        type: string
+      chaincodeType:
+        type: string
+      fcn:
+        type: string
+      args:
+        type: array
+        description: An array of arguements
+        items:
+          type: object
     required:
       - chaincodeId
-      - inputData
+      - chaincodeVersion
 
   ChaincodeQueryResponse:
     description: Array of ChaincodeInfo
@@ -599,12 +615,3 @@ definitions:
         type: integer
       transactionEnvelope:
         type: object
-
-  TODO:
-    description: Needs defining
-    properties:
-      todo:
-        type: boolean
-        description: This is TODO
-    required:
-      - todo

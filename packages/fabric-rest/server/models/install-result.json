@@ -1,17 +1,17 @@
 {
-  "name": "ChaincodeQueryResponse",
+  "name": "installResult",
   "base": "PersistedModel",
   "idInjection": false,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "chaincodes": {
+    "peerResponses": {
       "type": [
-        "ChaincodeInfo"
+        "object"
       ],
       "required": true,
-      "description": "An array of ChaincodeInfo"
+      "description": "An array of ProposalResponse objects, ref https://fabric-sdk-node.github.io/global.html#ProposalResponse"
     }
   },
   "validations": [],

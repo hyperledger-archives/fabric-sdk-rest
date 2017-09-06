@@ -1,20 +1,15 @@
 {
-  "name": "channelResponse",
+  "name": "channelID",
   "base": "PersistedModel",
   "idInjection": false,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "status": {
+    "channel_id": {
       "type": "string",
       "required": true,
-      "description": "Has the orderer accepted this request for processing?"
-    },
-    "transactionID": {
-      "type": "string",
-      "required": true,
-      "description": "The transaction ID of the request"
+      "description": "The name of the channel"
     }
   },
   "validations": [],

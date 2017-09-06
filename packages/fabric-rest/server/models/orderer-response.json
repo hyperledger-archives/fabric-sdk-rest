@@ -1,5 +1,5 @@
 {
-  "name": "channelResponse",
+  "name": "ordererResponse",
   "base": "PersistedModel",
   "idInjection": false,
   "options": {
@@ -8,8 +8,15 @@
   "properties": {
     "status": {
       "type": "string",
-      "required": true,
-      "description": "Has the orderer accepted this request for processing?"
+      "required": false,
+      "description": "The response from the orderer"
+    },
+    "peerResponses":{
+      "type": [
+        "object"
+      ],
+      "required": false,
+      "description": "An array of ProposalResponse objects if request failed the endorsement step"
     },
     "transactionID": {
       "type": "string",

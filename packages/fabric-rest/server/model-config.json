@@ -37,11 +37,19 @@
     "dataSource": null,
     "public": false
   },
+  "channelID": {
+    "dataSource": null,
+    "public": false
+  },
   "transactionProposal": {
     "dataSource": null,
     "public": false
   },
-  "proposalResult": {
+  "ordererResponse": {
+    "dataSource": null,
+    "public": false
+  },
+  "installResult": {
     "dataSource": null,
     "public": false
   },

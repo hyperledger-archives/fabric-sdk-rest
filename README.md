@@ -1,5 +1,6 @@
 # Hyperledger Fabric REST API, fabric-sdk-rest
 
+
 ## Overview
 **This project is a work in progress** The Hyperledger Fabric REST API server is provided
 by two node.js modules. The first defines a loopback connector for Hyperledger Fabric and
@@ -11,13 +12,14 @@ It is intended to provide the capabilities for [FAB-156][].
 The design for this item can be found [on Google Docs][gd]. Comments on the design are
 welcome.
 
+
 ## Endpoint implementation status
 This table provides a rough guide to what has been implemented.
 
 | Verb   | REST Endpoint                                          | Implementation Status                                 | Test Available                     |
 | :--:   | :--                                                    | :--                                                   | :--                                |
-| `POST` | `/channels/{channelName}/transactions`                 | End to End done but does not accept proposalResponses | NO                                 |
-| `POST` | `/channels/{channelName}/endorse`                      | Done, manual test, test script run                    | NO                                 |
+| `POST` | `/channels/{channelName}/transactions`                 | End to End done                                       | NO                                 |
+| `POST` | ~~/channels/{channelName}/endorse~~                    | COMMENTED OUT, Needs clear use case to add back in    | NO                                 |
 | `POST` | `/chaincodes`                                          | Done, needs more testing                              | YES but needs enhancing            |
 | `POST` | `/channels/{channelName}/chaincodes`                   | Done                                                  | NO                                 |
 | `PUT`  | ^^                                                     | Basic impl, test script run                           | NO                                 |
@@ -33,6 +35,7 @@ This table provides a rough guide to what has been implemented.
 | `GET`  | `/chaincodes/{id}`                                     | Done, manual test, test script run                    | NO                                 |
 | `POST` | `/channels/{channelName}/ledger`                       | Done, manual test, test script run                    | PARTIAL                            |
 
+
 ## Dependencies
 - `fabric-client` node module
 - Node v6.9.x
@@ -41,14 +44,13 @@ This table provides a rough guide to what has been implemented.
   - Clone this git repository to enable testing the REST server with the provided
     configuration
 
+
 ## Contributing
 We welcome contributions to the Hyperledger Fabric SDK REST Project in
 many forms.
 
-There’s always plenty to do! Check [the Hyperledger Fabric
-documentation on how to contribute to this
-project](http://hyperledger-fabric.readthedocs.io/en/latest/CONTRIBUTING.html)
-for the full details.
+Please read our [contributing guide](CONTRIBUTING.md) for details.
+
 
 ## Developer Installation
 Install the prerequisites.
@@ -62,6 +64,7 @@ npm install loopback-connector-fabric
 npm install fabric-rest
 ```
 
+
 ## Configuration
 For a simple configuration that works with the fabric-sample/fabcar we have provided a
 `setup.sh` script.
@@ -71,6 +74,7 @@ of `datasources.json.template` to reference the peer(s), orderer(s), and keystor
 well as to configure the fabric user credentials.  To install and instantiate chaincode
 the server must be configured to run as a user with administrator access on the peer, for
 standard work the server can be configured with any user that is known to the peer.
+
 
 ### Sample configuration
 The settings in `datasources.json` (generated from the template) are used to configure
@@ -92,6 +96,7 @@ have their own certificate authorities and can be started using docker images.
 | Org2, peer0  | 0.0.0.0:9051     |
 | Org2, peer1  | 0.0.0.0:10051    |
 
+
 ## Running the REST API
 From within the `fabric-rest` project folder open a terminal and run `node .`. The
 messages to the terminal will confirm when the LoopBack server is running. Try out the
@@ -111,6 +116,7 @@ setup.sh -f ~/fabric-samples/basic-network/ -dukas
 HTTP Basic authentication is provided using [Passport][] as standard, with a default
 username and password combination of `chris:secret`. This should be passed on all URL
 invocations.
+
 
 ## Testing the REST API
 The `tests` directory contains a python wrapper for the REST API, and modules to run
@@ -135,8 +141,10 @@ this test, first `start.sh` must be run to redefine the basic-network without an
 
 ## Fabric Examples: Input for Testing
 
+
 ### Fabcar
 Browse to the [Loopback Explorer][explorer] interface.
+
 
 #### Query ledger using chaincode for all cars
 Issue a `POST` request to `/fabric/1_0/channels/{channelName}/ledger` with the following
@@ -151,6 +159,7 @@ values by default:
 Request body
 : `{"fcn": "queryAllCars","args": []}`
 
+
 #### Query ledger using chaincode for one car
 Issue a `POST` request to `/fabric/1_0/channels/{channelName}/ledger` with the following
 values by default:
@@ -164,6 +173,7 @@ values by default:
 Request body
 : `{"fcn": "queryCar","args": ["CAR4"]}`
 
+
 ### Propose a transaction
 `channel`
 : `mychannel`
@@ -175,12 +185,14 @@ Request body
 __Passing the response from this on to the transaction end point will not work at this
 time, it requires session management or new SDK functionality to be implemented__
 
+
 ### End to End transaction
 `channel`
 : `mychannel`
 
 Request body
 : `{"proposalResponses":[],"proposal":{"chaincodeId": "fabcar", "fcn": "createCar", "args": ["CAR10", "Chevy", "Volt", "Red", "Nick"]}}`
+
 
 ## Logging
 The logging used relies on the logger being set for fabric-sdk-node. The following
@@ -198,6 +210,7 @@ and 2 info messages for each info being sent to the console.  `node . --hfc-logg
 The following will send error, info and debug messages to a file, and just error messages
 to the console. `node . --hfc-logging
 '{"error":"console","debug":"/tmp/fabricRestDebug.log"}'`
+
 
 ## License
 <a rel="license"

@@ -14,7 +14,8 @@ var Common = require('./Common.js');
 
 //This module requires fabric-client so safe to use the same logger as set for sdk.
 const sdkutils = require('fabric-client/lib/utils');
-var logger = sdkutils.getLogger('fabricconnector.js');
+
+var logger = sdkutils.getLogger(__filename.slice(__dirname.length + 1));
 
 
 //A class that extends Connector to allow functions to be called from a Model.
@@ -41,9 +42,10 @@ class HFCSDKConnector extends Connector {
    * @param {ChaincodeInstallRequest} chaincode The chaincode install data. https://fabric-sdk-node.github.io/global.html#ChaincodeInstallRequest
    * @param {object} lbConnector The loopback connector object
    *
-   * @returns {any} result Result object
+   * @returns {installResult} result Result object
    */
   postChaincodes(peers, chaincode, lbConnector){
+    Common.logEntry(logger,this.postChaincodes);
     if(chaincode.chaincodePackage === undefined){
       logger.debug("postChaincodes() - no chaincodePackage in request");
       var err = new Error("Bad Request");
@@ -81,7 +83,7 @@ class HFCSDKConnector extends Connector {
       //Do some internal checking to help debug.
       var failed = Common.countFailedProposalResponses(proposalResponses);
       var resp = {};
-      resp.peerResponses = results;
+      resp.peerResponses = results[0];
       //Always send results from Peers even if not all worked.
       return Promise.resolve(resp);
     }).catch((err)=>{
@@ -99,6 +101,7 @@ class HFCSDKConnector extends Connector {
    *
    */
   getChaincodesId(id, peers, lbConnector){
+    Common.logEntry(logger,this.getChaincodesId);
     //1. Get client and known peers
     var clientPromise = Common.getClient(lbConnector.settings);
     var peerArrayPromise;
@@ -152,6 +155,7 @@ class HFCSDKConnector extends Connector {
    *
    */
   postChannelsChannelName(channelName, channelRequest, lbConnector){
+    Common.logEntry(logger,this.postChannelsChannelName);
     var newChannelReq = {};
     var response = {};
     var theClient;
@@ -195,8 +199,8 @@ class HFCSDKConnector extends Connector {
       logger.debug("postChannelsChannelName() - " + JSON.stringify(newChannelReq) );
       return theClient.createChannel(newChannelReq);
     }).then((newChannelResponse)=>{
-      //8. Return new channel response with transaciton ID
-      response.response = newChannelResponse;
+      //8. Return new channel response status with transaciton ID
+      response.status = newChannelResponse.status;
       return Promise.resolve(response);
     }).catch((err)=>{
       logger.debug("postChannelsChannelName() - Error caught");
@@ -213,6 +217,7 @@ class HFCSDKConnector extends Connector {
    *
    */
   putChannelsChannelName(channelName, channelRequest, lbConnector){
+    Common.logEntry(logger,this.putChannelsChannelName);
     var updateChannelReq = {};
     var response = {};
     var theClient;
@@ -253,8 +258,8 @@ class HFCSDKConnector extends Connector {
       updateChannelReq.name = channelName;
       return theClient.updateChannel(updateChannelReq);
     }).then((updateChannelResponse)=>{
-      //8. Return new channel response with transaction ID
-      response.response = updateChannelResponse;
+      //8. Return new channel response status with transaciton ID
+      response.status = updateChannelResponse.status;
       return Promise.resolve(response);
     }).catch((err)=>{
       logger.debug("postChannelsChannelName() - Error caught");
@@ -274,6 +279,7 @@ class HFCSDKConnector extends Connector {
    * @returns {Promise} Resolving to the result
    */
   postChannelsChannelNameChaincodes(channelName, peers, chaincode, lbConnector){
+    Common.logEntry(logger,this.postChannelsChannelNameChaincodes);
     var request = {};
     var theClient;
     var theChannel;
@@ -334,6 +340,7 @@ class HFCSDKConnector extends Connector {
    * @returns {Promise} Resolving to the result
    */
   putChannelsChannelNameChaincodes(channelName, peers, chaincode, lbConnector){
+    Common.logEntry(logger,this.putChannelsChannelNameChaincodes);
     // Check that chaincode exists, then do the same as postChannelsChannelNameChaincodes.
     var request = {};
     var theClient;
@@ -420,6 +427,7 @@ class HFCSDKConnector extends Connector {
    * @returns {Promise}
    */
   postChannelsChannelNameEndorse(channelName, peers, transaction, lbConnector){
+    Common.logEntry(logger,this.postChannelsChannelNameEndorse);
     var errMsg = "";
     var response = {};
 
@@ -467,6 +475,7 @@ class HFCSDKConnector extends Connector {
    * @returns {Promise}
    */
   postChannelsChannelNameTransactions(channelName, transaction, lbConnector){
+    Common.logEntry(logger,this.postChannelsChannelNameTransactions);
     var errMsg = "";
     var response = {};
     var theChannel;
@@ -547,6 +556,8 @@ class HFCSDKConnector extends Connector {
   * @returns Promise
   */
   getChannels(lbConnector){
+    Common.logEntry(logger,this.getChannels);
+
     var clientPromise = Common.getClient(lbConnector.settings);
     var peerPromise   = Common.getPeer(lbConnector.settings);
 
@@ -582,6 +593,7 @@ class HFCSDKConnector extends Connector {
   * @param {object} lbConnector The loopback connector object
   */
   getChannelsChannelName(channelName, lbConnector){
+    Common.logEntry(logger,this.getChannelsChannelName);
     var response = {};
     var theChannel;
 
@@ -618,6 +630,7 @@ class HFCSDKConnector extends Connector {
   * @param {object} lbConnector The loopback connector object
   */
   postChannelsChannelNamePeers(channelName, peerInfo, lbConnector){
+    Common.logEntry(logger,this.postChannelsChannelNamePeers);
     var joinChannelRequest = {};
     var response = {};
 
@@ -646,6 +659,7 @@ class HFCSDKConnector extends Connector {
       joinChannelRequest.txId = theClient.newTransactionID();
       joinChannelRequest.block = genesisBlock;
       //5. Join the peer to the channel
+      logger.debug("postChannelsChannelNamePeers() - about to joinChannel()");
       return theChannel.joinChannel(joinChannelRequest);
     }).then((results) => {
       var proposalResponses = results[0];
@@ -653,7 +667,8 @@ class HFCSDKConnector extends Connector {
       var failed = Common.countFailedProposalResponses(proposalResponses);
       if(failed == 0){
         var resp = {};
-        resp.joinResults = results;
+        resp.peerResponses = results[0];
+        logger.debug(JSON.stringify(resp));
         return Promise.resolve(resp);
       } else {
         var err = new Error("Failed to join peer to channel");
@@ -675,6 +690,7 @@ class HFCSDKConnector extends Connector {
   * @param {object} lbConnector The loopback connector object
   */
   getChannelsChannelNameChaincodesId(channelName, id, lbConnector){
+    Common.logEntry(logger,this.getChannelsChannelNameChaincodesId);
     var response = {};
 
     //1. Get a new client instance.
@@ -709,6 +725,7 @@ class HFCSDKConnector extends Connector {
   * @param {object} lbConnector The loopback connector object
   */
   getChannelsChannelNameChaincodes(channelName, lbConnector){
+    Common.logEntry(logger,this.getChannelsChannelNameChaincodes);
     var response = {};
     var theChannel;
 
@@ -743,11 +760,11 @@ class HFCSDKConnector extends Connector {
   * @param {object} lbConnector The loopback connector object
   */
   postChannelsChannelNameLedger(channelName, chaincodeId, blockId, blockHash, txnId, body, lbConnector){
+    Common.logEntry(logger,this.postChannelsChannelNameLedger);
     var response = {};
     var queryRequest = {};
     var queryType = "NOT SET"
     var queryParmCount = 0;
-    logger.debug(">postChannelsChannelNameLedger()");
 
     //Validate that the number of query parameters is valid
     if(chaincodeId !== undefined && chaincodeId !== null){ queryParmCount++; queryType = "chaincodeId"}
@@ -788,14 +805,21 @@ class HFCSDKConnector extends Connector {
     }).then( (queryResult) =>{
       logger.debug("postChannelsChannelNameLedger() - queried channel for " + queryType);
       try{
-        response = Common.formatBufferResponse(queryResult[0]);
+        if(queryResult instanceof Array && queryResult[0] instanceof Buffer){
+          // Query by chaincode result, format nicely for REST client.
+          response = Common.formatBufferResponse(queryResult[0]);
+        } else {
+          response = queryResult;
+        }
       } catch(err){
         logger.debug("postChannelsChannelNameLedger() - return 404");
         return Promise.reject(err);
       }
       return Promise.resolve( response );
     }).catch((err)=>{
-      if(err instanceof Error && !err.statusCode) err.statusCode = 500;
+      if(err instanceof Error && err.message.indexOf("error Entry not found in index") > -1){
+        err.statusCode = 404; //If block not found return a 404 instead of 500.
+      } else if(err instanceof Error && !err.statusCode) err.statusCode = 500;
       return Promise.reject(err);
     });
   }
@@ -811,10 +835,10 @@ class HFCSDKConnector extends Connector {
   * @param {object} lbConnector The loopback connector object
   */
   getChannelsChannelNameBlocks(channelName, blockId, blockHash, lbConnector){
+    Common.logEntry(logger,this.getChannelsChannelNameBlocks);
     var response = {};
     var queryType = "NOT SET"
     var queryParmCount = 0;
-    logger.debug(">getChannelsChannelNameBlocks()");
 
     //Validate that the number of query parameters is valid
     if(blockId !== undefined && blockId !== null){ queryParmCount++; queryType = "blockId"}
@@ -855,8 +879,8 @@ class HFCSDKConnector extends Connector {
 
 
   getChannelsChannelNameTransactionsTransactionID(channelName, transactionID, lbConnector){
+    Common.logEntry(logger,this.getChannelsChannelNameTransactionsTransactionID);
     var response = {};
-    logger.debug("getChannelsChannelNameTransactionsTransactionID()");
 
     //1. Get a new client instance.
     return Common.getClientWithChannels(lbConnector.settings).then( (aClient) =>{

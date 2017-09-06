@@ -6,9 +6,9 @@
 module.exports = function(SwaggerApi) {
 
 /**
- * Commit a transaction, if no proposal responses propose and commit.
+ * Endorse and commit a transaction using configured peers
  * @param {string} channelName Name of the channel
- * @param {transaction} transaction The transaction to commit and any proposal response.
+ * @param {transaction} transaction The transaction to endorse and commit
  * @callback {Function} callback Callback function
  * @param {Error|string} err Error object
  * @param {any} result Result object
@@ -82,7 +82,7 @@ SwaggerApi.postChaincodes = function(peers, chaincode, callback) {
  * @param {chaincodeInstantiate} chaincode The chaincode instantiate data.
  * @callback {Function} callback Callback function
  * @param {Error|string} err Error object
- * @param {proposalResult} result Result object
+ * @param {ordererResponse} result Result object
  */
 SwaggerApi.postChannelsChannelNameChaincodes = function(channelName, peers, chaincode, callback) {
 
@@ -108,7 +108,7 @@ SwaggerApi.postChannelsChannelNameChaincodes = function(channelName, peers, chai
  * @param {chaincodeInstantiate} chaincode The chaincode instantiate data.
  * @callback {Function} callback Callback function
  * @param {Error|string} err Error object
- * @param {proposalResult} result Result object
+ * @param {ordererResponse} result Result object
  */
 SwaggerApi.putChannelsChannelNameChaincodes = function(channelName, peers, chaincode, callback) {
 
@@ -400,8 +400,6 @@ SwaggerApi.postChannelsChannelNameLedger = function(channelName, chaincodeId, bl
 
 }
 
-
-
 SwaggerApi.remoteMethod('postChannelsChannelNameTransactions',
   { isStatic: true,
   accepts:
@@ -412,43 +410,43 @@ SwaggerApi.remoteMethod('postChannelsChannelNameTransactions',
        http: { source: 'path' } },
      { arg: 'transaction',
        type: 'transaction',
-       description: 'The transaction to commit and any proposal response.',
+       description: 'The transaction to endorse and commit.',
        required: true,
        http: { source: 'body' } } ],
   returns: [{ description: 'Successful response or array of proposal responses',
-      type: 'any',
+      type: 'ordererResponse',
       arg: 'data',
       root: true }],
   http: { verb: 'post', path: '/channels/:channelName/transactions', status: 202 },
-  description: 'Commit a transaction, if no proposal responses propose and commit.' }
+  description: 'Endorse and commit a transaction using configured peers.' }
 );
 
-SwaggerApi.remoteMethod('postChannelsChannelNameEndorse',
-  { isStatic: true,
-  accepts:
-   [ { arg: 'channelName',
-       type: 'string',
-       description: 'Name of the channel',
-       required: true,
-       http: { source: 'path' } },
-     { arg: 'peers',
-       type: [ 'integer' ],
-       description: 'Peers to send proposal to',
-       required: false,
-       http: { source: 'query' } },
-     { arg: 'transaction',
-       type: 'transaction',
-       description: 'The proposal.',
-       required: true,
-       http: { source: 'body' } } ],
-  returns:
-   [ { description: 'Successful response',
-       type: 'proposalResult',
-       arg: 'data',
-       root: true } ],
-  http: { verb: 'post', path: '/channels/:channelName/endorse', status: 202 },
-  description: 'Send a proposal to the channel\'s peers. This could be for either chaincode or a transaction.' }
-);
+// SwaggerApi.remoteMethod('postChannelsChannelNameEndorse',
+//   { isStatic: true,
+//   accepts:
+//    [ { arg: 'channelName',
+//        type: 'string',
+//        description: 'Name of the channel',
+//        required: true,
+//        http: { source: 'path' } },
+//      { arg: 'peers',
+//        type: [ 'integer' ],
+//        description: 'Peers to send proposal to',
+//        required: false,
+//        http: { source: 'query' } },
+//      { arg: 'transaction',
+//        type: 'transaction',
+//        description: 'The proposal.',
+//        required: true,
+//        http: { source: 'body' } } ],
+//   returns:
+//    [ { description: 'Successful response',
+//        type: 'proposalResult',
+//        arg: 'data',
+//        root: true } ],
+//   http: { verb: 'post', path: '/channels/:channelName/endorse', status: 202 },
+//   description: 'Send a proposal to the channel\'s peers. This could be for either chaincode or a transaction.' }
+// );
 
 SwaggerApi.remoteMethod('postChaincodes',
   { isStatic: true,
@@ -463,8 +461,8 @@ SwaggerApi.remoteMethod('postChaincodes',
        description: 'The chaincode install data.',
        required: true,
        http: { source: 'body' } } ],
-  returns: [ { description: 'Successful response',
-      type: 'proposalResult',
+  returns: [ { description: 'Array of responses from the peers',
+      type: 'installResult',
       arg: 'data',
       root: true } ],
   http: { verb: 'post', path: '/chaincodes' },
@@ -490,8 +488,8 @@ SwaggerApi.remoteMethod('postChannelsChannelNameChaincodes',
        required: true,
        http: { source: 'body' } } ],
   returns:
-   [ { description: 'Successful response',
-       type: 'proposalResult',
+   [ { description: 'Successful response from orderer',
+       type: 'ordererResponse',
        arg: 'data',
        root: true } ],
   http: { verb: 'post', path: '/channels/:channelName/chaincodes' },
@@ -517,8 +515,8 @@ SwaggerApi.remoteMethod('putChannelsChannelNameChaincodes',
        required: true,
        http: { source: 'body' } } ],
   returns:
-   [ { description: 'Successful response',
-       type: 'proposalResult',
+   [ { description: 'Successful response from orderer',
+       type: 'ordererResponse',
        arg: 'data',
        root: true } ],
   http: { verb: 'put', path: '/channels/:channelName/chaincodes' },
@@ -581,7 +579,7 @@ SwaggerApi.remoteMethod('postChannelsChannelName',
        http: { source: 'path' } },
      { arg: 'channel',
        type: 'channel',
-       description: 'The channel with values to use',
+       description: 'The contents of a generated channel configuration file encoded in base64',
        required: true,
        http: { source: 'body' } } ],
   returns: [ { description: 'Successful response',
@@ -602,7 +600,7 @@ SwaggerApi.remoteMethod('putChannelsChannelName',
        http: { source: 'path' } },
      { arg: 'channel',
        type: 'channel',
-       description: 'The channel with values to update',
+       description: 'The contents of a generated channel configuration file encoded in base64',
        required: true,
        http: { source: 'body' } } ],
   returns: [ { description: 'Successful response',
@@ -626,8 +624,8 @@ SwaggerApi.remoteMethod('postChannelsChannelNamePeers',
        description: 'The peer information',
        required: true,
        http: { source: 'body' } } ],
-  returns: [{ description: 'Successful response with data specific to the request',
-      type: 'object',
+  returns: [{ description: 'Successful response from the peer',
+      type: 'installResult',
       arg: 'data',
       root: true } ],
   http: { verb: 'post', path: '/channels/:channelName/peers' },
@@ -677,7 +675,7 @@ SwaggerApi.remoteMethod('getChannelsChannelNameBlocks',
        required: false,
        http: { source: 'query' } } ],
   returns:
-   [ { description: 'Successful response',
+   [ { description: 'The data contained in a Block, ref https://fabric-sdk-node.github.io/global.html#Block',
        type: 'block',
        arg: 'data',
        root: true } ],
