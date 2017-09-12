@@ -12,6 +12,9 @@ It is intended to provide the capabilities for [FAB-156][].
 The design for this item can be found [on Google Docs][gd]. Comments on the design are
 welcome.
 
+Dev branch status:  
+[![Build Status](https://jenkins.hyperledger.org/buildStatus/icon?job=fabric-sdk-rest-merge-x86_64)](https://jenkins.hyperledger.org/view/fabric-sdk-rest/job/fabric-sdk-rest-merge-x86_64/)
+
 
 ## Endpoint implementation status
 This table provides a rough guide to what has been implemented.
