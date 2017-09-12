@@ -37,6 +37,7 @@ class TestChannelSetup(unittest.TestCase):
         config_file_loc = fs_dir + '/basic-network/config/channel.tx'
         config_file = open(config_file_loc, 'rb')
         configInb64 = base64.b64encode(config_file.read())
+        config_file.close()
         create_result = restserver.create_channel("mychannel",configInb64)["status"]
         self.assertEqual(create_result,"SUCCESS")
         time.sleep(5) #Allow orderer to finish this task before next tests run
@@ -52,6 +53,7 @@ class TestChannelSetup(unittest.TestCase):
         pem_for_peer = pem_file.read()
         pem_for_peer = pem_for_peer.replace('\n','') #Strip newline chars from PEM.
         peerData = "{\"url\": \"grpc://0.0.0.0:7051\",\"opts\":{\"pem\":\""+ pem_for_peer +"\",\"ssl-target-name-override\": \"peer0\"}}"
+        pem_file.close()
         join_result = restserver.join_channel("mychannel",peerData)["peerResponses"]["response"]["status"]
         self.assertEqual(join_result,200)
 
@@ -60,6 +62,7 @@ class TestChannelSetup(unittest.TestCase):
         # install chaincode: id, path(in archive), archive as base64 string, version, peers
         archiveFile = open('input/installTest.tar.gz', 'rb')
         archiveInb64 = base64.b64encode(archiveFile.read())
+        archiveFile.close()
         install_result = restserver.install_chaincode("marbles","marbles02",archiveInb64,"1.0","%5B0%5D")["peerResponses"]
         #TODO check response
 
@@ -69,6 +72,7 @@ class TestChannelSetup(unittest.TestCase):
         # Created using "tar -cvzf installFabcar.tar.gz src/fabcar/fabcar.go"
         archiveFile = open('input/installFabcar.tar.gz', 'rb')
         archiveInb64 = base64.b64encode(archiveFile.read())
+        archiveFile.close()
         install_result = restserver.install_chaincode("fabcar","fabcar",archiveInb64,"1.0","%5B0%5D")["peerResponses"]
         time.sleep(5) # Allow chaincode install to complete
         #TODO check response
@@ -84,6 +88,20 @@ class TestChannelSetup(unittest.TestCase):
         init_result = restserver.commit_transaction("mychannel",
                                             data=r'{"proposal":{"chaincodeId":"fabcar","fcn":"initLedger","args":[""]}}')
         #TODO check response
+
+# TODO Failing with "Rejecting CONFIG_UPDATE because: Error authorizing update: Update not for correct channel:"
+    # def test_ag_update_channel(self):
+    #     """Test updating the channel mychannel, just tests orderer has accepted the request"""
+    #     # Get fabric sample directory, default assumes fabric-samples checked
+    #     # out into same root folder as this project
+    #     fs_dir = os.getenv('FABRIC_SAMPLES_DIR','../../fabric-samples')
+    #     config_file_loc = fs_dir + '/basic-network/config/Org1MSPanchors.tx'
+    #     config_file = open(config_file_loc, 'rb')
+    #     configInb64 = base64.b64encode(config_file.read())
+    #     config_file.close()
+    #     create_result = restserver.update_channel("mychannel",configInb64)["status"]
+    #     self.assertEqual(create_result,"SUCCESS")
+    #     time.sleep(3) #Allow orderer to finish this task before next tests run
 
     # def test_first_channel_name(self):
     #     """Test to confirm that the first channel on the network has the default name of
