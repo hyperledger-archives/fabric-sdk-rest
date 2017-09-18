@@ -72,9 +72,11 @@ class FabricRest:
 
 
     # PUT /fabric/1_0/channels/{channelName}
-    def update_channel(self):
+    def update_channel(self, channel_name, channel_config_base64):
         """Update the named channel"""
-        pass
+        url = "/api/fabric/1_0/channels/" +channel_name
+        data='{"config":"'+channel_config_base64+'"}'  #No signatures passed in as one org test
+        return self._call_endpoint("PUT", url, data)
 
 
     # POST /fabric/1_0/channels/{channelName}

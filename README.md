@@ -12,6 +12,9 @@ It is intended to provide the capabilities for [FAB-156][].
 The design for this item can be found [on Google Docs][gd]. Comments on the design are
 welcome.
 
+Dev branch status:  
+[![Build Status](https://jenkins.hyperledger.org/buildStatus/icon?job=fabric-sdk-rest-merge-x86_64)](https://jenkins.hyperledger.org/view/fabric-sdk-rest/job/fabric-sdk-rest-merge-x86_64/)
+
 
 ## Endpoint implementation status
 This table provides a rough guide to what has been implemented.
@@ -66,14 +69,22 @@ npm install fabric-rest
 
 
 ## Configuration
-For a simple configuration that works with the fabric-sample/fabcar we have provided a
-`setup.sh` script.
+For a simple configuration that works with `fabric-samples/fabcar` we have provided a
+`setup.sh` script. See the [Sample configuration](#sample-configuration) section for more details.
 
-For custom configuration, in the folder `packages/fabric-rest/server` change the contents
-of `datasources.json.template` to reference the peer(s), orderer(s), and keystore, as
-well as to configure the fabric user credentials.  To install and instantiate chaincode
-the server must be configured to run as a user with administrator access on the peer, for
-standard work the server can be configured with any user that is known to the peer.
+**These configuration details will change once support for FAB-5363 is implemented**
+
+For custom configuration, that still uses setup.sh, in the folder `packages/fabric-rest/server` change the contents of `datasources.json.template`
+to reference the peer(s), orderer(s), and keystore, as well as to configure the
+fabric user credentials.  Note that either string `AUSER` or `ADMINUSER` will be
+replaced by the string `fabricUser` and that the string `FABSAMPLE` will be replaced
+by what is passed on the -f option.
+
+For custom configuration, that does not use setup.sh, in the folder `packages/fabric-rest/server` change the contents of `datasources.json`
+to reference the peer(s), orderer(s), and keystore, as well as to configure the
+`"fabricUser": {..}` credentials.  
+
+To install and instantiate chaincode the server must be configured to run as a user with administrator access on the peer (setup.sh -a option), for standard work the server can be configured with any user that is known to the peer.
 
 
 ### Sample configuration
@@ -85,16 +96,16 @@ work with `fabric-sample/fabcar` running in local Docker containers. It also con
 some unused fields that show the equivalent peers and orderers configured to work with
 grpcs connections.
 
-One of the networks in fabric-samples consists of 4 peers owned by 2 different orgs that
-have their own certificate authorities and can be started using docker images.
+Note that the fabcar sample is a customization on top of basic-network so the `-f` option should point to `<your dir>/fabric-samples/basic-network` where `<your dir>` is the directory the fabric-samples have been downloaded to.
 
-| Node/Peer    | External IP:Port |
-|:---          | :---             |
-| Orderer      | 0.0.0.0:7050     |
-| Org1, peer0  | 0.0.0.0:7051     |
-| Org1, peer1  | 0.0.0.0:8051     |
-| Org2, peer0  | 0.0.0.0:9051     |
-| Org2, peer1  | 0.0.0.0:10051    |
+Running the basic-network from fabric-samples locally will start 4 containers.
+
+| Node/Peer       | External IP:Port |
+|:---             | :---             |
+| Orderer         | 0.0.0.0:7050     |
+| Org1, peer0     | 0.0.0.0:7051     |
+| couchdb (peer0) | -                |
+| CA (Org1)       | -                |
 
 
 ## Running the REST API
