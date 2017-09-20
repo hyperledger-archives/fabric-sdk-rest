@@ -1,6 +1,13 @@
 {
   "name": "fabric-rest",
   "version": "1.0.0",
+  "keywords": [
+    "LoopBack",
+    "Hyperledger",
+    "Fabric",
+    "REST",
+    "fabric-sdk-rest"
+  ],
   "main": "server/server.js",
   "scripts": {
     "start": "node ."
