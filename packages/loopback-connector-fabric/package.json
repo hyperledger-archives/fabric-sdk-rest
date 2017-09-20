@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Loopback Connector for Hyperledger Fabric v1.0",
   "engines": {
-    "node": ">=4"
+    "node": ">=6.9.0"
   },
   "keywords": [
     "StrongLoop",
@@ -16,7 +16,7 @@
   "main": "index.js",
   "dependencies": {
     "loopback-connector": "^3.0.0",
-    "fabric-client": "^1.0.0-alpha"
+    "fabric-client": "^1.0.0"
   },
   "repository": {
     "type": "gerrit",

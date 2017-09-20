@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "main": "server/server.js",
   "scripts": {
-    "lint": "eslint .",
-    "start": "node .",
-    "posttest": "npm run lint && nsp check"
+    "start": "node ."
   },
   "dependencies": {
     "compression": "^1.0.3",
@@ -20,15 +18,10 @@
     "passport": "^0.2.2",
     "passport-http": "^0.3.0"
   },
-  "devDependencies": {
-    "eslint": "^2.13.1",
-    "eslint-config-loopback": "^4.0.0",
-    "nsp": "^2.1.0"
-  },
   "repository": {
     "type": "gerrit",
     "url": "https://gerrit.hyperledger.org/r/#/admin/projects/fabric-sdk-rest"
   },
   "license": "Apache-2.0",
-  "description": "fabric-rest"
+  "description": "SDK REST API for Hyperledger Fabric"
 }

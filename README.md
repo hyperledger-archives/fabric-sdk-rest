@@ -62,7 +62,7 @@ To use the source version of the fabric loopback connector run `npm link` in the
 `loopback-connector-fabric` folder and run `npm link loopback-connector-fabric` in the
 `fabric-rest` folder. The following commands should be run in the packages folder
 
-```
+```shell
 npm install loopback-connector-fabric
 npm install fabric-rest
 ```
@@ -151,9 +151,11 @@ this test, first `start.sh` must be run to redefine the basic-network without an
 
 
 ## Fabric Examples: Input for Testing
-
+Before running these tests ensure that the fabcar sample network is running, for example using `docker ps`. If it is not use the `startFabric.sh` script in the fabcar directory to start it.
 
 ### Fabcar
+
+
 Browse to the [Loopback Explorer][explorer] interface.
 
 
@@ -167,8 +169,13 @@ values by default:
 `chaincodeId`
 : `fabcar`
 
-Request body
-: `{"fcn": "queryAllCars","args": []}`
+Request body:
+```json
+ {
+   "fcn": "queryAllCars",
+   "args": []
+ }
+ ```
 
 
 #### Query ledger using chaincode for one car
@@ -181,11 +188,38 @@ values by default:
 `chaincodeId`
 : `fabcar`
 
-Request body
-: `{"fcn": "queryCar","args": ["CAR4"]}`
+Request body:
+```json
+{
+  "fcn": "queryCar",
+  "args": ["CAR4"]
+}
+```
 
+Expected Response (truncated), code `200`:
+```json
+{
+  "queryResult": [  
+    {  
+      "Key": "CAR0",
+      "Record": {
+        "colour": "blue",
+        "make": "Toyota",
+        "model": "Prius",
+        "owner": "Tomoko"
+      }
+    },
+    {
+      "Key": "CAR1",
+      "Record": {
 
-### Propose a transaction
+      }
+    }
+  ]
+}
+```
+
+<!-- ### Propose a transaction
 `channel`
 : `mychannel`
 
@@ -194,16 +228,38 @@ Request body
   "Volt", "Red", "Nick"]}}`
 
 __Passing the response from this on to the transaction end point will not work at this
-time, it requires session management or new SDK functionality to be implemented__
+time, it requires session management or new SDK functionality to be implemented__ -->
 
 
-### End to End transaction
+#### End to End transaction
 `channel`
 : `mychannel`
 
-Request body
-: `{"proposalResponses":[],"proposal":{"chaincodeId": "fabcar", "fcn": "createCar", "args": ["CAR10", "Chevy", "Volt", "Red", "Nick"]}}`
+Request body:
+```json
+{
+    "proposalResponses":[],
+    "proposal": {
+      "chaincodeId": "fabcar",
+      "fcn":"createCar",
+      "args": ["CAR10", "Chevy", "Volt", "Red", "Nick"]
+    }
+}```
 
+#### Unexpected responses
+There could be several different causes for an unexpected response body.
+
+If a response is returned that contains a body similar to this:
+```json
+{
+  "status": 14,
+  "metadata":{   }
+}
+```
+then an error has occurred in the grpc communication layer. The status codes returned are available
+in the grpc source code (Apache-2.0 licensed at time of writing) here https://github.com/grpc/grpc/blob/master/src/node/src/constants.js
+
+For example a `"status": 14` means UNAVAILABLE and is caused by a problem with the REST server communicating with the peer or orderer. In this case check that the network is running (If the network is local `docker ps` will list the containers) and check that the addresses and ports used are also correct.
 
 ## Logging
 The logging used relies on the logger being set for fabric-sdk-node. The following
