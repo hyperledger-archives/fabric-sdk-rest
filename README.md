@@ -278,6 +278,29 @@ The following will send error, info and debug messages to a file, and just error
 to the console. `node . --hfc-logging
 '{"error":"console","debug":"/tmp/fabricRestDebug.log"}'`
 
+## Security
+
+## Enabling SSL
+By default, the server operates over HTTP. With the supplied option
+`-s` or `--https`, however, HTTPS can be enabled. To do this, you must
+first generate SSL keys. The server will look for these keys in the
+directory `packages/fabric-rest/server/private`. Create and change to
+this directory, then issue the following commands:
+
+```bash
+openssl genrsa -out privatekey.pem 1024
+openssl req -new -key privatekey.pem -out certrequest.csr
+openssl x509 -req -in certrequest.csr -signkey privatekey.pem -out certificate.pem
+```
+
+Generally, questions can be left with their default values, if you're
+setting this up for testing purposes. Now, start the server with `node
+. --https` or `node . -s`.
+
+The `setup.sh` helper script has support for security too. Use the
+`-t` option to use HTTPS when running the server, as well as running
+the above commands to generate keys, if they don't already exist.
+
 
 ## License
 <a rel="license"
