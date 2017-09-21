@@ -284,8 +284,15 @@ to the console. `node . --hfc-logging
 By default, the server operates over HTTP. With the supplied option
 `-s` or `--https`, however, HTTPS can be enabled. To do this, you must
 first generate SSL keys. The server will look for these keys in the
-directory `packages/fabric-rest/server/private`. Create and change to
-this directory, then issue the following commands:
+directory `packages/fabric-rest/server/private`. The following files
+are required:
+
+- `certificate.pem`
+- `certrequest.csr`
+- `privatekey.pem`
+
+To create these files, create and change to this directory, then issue
+the following commands:
 
 ```bash
 openssl genrsa -out privatekey.pem 1024
@@ -293,8 +300,9 @@ openssl req -new -key privatekey.pem -out certrequest.csr
 openssl x509 -req -in certrequest.csr -signkey privatekey.pem -out certificate.pem
 ```
 
-Generally, questions can be left with their default values, if you're
-setting this up for testing purposes. Now, start the server with `node
+These commands will prompt for several questions. Generally, these
+questions can be left with their default values, if you're setting
+this up for testing purposes. Now, start the server with `node
 . --https` or `node . -s`.
 
 The `setup.sh` helper script has support for security too. Use the
