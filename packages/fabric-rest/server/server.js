@@ -50,8 +50,11 @@ app.start = function(httpOnly) {
     server = http.createServer(app);
   }
 
-  return server.listen(app.get('port'), function() {
-    var baseUrl = (httpOnly ? 'http://' : 'https://') + app.get('host') + ':' + app.get('port');
+  var cliPort = argv.port || argv.p;
+  var port = cliPort ? cliPort : app.get('port');
+
+  return server.listen(port, function() {
+    var baseUrl = (httpOnly ? 'http://' : 'https://') + app.get('host') + ':' + port;
     app.emit('started', baseUrl);
     console.log('Hyperledger Fabric SDK REST server listening at %s%s', baseUrl, '/');
     if (app.get('loopback-component-explorer')) {

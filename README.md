@@ -1,4 +1,4 @@
-# Hyperledger Fabric REST API, fabric-sdk-rest
+# Hyperledger Fabric SDK REST Server
 
 
 ## Overview
@@ -124,8 +124,10 @@ Fabric network directory must be specified.
 setup.sh -f ~/fabric-samples/basic-network/ -dukas
 ```
 
-HTTP Basic authentication is provided using [Passport][] as standard, with a default
-username and password combination of `chris:secret`. This should be passed on all URL
+The port for the SDK REST server to listen on can be specified with
+the `-p` option. HTTP Basic authentication is provided using
+[Passport][] as standard, with a default username and password
+combination of `chris:secret`. This should be passed on all URL
 invocations.
 
 

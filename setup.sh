@@ -19,6 +19,7 @@ _show_help() {
     printf -- "Options:\n"
     printf -- "-s Start server\n"
     printf -- "-t Use HTTPS\n"
+    printf -- "-p Specify a port to listen on\n"
     printf -- "-d Set debug info on\n"
     printf -- "-u Update data sources\n"
     printf -- "-k Update keys\n"
@@ -31,11 +32,13 @@ if [[ -z "$1" ]]; then
     _show_help
 fi
 
-while getopts :stdukf:ah opt; do
+while getopts :stp:dukf:ah opt; do
     case "$opt" in
         s)    start_server=true
               ;;
         t)    use_https=true
+              ;;
+        p)    port="$OPTARG"
               ;;
         d)    debug=true
               ;;
@@ -101,14 +104,18 @@ if [[ -n $update_data_sources ]]; then
 fi
 
 if [[ -n $use_https ]]; then
-    httpsOptions="--https"
+    cliOptions="--https"
+fi
+
+if [[ -n $port ]]; then
+    cliOptions="${cliOptions} --port ${port}"
 fi
 
 if [[ -n $start_server ]]; then
     cd ..
     if [[ -n $debug ]]; then
-        node . "$httpsOptions" --hfc-logging '{"debug":"console"}'
+        node . ${cliOptions} --hfc-logging '{"debug":"console"}'
     else
-        node . "$httpsOptions"
+        node . ${cliOptions}
     fi
 fi
