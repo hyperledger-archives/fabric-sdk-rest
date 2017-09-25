@@ -53,6 +53,10 @@ app.start = function(httpOnly) {
   var cliPort = argv.port || argv.p;
   var port = cliPort ? cliPort : app.get('port');
 
+  if (typeof port != "number") {
+    throw new TypeError('Port not a number');
+  }
+
   return server.listen(port, function() {
     var baseUrl = (httpOnly ? 'http://' : 'https://') + app.get('host') + ':' + port;
     app.emit('started', baseUrl);
