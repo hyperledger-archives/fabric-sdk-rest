@@ -11,7 +11,8 @@
     "Hyperledger",
     "Fabric",
     "DataSource",
-    "Connector"
+    "Connector",
+    "fabric-sdk-rest"
   ],
   "main": "index.js",
   "dependencies": {
