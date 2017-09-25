@@ -1,19 +1,17 @@
 {
-  "name": "loopback-connector-fabric",
+  "name": "fabric-sdk-rest",
   "version": "1.0.0",
-  "description": "Loopback Connector for Hyperledger Fabric v1.0",
+  "description": "Gerrit repository of the REST SDK for Hyperledger Fabric v1.0",
   "engines": {
     "node": ">=6.9.0"
   },
   "keywords": [
-    "StrongLoop",
-    "LoopBack",
-    "Hyperledger",
-    "Fabric",
-    "DataSource",
-    "Connector",
     "fabric-sdk-rest"
   ],
+  "scripts": {
+    "start": "./setup.sh -sd",
+    "test": "python tests/test_fabcar.py"
+  },
   "main": "index.js",
   "dependencies": {
     "loopback-connector": "^3.0.0",
