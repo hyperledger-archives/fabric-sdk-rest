@@ -12,7 +12,7 @@
     "start": "./setup.sh -sd",
     "test": "python tests/test_fabcar.py"
   },
-  "main": "index.js",
+  "main": "packages/fabric-rest/server/server.js",
   "dependencies": {
     "loopback-connector": "^3.0.0",
     "fabric-client": "^1.0.0"
