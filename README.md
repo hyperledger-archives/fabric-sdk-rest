@@ -1,4 +1,4 @@
-# Hyperledger Fabric REST API, fabric-sdk-rest
+# Hyperledger Fabric SDK REST Server
 
 
 ## Overview
@@ -62,7 +62,7 @@ To use the source version of the fabric loopback connector run `npm link` in the
 `loopback-connector-fabric` folder and run `npm link loopback-connector-fabric` in the
 `fabric-rest` folder. The following commands should be run in the packages folder
 
-```
+```shell
 npm install loopback-connector-fabric
 npm install fabric-rest
 ```
@@ -124,8 +124,10 @@ Fabric network directory must be specified.
 setup.sh -f ~/fabric-samples/basic-network/ -dukas
 ```
 
-HTTP Basic authentication is provided using [Passport][] as standard, with a default
-username and password combination of `chris:secret`. This should be passed on all URL
+The port for the SDK REST server to listen on can be specified with
+the `-p` option. HTTP Basic authentication is provided using
+[Passport][] as standard, with a default username and password
+combination of `chris:secret`. This should be passed on all URL
 invocations.
 
 
@@ -151,9 +153,11 @@ this test, first `start.sh` must be run to redefine the basic-network without an
 
 
 ## Fabric Examples: Input for Testing
-
+Before running these tests ensure that the fabcar sample network is running, for example using `docker ps`. If it is not use the `startFabric.sh` script in the fabcar directory to start it.
 
 ### Fabcar
+
+
 Browse to the [Loopback Explorer][explorer] interface.
 
 
@@ -167,8 +171,13 @@ values by default:
 `chaincodeId`
 : `fabcar`
 
-Request body
-: `{"fcn": "queryAllCars","args": []}`
+Request body:
+```json
+ {
+   "fcn": "queryAllCars",
+   "args": []
+ }
+ ```
 
 
 #### Query ledger using chaincode for one car
@@ -181,11 +190,38 @@ values by default:
 `chaincodeId`
 : `fabcar`
 
-Request body
-: `{"fcn": "queryCar","args": ["CAR4"]}`
+Request body:
+```json
+{
+  "fcn": "queryCar",
+  "args": ["CAR4"]
+}
+```
 
+Expected Response (truncated), code `200`:
+```json
+{
+  "queryResult": [  
+    {  
+      "Key": "CAR0",
+      "Record": {
+        "colour": "blue",
+        "make": "Toyota",
+        "model": "Prius",
+        "owner": "Tomoko"
+      }
+    },
+    {
+      "Key": "CAR1",
+      "Record": {
 
-### Propose a transaction
+      }
+    }
+  ]
+}
+```
+
+<!-- ### Propose a transaction
 `channel`
 : `mychannel`
 
@@ -194,16 +230,39 @@ Request body
   "Volt", "Red", "Nick"]}}`
 
 __Passing the response from this on to the transaction end point will not work at this
-time, it requires session management or new SDK functionality to be implemented__
+time, it requires session management or new SDK functionality to be implemented__ -->
 
 
-### End to End transaction
+#### End to End transaction
 `channel`
 : `mychannel`
 
-Request body
-: `{"proposalResponses":[],"proposal":{"chaincodeId": "fabcar", "fcn": "createCar", "args": ["CAR10", "Chevy", "Volt", "Red", "Nick"]}}`
+Request body:
+```json
+{
+    "proposalResponses":[],
+    "proposal": {
+      "chaincodeId": "fabcar",
+      "fcn":"createCar",
+      "args": ["CAR10", "Chevy", "Volt", "Red", "Nick"]
+    }
+}
+```
 
+#### Unexpected responses
+There could be several different causes for an unexpected response body.
+
+If a response is returned that contains a body similar to this:
+```json
+{
+  "status": 14,
+  "metadata":{   }
+}
+```
+then an error has occurred in the grpc communication layer. The status codes returned are available
+in the grpc source code (Apache-2.0 licensed at time of writing) here https://github.com/grpc/grpc/blob/master/src/node/src/constants.js
+
+For example a `"status": 14` means UNAVAILABLE and is caused by a problem with the REST server communicating with the peer or orderer. In this case check that the network is running (If the network is local `docker ps` will list the containers) and check that the addresses and ports used are also correct.
 
 ## Logging
 The logging used relies on the logger being set for fabric-sdk-node. The following
@@ -221,6 +280,37 @@ and 2 info messages for each info being sent to the console.  `node . --hfc-logg
 The following will send error, info and debug messages to a file, and just error messages
 to the console. `node . --hfc-logging
 '{"error":"console","debug":"/tmp/fabricRestDebug.log"}'`
+
+## Security
+
+## Enabling SSL
+By default, the server operates over HTTP. With the supplied option
+`-s` or `--https`, however, HTTPS can be enabled. To do this, you must
+first generate SSL keys. The server will look for these keys in the
+directory `packages/fabric-rest/server/private`. The following files
+are required:
+
+- `certificate.pem`
+- `certrequest.csr`
+- `privatekey.pem`
+
+To create these files, create and change to this directory, then issue
+the following commands:
+
+```bash
+openssl genrsa -out privatekey.pem 1024
+openssl req -new -key privatekey.pem -out certrequest.csr
+openssl x509 -req -in certrequest.csr -signkey privatekey.pem -out certificate.pem
+```
+
+These commands will prompt for several questions. Generally, these
+questions can be left with their default values, if you're setting
+this up for testing purposes. Now, start the server with `node
+. --https` or `node . -s`.
+
+The `setup.sh` helper script has support for security too. Use the
+`-t` option to use HTTPS when running the server, as well as running
+the above commands to generate keys, if they don't already exist.
 
 
 ## License

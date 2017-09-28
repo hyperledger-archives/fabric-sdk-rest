@@ -7,9 +7,16 @@
 
 var loopback = require('loopback');
 var boot = require('loopback-boot');
+
+var http = require('http');
+var https = require('https');
+const argv = require('yargs').argv;
+
 var passport = require('passport');
 var Strategy = require('passport-http').BasicStrategy;
 var db = require('./db');
+
+var app = module.exports = loopback();
 
 passport.use(new Strategy(
   function(username, password, cb) {
@@ -21,14 +28,39 @@ passport.use(new Strategy(
     });
   }));
 
-var app = module.exports = loopback();
+var useHttps = argv.https || argv.s;
+if (useHttps) {
+  var sslConfig = require('./ssl-config');
+}
 
-app.start = function() {
-  // start the web server
-  return app.listen(function() {
-    app.emit('started');
-    var baseUrl = app.get('url').replace(/\/$/, '');
-    console.log('Web server listening at: %s', baseUrl);
+app.start = function(httpOnly) {
+  if (httpOnly === undefined) {
+    httpOnly = process.env.HTTP;
+  }
+
+  var server = null;
+
+  if (!httpOnly) {
+    var options = {
+      key: sslConfig.privateKey,
+      cert: sslConfig.certificate
+    };
+    server = https.createServer(options, app);
+  } else {
+    server = http.createServer(app);
+  }
+
+  var cliPort = argv.port || argv.p;
+  var port = cliPort ? cliPort : app.get('port');
+
+  if (typeof port != "number") {
+    throw new TypeError('Port not a number');
+  }
+
+  return server.listen(port, function() {
+    var baseUrl = (httpOnly ? 'http://' : 'https://') + app.get('host') + ':' + port;
+    app.emit('started', baseUrl);
+    console.log('Hyperledger Fabric SDK REST server listening at %s%s', baseUrl, '/');
     if (app.get('loopback-component-explorer')) {
       var explorerPath = app.get('loopback-component-explorer').mountPath;
       console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
@@ -42,6 +74,11 @@ boot(app, __dirname, function(err) {
   if (err) throw err;
 
   // start the server if `$ node server.js`
-  if (require.main === module)
-    app.start();
+  if (require.main === module) {
+    if (useHttps) {
+      app.start(false);
+    } else {
+      app.start(true);
+    }
+  }
 });

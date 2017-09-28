@@ -18,6 +18,8 @@ _show_help() {
     printf -- "Usage: setup.sh [OPTIONS]\n\n"
     printf -- "Options:\n"
     printf -- "-s Start server\n"
+    printf -- "-t Use HTTPS\n"
+    printf -- "-p Specify a port to listen on\n"
     printf -- "-d Set debug info on\n"
     printf -- "-u Update data sources\n"
     printf -- "-k Update keys\n"
@@ -30,9 +32,13 @@ if [[ -z "$1" ]]; then
     _show_help
 fi
 
-while getopts :sdukf:ah opt; do
+while getopts :stp:dukf:ah opt; do
     case "$opt" in
         s)    start_server=true
+              ;;
+        t)    use_https=true
+              ;;
+        p)    port="$OPTARG"
               ;;
         d)    debug=true
               ;;
@@ -71,6 +77,21 @@ fi
 
 cd "${project_dir}/packages/fabric-rest/server"
 
+if [[ -n $use_https ]]; then
+    mkdir -p private
+    cd private
+    if [[ ! -f privatekey.pem ]]; then
+        openssl genrsa -out privatekey.pem 1024
+    fi
+    if [[ ! -f certrequest.csr ]]; then
+        openssl req -new -key privatekey.pem -out certrequest.csr
+    fi
+    if [[ ! -f certificate.pem ]]; then
+        openssl x509 -req -in certrequest.csr -signkey privatekey.pem -out certificate.pem
+    fi
+    cd ..
+fi
+
 if [[ -n $update_data_sources ]]; then
     # Use ^ for sed command as / is in file paths
     if [[ -n $run_as_admin ]]; then
@@ -82,11 +103,19 @@ if [[ -n $update_data_sources ]]; then
     fi
 fi
 
+if [[ -n $use_https ]]; then
+    cliOptions="--https"
+fi
+
+if [[ -n $port ]]; then
+    cliOptions="${cliOptions} --port ${port}"
+fi
+
 if [[ -n $start_server ]]; then
     cd ..
     if [[ -n $debug ]]; then
-        node . --hfc-logging '{"debug":"console"}'
+        node . ${cliOptions} --hfc-logging '{"debug":"console"}'
     else
-        node .
+        node . ${cliOptions}
     fi
 fi
