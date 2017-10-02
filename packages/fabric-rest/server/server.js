@@ -10,7 +10,21 @@ var boot = require('loopback-boot');
 
 var http = require('http');
 var https = require('https');
-const argv = require('yargs').argv;
+const argv = require('yargs')
+            .usage('Usage: [options]')
+            .option('p', {
+              alias: 'port',
+              default: 3000,
+              describe: 'Port server listens on'
+            })
+            .option('s', {
+              alias: 'https',
+              default: false,
+              describe: 'Use HTTPS'
+            })
+            .help('h')
+            .alias('h', 'help')
+            .argv;
 
 var passport = require('passport');
 var Strategy = require('passport-http').BasicStrategy;
