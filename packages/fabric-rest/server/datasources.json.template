@@ -1,4 +1,8 @@
 {
+  "db": {
+    "name": "db",
+    "connector": "memory"
+  },
   "fabricDataSource": {
     "name": "fabricDataSource",
     "connector": "fabric",
