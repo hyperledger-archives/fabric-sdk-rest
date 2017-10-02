@@ -127,7 +127,7 @@ setup.sh -f ~/fabric-samples/basic-network/ -dukas
 The port for the SDK REST server to listen on can be specified with
 the `-p` option. HTTP Basic authentication is provided using
 [Passport][] as standard, with a default username and password
-combination of `chris:secret`. This should be passed on all URL
+combination of `alice:secret`. This should be passed on all URL
 invocations.
 
 
@@ -306,11 +306,43 @@ openssl x509 -req -in certrequest.csr -signkey privatekey.pem -out certificate.p
 These commands will prompt for several questions. Generally, these
 questions can be left with their default values, if you're setting
 this up for testing purposes. Now, start the server with `node
-. --https` or `node . -s`.
+. --https` or `node . -s`. Note that if you connect to the server with
+a web browser, to view the `/explorer` interface for example, the
+browser may warn about using a self-signed certifiate. This is
+expected behaviour.
 
-The `setup.sh` helper script has support for security too. Use the
-`-t` option to use HTTPS when running the server, as well as running
-the above commands to generate keys, if they don't already exist.
+The `setup.sh` helper script has support for SSL too. Use `setup.sh
+-t` option to use HTTPS when running the server, as well as running
+the above commands to generate keys, if they don't already
+exist. Attempting to start the server requesting HTTPS secure
+transport while not having the correct certificates and private key
+will cause the server to fail.
+
+## Authentication Mechanisms
+
+By default, HTTP basic authentication is used to authenticate the
+user. User IDs and passwords can be configured in the `fabric-rest`
+package, in the file `server/db/users.js`. The default user and
+password combination is `alice:secret`.
+
+### LDAP
+
+LDAP authentication is also supported. To configure this function
+appropriately for your LDAP server, edit the file
+`server/providers.json.template` in the `fabric-rest` package, and
+remove the `.template` suffix. If this file is found on server
+startup, it will take precedence over HTTP basic authentication. The
+supplied values in `providers.json.template` are appropiate for
+running the LDAP test, which connects to an [ldapjs][] server. To run
+the LDAP server yourself while testing this mechanism manually, run
+
+```bash
+node authentication.js
+```
+
+in the `tests/authentication` directory. This will start the server on
+port `1389` by default, with a user `alice` whose password is
+`secret`.
 
 
 ## License
@@ -329,3 +361,4 @@ Attribution 4.0 International License</a>.
 [FAB-156]: https://jira.hyperledger.org/browse/FAB-156
 [explorer]: http://0.0.0.0:3000/explorer/
 [Passport]: http://passportjs.org/
+[ldapjs]: http://ldapjs.org/
