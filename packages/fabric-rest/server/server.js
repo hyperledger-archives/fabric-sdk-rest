@@ -12,6 +12,8 @@ var http = require('http');
 var https = require('https');
 const argv = require('yargs')
             .usage('Usage: [options]')
+            // Allow all variables to be set via ENV variables prefixed REST_
+            .env('REST')
             .option('p', {
               alias: 'port',
               default: 3000,
@@ -21,6 +23,9 @@ const argv = require('yargs')
               alias: 'https',
               default: false,
               describe: 'Use HTTPS'
+            })
+            .option('hfc-logging', {
+              describe: 'Set logging options, e.g. {"debug":"console"}'
             })
             .help('h')
             .alias('h', 'help')
@@ -42,19 +47,14 @@ passport.use(new Strategy(
     });
   }));
 
-var useHttps = argv.https || argv.s;
-if (useHttps) {
+if (argv.https) {
   var sslConfig = require('./ssl-config');
 }
 
-app.start = function(httpOnly) {
-  if (httpOnly === undefined) {
-    httpOnly = process.env.HTTP;
-  }
-
+app.start = function() {
   var server = null;
 
-  if (!httpOnly) {
+  if (argv.https) {
     var options = {
       key: sslConfig.privateKey,
       cert: sslConfig.certificate
@@ -64,15 +64,13 @@ app.start = function(httpOnly) {
     server = http.createServer(app);
   }
 
-  var cliPort = argv.port || argv.p;
-  var port = cliPort ? cliPort : app.get('port');
-
+  var port = argv.port ? argv.port : app.get('port');
   if (typeof port != "number") {
     throw new TypeError('Port not a number');
   }
 
   return server.listen(port, function() {
-    var baseUrl = (httpOnly ? 'http://' : 'https://') + app.get('host') + ':' + port;
+    var baseUrl = (argv.https ? 'https://' : 'http://') + app.get('host') + ':' + port;
     app.emit('started', baseUrl);
     console.log('Hyperledger Fabric SDK REST server listening at %s%s', baseUrl, '/');
     if (app.get('loopback-component-explorer')) {
@@ -89,10 +87,6 @@ boot(app, __dirname, function(err) {
 
   // start the server if `$ node server.js`
   if (require.main === module) {
-    if (useHttps) {
-      app.start(false);
-    } else {
-      app.start(true);
-    }
+    app.start();
   }
 });

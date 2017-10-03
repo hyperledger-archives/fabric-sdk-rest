@@ -312,6 +312,10 @@ The `setup.sh` helper script has support for security too. Use the
 `-t` option to use HTTPS when running the server, as well as running
 the above commands to generate keys, if they don't already exist.
 
+## Starting the server
+In the directory for fabric-client run the command `node .`.
+
+To see all command line options run `node . --help`.
 
 ## License
 <a rel="license"
