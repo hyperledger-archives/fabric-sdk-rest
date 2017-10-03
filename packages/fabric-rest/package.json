@@ -19,7 +19,7 @@
     "loopback": "^3.0.0",
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^4.0.0",
-    "loopback-connector-fabric": "^1.0.0",
+    "loopback-connector-fabric": "^1.0.0-snapshot",
     "passport": "^0.2.2",
     "passport-http": "^0.3.0",
     "serve-favicon": "^2.0.1",
