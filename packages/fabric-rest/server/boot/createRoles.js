@@ -35,5 +35,5 @@ module.exports = function(app) {
         console.log('Created principal:', principal);
       });
     });
-  })
-}
+  });
+};

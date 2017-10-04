@@ -38,7 +38,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var passport = require('passport');
 var Strategy = require('passport-http').BasicStrategy;
-var db = require('./db');
+var wallet = require('./wallet');
 
 var app = module.exports = loopback();
 var passportConfigurator = new PassportConfigurator(app);
@@ -48,15 +48,9 @@ var passportConfig = {};
 try {
   passportConfig = require('./providers.json');
 } catch (err) {
-  passport.use(new Strategy(
-    function(username, password, cb) {
-      db.users.findByUsername(username, function(err, user) {
-        if (err) { return cb(err); }
-        if (!user) { return cb(null, false); }
-        if (user.password != password) { return cb(null, false); }
-        return cb(null, user);
-      });
-    }));
+  passport.use(new Strategy(function(username, password, cb) {
+    wallet.validateUser(username, password, cb);
+  }));
   var router = app.loopback.Router();
   router.get('/', app.loopback.status());
   app.use(passport.authenticate('basic', { session: false }),
