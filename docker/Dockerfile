@@ -5,7 +5,7 @@
 #
 
 # Use the same docker image that is used as the hyperledger base image
-FROM hyperledger/fabric-basejvm:x86_64-0.3.2-snapshot-1d0fa6d
+FROM hyperledger/fabric-baseos:x86_64-0.4.2
 
 RUN mkdir -p /tmp/scripts
 COPY scripts /tmp/scripts
