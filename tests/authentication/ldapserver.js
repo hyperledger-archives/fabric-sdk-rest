@@ -43,7 +43,7 @@ exports.start = function (port, password) {
 
   server.bind(SUFFIX, authorize, function(req, res, next) {
     let dn = req.dn.toString();
-    if (dn !== 'dc=example, dc=org' || req.credentials !== password) {
+    if (dn !== 'cn=alice, dc=example, dc=org' || req.credentials !== password) {
       return next(new ldap.InvalidCredentialsError());
     }
     res.end();

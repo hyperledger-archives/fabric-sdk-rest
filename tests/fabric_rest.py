@@ -24,7 +24,7 @@ class FabricRest:
     def _call_endpoint(self, verb, endpoint, data=None):
         """Call a REST endpoint, returning a dict representation of the returned JSON."""
         url = "http://" + self.hostname + ":" + self.port + endpoint
-        process_list = ["curl", "-u", "chris:secret", "-s", "-X", verb.upper(), "--header", "Accept: application/json",
+        process_list = ["curl", "-u", "alice:secret", "-s", "-X", verb.upper(), "--header", "Accept: application/json",
                         "--header", "Content-Type: application/json"]
 
         if data:
