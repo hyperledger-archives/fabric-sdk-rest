@@ -16,7 +16,18 @@
   },
   "validations": [],
   "relations": {},
-  "acls": [],
+  "acls": [{
+            "accessType": "*",
+            "permission": "ALLOW",
+            "principalId": "$authenticated",
+            "principalType": "ROLE"
+        },
+        {
+            "accessType": "*",
+            "permission": "DENY",
+            "principalId": "$unauthenticated",
+            "principalType": "ROLE"
+        }],
   "methods": {},
   "hidden": ["id"]
 }

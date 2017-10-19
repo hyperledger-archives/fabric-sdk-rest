@@ -31,5 +31,8 @@
     "url": "https://gerrit.hyperledger.org/r/#/admin/projects/fabric-sdk-rest"
   },
   "license": "Apache-2.0",
-  "description": "SDK REST API for Hyperledger Fabric"
+  "description": "SDK REST API for Hyperledger Fabric",
+  "devDependencies": {
+    "ldapjs": "^1.0.1"
+  }
 }
