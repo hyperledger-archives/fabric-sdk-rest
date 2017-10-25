@@ -2,6 +2,7 @@
   "name": "user",
   "plural": "users",
   "base": "User",
+  "idInjection": true,
   "relations": {
     "accessTokens": {
       "type": "hasMany",

@@ -21,18 +21,7 @@
   },
   "validations": [],
   "relations": {},
-  "acls": [{
-            "accessType": "*",
-            "permission": "ALLOW",
-            "principalId": "$authenticated",
-            "principalType": "ROLE"
-        },
-        {
-            "accessType": "*",
-            "permission": "DENY",
-            "principalId": "$unauthenticated",
-            "principalType": "ROLE"
-        }],
+  "acls": [],
   "methods": {},
   "hidden": ["id"]
 }

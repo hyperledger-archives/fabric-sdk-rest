@@ -37,7 +37,7 @@ if [[ -f cookies.txt ]]; then
 fi
 
 if [[ ! -f "$providers_file" ]]; then
-    cp "{providers_file}.template" "$providers_file"
+    cp "${providers_file}.template" "$providers_file"
 fi
 
 # Get the channels, which should fail (JSON payload, error.statusCode=401,

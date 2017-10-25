@@ -5,6 +5,8 @@
 //
 'use strict';
 
+// The first user is the admin role
 exports.records = [
-    { id: 1, username: 'alice', password: 'secret', displayName: 'Alice', emails: [ { value: 'alice@example.com' } ] }
+  { username: 'alice', password: 'secret', displayName: 'Alice', email: 'alice@example.com' },
+  { username: 'bob', password: 'secret', displayName: 'Bob', email: 'bob@example.com' },
 ];

@@ -6,7 +6,7 @@
 'use strict';
 var walletContents = require('./private/wallet');
 
-var findByUsername = exports.findByUsername = function(username, cb) {
+var findByUsername = function(username, cb) {
   process.nextTick(function() {
     for (var i = 0, len = walletContents.records.length; i < len; i++) {
       var record = walletContents.records[i];
@@ -18,11 +18,21 @@ var findByUsername = exports.findByUsername = function(username, cb) {
   });
 };
 
-exports.validateUser = function(username, password, cb) {
+exports.validateUser = function(app, username, password, cb) {
   findByUsername(username, function(err, user) {
+    var User = app.models.user;
+    
     if (err) { return cb(err); }
     if (!user) { return cb(null, false); }
     if (user.password != password) { return cb(null, false); }
+
+    User.login({
+      username: username, password: password
+    }, 'user', function(err, token) {
+      if (err) {
+        console.log("Error logging in user!!");
+      }});
+
     return cb(null, user);
   });
 };
