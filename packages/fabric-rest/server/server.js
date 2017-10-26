@@ -12,22 +12,43 @@ var http = require('http');
 var https = require('https');
 const argv = require('yargs')
             .usage('Usage: [options]')
+            .config({extends:'./server/config.json'})
             // Allow all variables to be set via ENV variables prefixed REST_
             .env('REST')
-            .option('p', {
+            .option('P', {
               alias: 'port',
-              default: 3000,
-              describe: 'Port server listens on'
+              describe: 'The port to serve the REST API on',
+              type: 'number'
             })
-            .option('s', {
-              alias: 'https',
+            .option('t', {
+              alias: 'tls',
               default: false,
-              describe: 'Use HTTPS'
+              describe: 'Enable TLS security for the REST API',
+              type: 'boolean'
             })
+            .option('p', {
+              alias: 'connectionProfileName',
+              describe: 'TODO (SDK v1.1 prereq) - The connection profile name',
+              type: 'string'
+            })
+            .option('c', {
+              alias: 'tlscert',
+              describe: 'TODO - File containing the TLS certificate',
+              type: 'string'
+            })
+            .option('k', {
+              alias: 'tlskey',
+              describe: 'TODO - File containing the TLS private key',
+              type: 'string'
+            })
+            .implies('tlscert','tls')
+            .implies('tlskey','tls')
             .option('hfc-logging', {
-              describe: 'Set logging options, e.g. {"debug":"console"}'
+              describe: 'Set logging options, e.g. {"debug":"console"}',
+              type: 'string'
             })
             .help('h')
+            .version()
             .alias('h', 'help')
             .argv;
 
@@ -43,7 +64,7 @@ var wallet = require('./wallet');
 var app = module.exports = loopback();
 var passportConfigurator = new PassportConfigurator(app);
 
-if (argv.https) {
+if (argv.tls) {
   var sslConfig = require('./ssl-config');
 }
 
@@ -73,7 +94,7 @@ app.start = function() {
     userIdentityModel: app.models.userIdentity,
     userCredentialModel: app.models.userCredential
   });
-  
+
   // Read providers.json file if it exists, or revert to HTTP basic auth
   var passportConfig = {};
   try {
@@ -107,7 +128,7 @@ app.start = function() {
 
   var server = null;
 
-  if (argv.https) {
+  if (argv.tls) {
     var options = {
       key: sslConfig.privateKey,
       cert: sslConfig.certificate
@@ -123,7 +144,7 @@ app.start = function() {
   }
 
   return server.listen(port, function() {
-    var baseUrl = (argv.https ? 'https://' : 'http://') + app.get('host') + ':' + port;
+    var baseUrl = (argv.tls ? 'https://' : 'http://') + app.get('host') + ':' + port;
     app.emit('started', baseUrl);
     console.log('Hyperledger Fabric SDK REST server listening at %s%s', baseUrl, '/');
     if (app.get('loopback-component-explorer')) {

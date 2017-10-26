@@ -104,7 +104,7 @@ if [[ -n $update_data_sources ]]; then
 fi
 
 if [[ -n $use_https ]]; then
-    cliOptions="--https"
+    cliOptions="--tls"
 fi
 
 if [[ -n $port ]]; then
