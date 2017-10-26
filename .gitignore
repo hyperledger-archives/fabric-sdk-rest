@@ -2,3 +2,8 @@ node_modules/
 *.pyc
 datasources.json
 *.log
+tests/cookies.txt
+private/certificate.pem
+private/privatekey.pem
+private/certrequest.csr
+providers.json

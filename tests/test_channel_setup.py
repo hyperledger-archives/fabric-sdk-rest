@@ -33,8 +33,8 @@ class TestChannelSetup(unittest.TestCase):
         """Test creating the channel mychannel, just tests orderer has accepted the request"""
         # Get fabric sample directory, default assumes fabric-samples checked
         # out into same root folder as this project
-        fs_dir = os.getenv('FABRIC_SAMPLES_DIR','../../fabric-samples')
-        config_file_loc = fs_dir + '/basic-network/config/channel.tx'
+        fs_dir = os.getenv('TEST_NETWORK_DIR','./basic-network')
+        config_file_loc = fs_dir + '/config/channel.tx'
         config_file = open(config_file_loc, 'rb')
         configInb64 = base64.b64encode(config_file.read())
         config_file.close()
@@ -46,8 +46,8 @@ class TestChannelSetup(unittest.TestCase):
         """Test joining peer0 to the new channel"""
         # Get fabric sample directory, default assumes fabric-samples checked
         # out into same root folder as this project
-        fs_dir = os.getenv('FABRIC_SAMPLES_DIR','../../fabric-samples')
-        pem_file_loc = fs_dir + '/basic-network/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem'
+        fs_dir = os.getenv('TEST_NETWORK_DIR','./basic-network')
+        pem_file_loc = fs_dir + '/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem'
         pem_file = open(pem_file_loc, 'rb')
         #READ in PEM
         pem_for_peer = pem_file.read()
@@ -94,7 +94,7 @@ class TestChannelSetup(unittest.TestCase):
     #     """Test updating the channel mychannel, just tests orderer has accepted the request"""
     #     # Get fabric sample directory, default assumes fabric-samples checked
     #     # out into same root folder as this project
-    #     fs_dir = os.getenv('FABRIC_SAMPLES_DIR','../../fabric-samples')
+    #     fs_dir = os.getenv('TEST_NETWORK_DIR','.')
     #     config_file_loc = fs_dir + '/basic-network/config/Org1MSPanchors.tx'
     #     config_file = open(config_file_loc, 'rb')
     #     configInb64 = base64.b64encode(config_file.read())
@@ -120,6 +120,6 @@ if __name__ == "__main__":
 
     restserver = FabricRest(hostname, port)
 
-    print "Using FABRIC_SAMPLES_DIR: " + os.getenv('FABRIC_SAMPLES_DIR','../../fabric-samples')
+    print "Using TEST_NETWORK_DIR: " + os.getenv('TEST_NETWORK_DIR','./basic-network')
 
     unittest.main()

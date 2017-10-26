@@ -40,35 +40,49 @@ if [[ ! -f "$providers_file" ]]; then
     cp "${providers_file}.template" "$providers_file"
 fi
 
+failed_tests=0
+
 # Get the channels, which should fail (JSON payload, error.statusCode=401,
 # error.message='Authorization Required')
 curl -X GET -H 'Accept: application/json' 'http://0.0.0.0:3000/api/fabric/1_0/channels' | grep 'Authorization Required'
 if [[ ! $? -eq 0 ]]; then # Error response was found
-    printf "Expected to find not-auth error, but didn't"
+    printf "Expected to find not-auth error, but didn't\n"
+    ((failed_tests++))
+    echo "DEBUG: ${failed_tests}"
 fi
 
 # Authenticate with an incorrect password, which should fail
 curl -H 'Content-Type: application/x-www-form-urlencoded' -d 'username=alice&password=wrongsecret' 'http://0.0.0.0:3000/auth/ldap' | grep 'Redirecting to /failure'
 if [[ ! $? -eq 0 ]]; then # Error response was found
-    printf "Expected to fail auth"
+    printf "Expected to fail auth\n"
+    ((failed_tests++))
+    echo "DEBUG: ${failed_tests}"
 fi
 
 # Get the channels, which should fail
 curl -b cookies.txt -X GET --header 'Accept: application/json' 'http://0.0.0.0:3000/api/fabric/1_0/channels' | grep 'Authorization Required'
 if [[ ! $? -eq 0 ]]; then # Error response was found
-    printf "Expected to find not-auth error, but didn't"
+    printf "Expected to find not-auth error, but didn't\n"
+    ((failed_tests++))
+    echo "DEBUG: ${failed_tests}"
 fi
 
 # Authenticate with a correct password, which should pass
 curl -c cookies.txt -H 'Content-Type: application/x-www-form-urlencoded' -d 'username=alice&password=secret' 'http://0.0.0.0:3000/auth/ldap' | grep 'Redirecting to /explorer'
 if [[ ! $? -eq 0 ]]; then # Error response was found
-    printf "Expected to succeed in auth"
+    printf "Expected to succeed in auth\n"
+    ((failed_tests++))
+    echo "DEBUG: ${failed_tests}"
 fi
 
 # Get the channels, which should now work
 curl -b cookies.txt -X GET --header 'Accept: application/json' 'http://0.0.0.0:3000/api/fabric/1_0/channels' | grep mychannel
 if [[ ! $? -eq 0 ]]; then # Error response was found
-    printf "Expected to find channel name"
+    printf "Expected to find channel name\n"
+    ((failed_tests++))
+    echo "DEBUG: ${failed_tests}"
 fi
 
 kill $ldapjs_pid
+
+exit ${failed_tests}
