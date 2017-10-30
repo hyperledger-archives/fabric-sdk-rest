@@ -3,7 +3,6 @@ node_modules/
 datasources.json
 *.log
 tests/cookies.txt
-private/certificate.pem
-private/privatekey.pem
-private/certrequest.csr
+**/private/*.pem
+**/private/*.csr
 providers.json
