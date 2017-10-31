@@ -8,6 +8,9 @@
 var loopback = require('loopback');
 var boot = require('loopback-boot');
 
+var fs = require("fs");
+var path = require("path");
+
 var http = require('http');
 var https = require('https');
 const argv = require('yargs')
@@ -20,29 +23,29 @@ const argv = require('yargs')
               describe: 'The port to serve the REST API on',
               type: 'number'
             })
+            .option('p', {
+              alias: 'connectionProfileName',
+              describe: 'TODO (SDK v1.1 prereq) - The connection profile name',
+              type: 'string'
+            })
             .option('t', {
               alias: 'tls',
               default: false,
               describe: 'Enable TLS security for the REST API',
               type: 'boolean'
             })
-            .option('p', {
-              alias: 'connectionProfileName',
-              describe: 'TODO (SDK v1.1 prereq) - The connection profile name',
-              type: 'string'
-            })
             .option('c', {
               alias: 'tlscert',
-              describe: 'TODO - File containing the TLS certificate',
+              describe: 'File containing the TLS certificate',
+              default: path.join(__dirname, './private/certificate.pem'),
               type: 'string'
             })
             .option('k', {
               alias: 'tlskey',
-              describe: 'TODO - File containing the TLS private key',
+              describe: 'File containing the TLS private key',
+              default: path.join(__dirname, './private/privatekey.pem'),
               type: 'string'
             })
-            .implies('tlscert','tls')
-            .implies('tlskey','tls')
             .option('hfc-logging', {
               describe: 'Set logging options, e.g. {"debug":"console"}',
               type: 'string'
@@ -63,10 +66,6 @@ var wallet = require('./wallet');
 
 var app = module.exports = loopback();
 var passportConfigurator = new PassportConfigurator(app);
-
-if (argv.tls) {
-  var sslConfig = require('./ssl-config');
-}
 
 app.start = function() {
   var User = app.models.user;
@@ -126,21 +125,43 @@ app.start = function() {
     res.end();
   });
 
-  var server = null;
+  var port =( argv.port === undefined ? app.get('port') : argv.port);
+  if ( isNaN(port) || port < 0 || port > 65535 ) {
+    console.log("ERROR: 'port' must be in the range 0 to 65535");
+    return;
+  }
 
+  var server = null;
   if (argv.tls) {
-    var options = {
-      key: sslConfig.privateKey,
-      cert: sslConfig.certificate
-    };
+    var options = { };
+
+    // Get key for server to run TLS
+    try{
+      options.key = fs.readFileSync(argv.tlskey).toString();
+    } catch (err) {
+      if(err.code == 'ENOENT'){
+        console.log("ERROR: 'tlskey' not found \"" + argv.tlskey + "\"");
+        return;
+      } else {
+        throw err;
+      }
+    }
+
+    // Get certificate for server to run TLS
+    try{
+      options.cert = fs.readFileSync(argv.tlscert).toString();
+    } catch (err) {
+      if(err.code == 'ENOENT'){
+        console.log("ERROR: 'tlscert' not found \"" + argv.tlscert + "\"");
+        return;
+      } else {
+        throw err;
+      }
+    }
+
     server = https.createServer(options, app);
   } else {
     server = http.createServer(app);
-  }
-
-  var port = argv.port ? argv.port : app.get('port');
-  if (typeof port != "number") {
-    throw new TypeError('Port not a number');
   }
 
   return server.listen(port, function() {
