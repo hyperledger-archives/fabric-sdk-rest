@@ -12,6 +12,6 @@ const port=1389;
 const ldapserver = require('./ldapserver');
 const password='secret';
 
-console.log('starting server');
+console.log('Starting LDAP server');
 ldapserver.start(port, password);
-console.log('server started, listening on port ' + port);
+console.log('LDAP server started, listening on port ' + port);

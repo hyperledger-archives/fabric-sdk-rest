@@ -49,11 +49,15 @@ class TestFabCar(unittest.TestCase):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--https', '-s', help='Enable HTTPS protocol', action='store_true', default=False)
+    parser.add_argument('--tls', '-t', help='Enable TLS', action='store_true', default=False)
     parser.add_argument('--hostname', '-n', help='Hostname of SDK REST server to connect to', default='localhost')
     parser.add_argument('--port', '-p', help='Port of SDK REST server to connect on', default='3000')
     args = parser.parse_args()
 
-    restserver = FabricRest(args.hostname, args.port, args.https)
+    restserver = FabricRest(args.hostname, args.port, args.tls)
     runner = unittest.TextTestRunner(verbosity=1)
     result = runner.run(unittest.makeSuite(TestFabCar))
+
+# Exit with non-zero exit code if any tests failed.
+    if not result.wasSuccessful():
+        system.exit(1)

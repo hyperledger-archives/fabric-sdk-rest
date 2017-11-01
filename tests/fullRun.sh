@@ -42,12 +42,22 @@ sleep 10
 # Now run the channel setup and fabcar tests
 cd ${tests_dir}
 python ./test_channel_setup.py
-result_test1=$?
+if [[ $? -eq 0 ]]; then # Error response was found
+  result_test1="PASSED"
+else
+  result_test1="FAILED"
+fi
+
 
 # Allow time for fabcar to be initialized before running tests
+echo "Wait 5 seconds to allow fabcar to finish initializing"
 sleep 5
 python ./test_fabcar.py
-result_test2=$?
+if [[ $? -eq 0 ]]; then # Error response was found
+  result_test2="PASSED"
+else
+  result_test2="FAILED"
+fi
 
 # Set up NODE_PATH to be able to start ldap server and run auth tests
 export NODE_PATH=../packages/fabric-rest/node_modules
@@ -58,26 +68,36 @@ result_test3=$?
 echo "Stopping REST SDK server, PID: ${SERVER_PID}"
 kill -15 ${SERVER_PID}
 
-# cd ${server_dir}
-# # Start the REST server in it's own process with tls and debug on
-# node . --tls --hfc-logging '{"debug":"console"}' &
-# # Save server's process id
-# SERVER_PID=$!
-# echo "Started REST server with TLS on, PID: ${SERVER_PID}"
-#
-# # Now run the authentication and fabcar tests
-# # TODO add fabcar tests
-# # TODO add authentication tests
-#
-# # Stop the REST server
-# kill -15 ${SERVER_PID}
+cd ${server_dir}
+# Start the REST server in it's own process with tls and debug on
+node . --tls --hfc-logging "{\"info\":\"${tests_dir}/logs/fullRun_$(date +%s).log\",\"debug\":\"${tests_dir}/logs/fullRun_$(date +%s).log\"}" &
+# Save server's process id
+SERVER_PID=$!
+echo "Starting REST server with TLS on, PID: ${SERVER_PID}"
+echo "Wait 5 seconds to allow REST server to start up"
+sleep 5
+
+# Now run the fabcar tests again with TLS option specified
+cd ${tests_dir}
+python ./test_fabcar.py -t
+if [[ $? -eq 0 ]]; then # Error response was found
+  result_test4="PASSED"
+else
+  result_test4="FAILED"
+fi
+
+# Stop the REST server
+echo "Stopping REST SDK server, PID: ${SERVER_PID}"
+kill -15 ${SERVER_PID}
 
 # cd ${tests_dir}/basic-network
 # # Stop the network
 # ./stop.sh
 
-#TODO Make sure scripts return a failure RC
 echo ""
-echo "*CHECK* Test suite 1, RC= ${result_test1}"
-echo "*CHECK* Test suite 2, RC= ${result_test2}"
+echo "Test suite result summary"
+echo ""
+echo "Test suite 1:  ${result_test1}"
+echo "Test suite 2:  ${result_test2}"
 echo "Test suite 3, Failed tests= ${result_test3}"
+echo "Test suite 4:  ${result_test4}"

@@ -14,15 +14,15 @@ import subprocess
 
 class FabricRest:
     """A thin wrapper around the Fabric REST API."""
-    def __init__(self, h="localhost", p="3000", https=False):
+    def __init__(self, h="localhost", p="3000", tls=False):
         self.hostname=h
         self.port=p
-        self.https=https
+        self.tls=tls
 
     def _call_endpoint(self, verb, endpoint, data=None):
         """Call a REST endpoint, returning a dict representation of the returned JSON."""
         url = "http"
-        if self.https:
+        if self.tls:
             url += "s"
         url += "://" + self.hostname + ":" + self.port + endpoint
         process_list = ["curl", "-k", "-u", "alice:secret", "-s", "-X", verb.upper(), "--header", "Accept: application/json",
