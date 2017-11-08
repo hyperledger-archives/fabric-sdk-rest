@@ -67,6 +67,8 @@ result_test3=$?
 # Stop the REST server
 echo "Stopping REST SDK server, PID: ${SERVER_PID}"
 kill -15 ${SERVER_PID}
+echo "Wait 3 seconds to allow REST server to stop"
+sleep 3
 
 cd ${server_dir}
 # Start the REST server in it's own process with tls and debug on

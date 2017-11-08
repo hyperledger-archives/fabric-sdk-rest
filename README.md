@@ -109,12 +109,14 @@ Running the basic-network from fabric-samples locally will start 4 containers.
 
 
 ## Running the REST API
+This step requires `datasources.json` to be configured, this can be done manually or using the `setup.sh` script, described later.
+
 From within the `fabric-rest` project folder open a terminal and run `node .`. The
 messages to the terminal will confirm when the LoopBack server is running. Try out the
 API manually using the [LoopBack API Explorer interface][explorer], for your given
 hostname and port.
 
-`setup.sh` can be used to generate keys for a given started Fabric network, update
+`setup.sh` can be used to generate keys for the server, copy keys for a given started Fabric network, update
 `datasources.json` from the supplied template, and start the REST API server. Full help
 will be shown with `setup.sh -h`. The following command will start the REST API server as
 Admin in debug mode after updating `datasources.json`, and generating keys. Note that the
@@ -133,8 +135,14 @@ invocations.
 
 ## Testing the REST API
 The `tests` directory contains a python wrapper for the REST API, and modules to run
-tests against the REST API server for specific Fabric sample networks. For example, after
-starting the `fabcar` sample network, run
+tests against the REST API server for specific Fabric sample networks.
+
+To run all the tests run the `fullRun.sh` test script which will start up a fabric
+network, start the server and run the tests. Note that some of the test suites will
+fail if the TLS certs have not been generated as the REST server will not start
+with the --tls option successfully in this scenario.
+
+For example, after starting the `fabcar` sample network, run
 
 ```
 python test_fabcar.py
