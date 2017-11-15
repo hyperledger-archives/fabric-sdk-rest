@@ -14,6 +14,12 @@
   "acls": [
     {
       "accessType": "*",
+      "permission": "DENY",
+      "principalId": "$unauthenticated",
+      "principalType": "ROLE"
+    },
+    {
+      "accessType": "*",
       "permission": "ALLOW",
       "principalId": "$authenticated",
       "principalType": "ROLE"

@@ -5,12 +5,37 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
+
+#
+# Setup
+#
+
+
 project_dir="$(cd "$( dirname "${BASH_SOURCE[0]}" )/../../" && pwd)/fabric-sdk-rest"
-server_dir=${project_dir}/packages/fabric-rest
-tests_dir=${project_dir}/tests
+server_dir="${project_dir}/packages/fabric-rest"
+tests_dir="${project_dir}/tests"
+cookies_file="cookies.txt"
+
+cd "${server_dir}/server"
+mkdir -p private
+cd private
+if [[ ! -f privatekey.pem ]]; then
+    printf "Files for TLS-enabled SDK REST server not found. Generating:\n\n"
+    openssl genrsa -out privatekey.pem 1024
+fi
+if [[ ! -f certrequest.csr ]]; then
+    openssl req -new -key privatekey.pem -out certrequest.csr
+fi
+if [[ ! -f certificate.pem ]]; then
+    openssl x509 -req -in certrequest.csr -signkey privatekey.pem -out certificate.pem
+fi
+
+# Stop any currently-running Hyperledger Docker containers
+# echo "Stopping any running Hyperledger Docker containers"
+#docker ps -a | grep -i hyperledger | cut -d' ' -f1 | xargs docker rm -f
 
 # Need to be in basic-network folder for docker-compose to pick up .env file
-cd ${tests_dir}/basic-network
+cd "${tests_dir}/basic-network"
 # Start fabric sample basic-network in "extra basic" Model
 ./start.sh
 
@@ -22,25 +47,38 @@ privatekeyAdmin="$(ls *_sk)"
 
 # Update datasources.json to use crypto-config from tests directory and run as Fabric ADMIN
 # TODO consider adding tests to run as a Fabric user.
-cd ${server_dir}/server
-echo "TEST - privatekeyUser  : ${privatekeyUser}"
-echo "TEST - privatekeyAdmin : ${privatekeyAdmin}"
+cd "${server_dir}/server"
+printf "TEST - privatekeyUser  : ${privatekeyUser}\n"
+printf "TEST - privatekeyAdmin : ${privatekeyAdmin}\n"
 sed -e "s/ADMINUSER/fabricUser/" -e "s^XXXXXXXX^${privatekeyUser}^" -e "s^ADMIN1STORE^${privatekeyAdmin}^" \
     -e "s^FABSAMPLE^${tests_dir}/basic-network^" < datasources.json.template > datasources.json
 
-# Start the REST server in it's own process with debug on
-cd ${server_dir}
+# Start the LDAP server
+cd "${tests_dir}"
+node ./authentication/authentication.js &
+ldapjs_pid=$!
+printf "Starting LDAP server, PID: ${ldapjs_pid}\n"
+sleep 3
+
+# Start the REST server in its own process with debug on
+cd "${server_dir}"
 node . --hfc-logging "{\"info\":\"${tests_dir}/logs/fullRun_$(date +%s).log\",\"debug\":\"${tests_dir}/logs/fullRun_$(date +%s).log\"}" &
 # Save server's process id
-SERVER_PID=$!
-echo "Starting REST server, PID: ${SERVER_PID}"
+rest_server_pid=$!
+printf "Starting REST server, PID: ${rest_server_pid}\n"
 
 # Give the server a chance to start
-echo "Sleeping for 10s to allow the REST server and Fabric network to start up"
+printf "Sleeping for 10s to allow the REST server and Fabric network to start up\n"
 sleep 10
 
+
+#
+# Test suite 1
+#
+
+
 # Now run the channel setup and fabcar tests
-cd ${tests_dir}
+cd "${tests_dir}"
 python ./test_channel_setup.py
 if [[ $? -eq 0 ]]; then # Error response was found
   result_test1="PASSED"
@@ -49,8 +87,13 @@ else
 fi
 
 
+#
+# Test suite 2
+#
+
+
 # Allow time for fabcar to be initialized before running tests
-echo "Wait 5 seconds to allow fabcar to finish initializing"
+printf "Wait 5 seconds to allow fabcar to finish initializing\n"
 sleep 5
 python ./test_fabcar.py
 if [[ $? -eq 0 ]]; then # Error response was found
@@ -59,28 +102,51 @@ else
   result_test2="FAILED"
 fi
 
+
+#
+# Test suite 3
+#
+
+
 # Set up NODE_PATH to be able to start ldap server and run auth tests
 export NODE_PATH=../packages/fabric-rest/node_modules
 ./test_authentication.sh
-result_test3=$?
+if [[ $? -eq 0 ]]; then # Error response was found
+  result_test3="PASSED"
+else
+  result_test3="FAILED"
+fi
+
+
+#
+# Switch the REST SDK server from HTTP to HTTPS configuration
+#
+
 
 # Stop the REST server
-echo "Stopping REST SDK server, PID: ${SERVER_PID}"
-kill -15 ${SERVER_PID}
-echo "Wait 3 seconds to allow REST server to stop"
+printf "Switching REST SDK server to use TLS\n"
+printf "Stopping REST SDK server, PID: ${rest_server_pid}\n"
+kill -15 ${rest_server_pid}
+printf "Wait 3 seconds to allow REST server to stop\n"
 sleep 3
 
-cd ${server_dir}
+cd "${server_dir}"
 # Start the REST server in it's own process with tls and debug on
 node . --tls --hfc-logging "{\"info\":\"${tests_dir}/logs/fullRun_$(date +%s).log\",\"debug\":\"${tests_dir}/logs/fullRun_$(date +%s).log\"}" &
 # Save server's process id
-SERVER_PID=$!
-echo "Starting REST server with TLS on, PID: ${SERVER_PID}"
-echo "Wait 5 seconds to allow REST server to start up"
+rest_server_pid=$!
+printf "Starting REST server with TLS on, PID: ${rest_server_pid}\n"
+printf "Wait 5 seconds to allow REST server to start up\n"
 sleep 5
 
+
+#
+# Test suite 4
+#
+
+
 # Now run the fabcar tests again with TLS option specified
-cd ${tests_dir}
+cd "${tests_dir}"
 python ./test_fabcar.py -t
 if [[ $? -eq 0 ]]; then # Error response was found
   result_test4="PASSED"
@@ -88,18 +154,23 @@ else
   result_test4="FAILED"
 fi
 
-# Stop the REST server
-echo "Stopping REST SDK server, PID: ${SERVER_PID}"
-kill -15 ${SERVER_PID}
+# Stop the REST and LDAP servers
+printf "Stopping REST SDK server, PID: ${rest_server_pid}\n"
+kill -15 "$rest_server_pid"
+printf "Stopping LDAP server, PID: ${ldapjs_pid}\n"
+kill -2 "$ldapjs_pid"
+
+cd "${tests_dir}"
+if [[ -f "$cookies_file" ]]; then
+    rm "$cookies_file"
+fi
 
 # cd ${tests_dir}/basic-network
 # # Stop the network
 # ./stop.sh
 
-echo ""
-echo "Test suite result summary"
-echo ""
-echo "Test suite 1:  ${result_test1}"
-echo "Test suite 2:  ${result_test2}"
-echo "Test suite 3, Failed tests= ${result_test3}"
-echo "Test suite 4:  ${result_test4}"
+printf "\nTest suite result summary\n\n"
+printf "Test suite 1:  ${result_test1}\n"
+printf "Test suite 2:  ${result_test2}\n"
+printf "Test suite 3:  ${result_test3}\n"
+printf "Test suite 4:  ${result_test4}\n"

@@ -14,24 +14,37 @@ import subprocess
 
 class FabricRest:
     """A thin wrapper around the Fabric REST API."""
-    def __init__(self, h="localhost", p="3000", tls=False):
-        self.hostname=h
-        self.port=p
-        self.tls=tls
+    COOKIES_FILE="cookies.txt"
 
-    def _call_endpoint(self, verb, endpoint, data=None):
+    def __init__(self, hostname="localhost", port="3000", tls=False, authenticate=True):
+        self.hostname = hostname
+        self.port = port
+        self.tls = tls
+        if authenticate:
+            self._call_endpoint("POST", "/auth/ldap", authenticate=True)
+
+    def _call_endpoint(self, verb, endpoint, data=None, authenticate=False):
         """Call a REST endpoint, returning a dict representation of the returned JSON."""
         url = "http"
         if self.tls:
             url += "s"
         url += "://" + self.hostname + ":" + self.port + endpoint
-        process_list = ["curl", "-k", "-u", "alice:secret", "-s", "-X", verb.upper(), "--header", "Accept: application/json",
-                        "--header", "Content-Type: application/json"]
-
+        process_list = ["curl", "-k", "-s", "-X", verb.upper(), "--header"]
+        if authenticate:
+            process_list.append("Content-Type: application/x-www-form-urlencoded")
+            process_list.extend(["-d", "username=alice&password=secret"])
+            process_list.extend(["-c", FabricRest.COOKIES_FILE])
+        else:
+            process_list.append("Content-Type: application/json")
+            process_list.extend(["-b", FabricRest.COOKIES_FILE])
         if data:
             process_list.extend(["-d", data])
         process_list.append(url)
-        return json.loads(subprocess.check_output(process_list))
+        process_output = subprocess.check_output(process_list)
+        try:
+            return json.loads(process_output)
+        except ValueError:
+            return process_output
 
     # GET /fabric/1_0/channels
     def get_channels(self):

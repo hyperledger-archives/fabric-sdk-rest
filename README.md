@@ -12,7 +12,7 @@ It is intended to provide the capabilities for [FAB-156][].
 The design for this item can be found [on Google Docs][gd]. Comments on the design are
 welcome.
 
-Dev branch status:  
+Dev branch status:
 [![Build Status](https://jenkins.hyperledger.org/buildStatus/icon?job=fabric-sdk-rest-merge-x86_64)](https://jenkins.hyperledger.org/view/fabric-sdk-rest/job/fabric-sdk-rest-merge-x86_64/)
 
 
@@ -82,7 +82,7 @@ by what is passed on the -f option.
 
 For custom configuration, that does not use setup.sh, in the folder `packages/fabric-rest/server` change the contents of `datasources.json`
 to reference the peer(s), orderer(s), and keystore, as well as to configure the
-`"fabricUser": {..}` credentials.  
+`"fabricUser": {..}` credentials.
 
 To install and instantiate chaincode the server must be configured to run as a user with administrator access on the peer (setup.sh -a option), for standard work the server can be configured with any user that is known to the peer.
 
@@ -122,7 +122,7 @@ will be shown with `setup.sh -h`. The following command will start the REST API 
 Admin in debug mode after updating `datasources.json`, and generating keys. Note that the
 Fabric network directory must be specified.
 
-```
+```bash
 setup.sh -f ~/fabric-samples/basic-network/ -dukas
 ```
 
@@ -135,37 +135,67 @@ invocations.
 
 ## Testing the REST API
 The `tests` directory contains a python wrapper for the REST API, and modules to run
-tests against the REST API server for specific Fabric sample networks.
+tests against the REST API server for specific Fabric sample
+networks. The tests assume LDAP authentication, so the supplied LDAP
+server should be started.
 
-To run all the tests run the `fullRun.sh` test script which will start up a fabric
-network, start the server and run the tests. Note that some of the test suites will
-fail if the TLS certs have not been generated as the REST server will not start
-with the --tls option successfully in this scenario.
 
-For example, after starting the `fabcar` sample network, run
+### Run all Tests Against a Supplied Sample Network
+To run all the tests run the `fullRun.sh` test script. This will:
 
-```
+- Start the supplied LDAP server
+- Start up a supplied Hyperledger Fabric network
+- Start the SDK REST server
+- Run all tests
+- Run tests with TLS enabled
+
+If keys for a TLS-enabled REST server haven't already been generated
+or supplied, `fullRun.sh` will prompt for values while generating
+these files.
+
+
+### Run Individual Tests
+If you start a network another way, for example by starting the
+_fabcar_ sample network yourself, run the tests individually, e.g.,
+
+```bash
 python test_fabcar.py
 ```
 
-The default hostname and port values for the REST API, `localhost` and `3000`, can be
-specified as arguments 1 and 2 respectively.
+This python test takes a `--help` parameter; specify `--hostname` or
+`--port` if the defaults of `localhost` and `3000` do not
+suffice. Option `--tls` enables TLS requests to the REST server.
 
-To test creating a new channel, joining a peer, and installing and instantiating
-the fabcar chaincode the automated test `test_channel_setup.py` requires some set up.
-- Set an environment variable for the location of the fabric-samples directory. `export FABRIC_SAMPLES_DIR=xxxx`
-- Comment out the `docker exec` commands in the file `fabric-samples/basic-network/start.sh`
-- Run that `start.sh` script to start the sample `basic-network` without a channel defined
-Now the test can be run using the command `python test_channel_setup.py`. To rerun
-this test, first `start.sh` must be run to redefine the basic-network without any artifacts.
+
+### Test Channel Creation
+To test creating a new channel, joining a peer, and installing and
+instantiating the fabcar chaincode, the automated test
+`test_channel_setup.py` requires some set up:
+
+- Set an environment variable for the location of the fabric-samples
+directory:
+
+  ```bash
+  export FABRIC_SAMPLES_DIR=xxxx
+  ```
+
+- Comment out the `docker exec` commands in the file
+  `fabric-samples/basic-network/start.sh`
+- Run that `start.sh` script to start the sample `basic-network`
+  without a channel defined
+
+Now the test can be run using the command `python
+test_channel_setup.py`. To rerun this test, first `start.sh` must be
+run to redefine the basic-network without any artifacts.
 
 
 ## Fabric Examples: Input for Testing
-Before running these tests ensure that the fabcar sample network is running, for example using `docker ps`. If it is not use the `startFabric.sh` script in the fabcar directory to start it.
+Before running these tests ensure that the fabcar sample network is
+running, for example using `docker ps`. If it is not use the
+`startFabric.sh` script in the fabcar directory to start it.
+
 
 ### Fabcar
-
-
 Browse to the [Loopback Explorer][explorer] interface.
 
 
@@ -209,8 +239,8 @@ Request body:
 Expected Response (truncated), code `200`:
 ```json
 {
-  "queryResult": [  
-    {  
+  "queryResult": [
+    {
       "Key": "CAR0",
       "Record": {
         "colour": "blue",
