@@ -11,12 +11,11 @@
 
 from sys import argv
 from fabric_rest import FabricRest
-import base64
+import argparse
 import unittest
 
 
 class TestFabCar(unittest.TestCase):
-
     def test_first_channel_name(self):
         """Test to confirm that the first channel on the network has the default name of
         mychannel.
@@ -34,31 +33,31 @@ class TestFabCar(unittest.TestCase):
         status_code = restserver.query_ledger("mychannel", block_id="99999")["error"]["statusCode"]
         self.assertEqual(status_code, 404)
 
-
     def test_car_color(self):
         """Test to confirm that the first car returned from a ledger query is the color blue."""
         car_color = restserver.query_ledger("mychannel", chaincode_id="fabcar",
                                             data=r'{"fcn":"queryAllCars","args":[]}')["queryResult"][0]["Record"]["colour"]
         self.assertEqual(car_color, "blue")
 
-
     def test_peer_chaincode_query(self):
         """Test to confirm that querying a peer for fabcar chaincode returns a result and querying for fab does not."""
         chaincode_name = restserver.query_chaincode("fabcar","%5B0%5D")["queryResult"][0]["name"]
         self.assertEqual(chaincode_name, "fabcar")
-
         empty_result = restserver.query_chaincode("fab","%5B0%5D")["queryResult"][0]
         self.assertEqual(empty_result, {})
 
 
 if __name__ == "__main__":
-    if len(argv) > 1:
-        hostname = argv[1]
-        port = argv[2]
-    else:
-        hostname = "localhost"
-        port = "3000"
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--tls', '-t', help='Enable TLS', action='store_true', default=False)
+    parser.add_argument('--hostname', '-n', help='Hostname of SDK REST server to connect to', default='localhost')
+    parser.add_argument('--port', '-p', help='Port of SDK REST server to connect on', default='3000')
+    args = parser.parse_args()
 
-    restserver = FabricRest(hostname, port)
+    restserver = FabricRest(args.hostname, args.port, args.tls)
+    runner = unittest.TextTestRunner(verbosity=1)
+    result = runner.run(unittest.makeSuite(TestFabCar))
 
-    unittest.main()
+# Exit with non-zero exit code if any tests failed.
+    if not result.wasSuccessful():
+        system.exit(1)

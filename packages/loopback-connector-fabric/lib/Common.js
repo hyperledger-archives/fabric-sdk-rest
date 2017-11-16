@@ -68,6 +68,12 @@ exports.countFailedProposalResponses = function(proposalResponses){
   return failedCount;
 }
 
+exports.isBase64 = function(aString){
+  // Pattern: Start of string, 0 or more valid quartets with last possibly padded, End of String
+  var base64Pattern = new RegExp("^([A-Za-z0-9\+\/]{4})*(([A-Za-z0-9\+\/]{3}\=)?|([A-Za-z0-9+\/]{2}\=\=))?$");
+  return base64Pattern.test(aString);
+}
+
 /**
 * Get a new {Client} that has been configured.
 *

@@ -46,9 +46,16 @@ class HFCSDKConnector extends Connector {
    */
   postChaincodes(peers, chaincode, lbConnector){
     Common.logEntry(logger,this.postChaincodes);
-    if(chaincode.chaincodePackage === undefined){
-      logger.debug("postChaincodes() - no chaincodePackage in request");
-      var err = new Error("Bad Request");
+    if(chaincode.chaincodePackage === undefined
+      || chaincode.chaincodePackage == ""){
+      logger.debug("postChaincodes() - chaincodePackage not set");
+      var err = new Error("Bad request - chaincodePackage not set");
+      err.statusCode = 400; //Bad request
+      return Promise.reject(err);
+    }
+    if(!Common.isBase64(chaincode.chaincodePackage) ){
+      logger.debug("postChaincodes() - chaincodePackage not base64");
+      var err = new Error("Bad request - chaincodePackage not base64");
       err.statusCode = 400; //Bad request
       return Promise.reject(err);
     }
@@ -67,7 +74,7 @@ class HFCSDKConnector extends Connector {
       (data)=>{
         var theClient = data[0];
         var peerArray = data[1];
-        // Convert base64 archive input to a Buffer
+        // Convert base64 archive input to a Buffer,
         var packageBuffer = Buffer.from(chaincode.chaincodePackage, 'base64');
         var request = chaincode;
         request.targets = peerArray;
@@ -160,6 +167,13 @@ class HFCSDKConnector extends Connector {
     var response = {};
     var theClient;
 
+    if(!Common.isBase64(channelRequest.envelope) ){
+      logger.debug("postChannelsChannelName() - envelope not base64");
+      var err = new Error("Bad request - envelope not base64");
+      err.statusCode = 400; //Bad request
+      return Promise.reject(err);
+    }
+
     //1. Get client
     var clientPromise = Common.getClient(lbConnector.settings);
     //2. Get Orderer
@@ -221,6 +235,13 @@ class HFCSDKConnector extends Connector {
     var updateChannelReq = {};
     var response = {};
     var theClient;
+
+    if(!Common.isBase64(channelRequest.config) ){
+      logger.debug("putChannelsChannelName() - config not base64");
+      var err = new Error("Bad request - config not base64");
+      err.statusCode = 400; //Bad request
+      return Promise.reject(err);
+    }
 
     //1. Get client
     var clientPromise = Common.getClient(lbConnector.settings);

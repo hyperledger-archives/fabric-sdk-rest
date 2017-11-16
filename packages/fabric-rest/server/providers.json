@@ -1,0 +1,24 @@
+{
+  "ldap": {
+    "provider": "ldap",
+    "authScheme":"ldap",
+    "module": "passport-ldapauth",
+    "authPath": "/auth/ldap",
+    "successRedirect": "/explorer",
+    "failureRedirect": "/failure",
+    "session": true,
+    "failureFlash": true,
+    "profileAttributesFromLDAP": {
+      "login": "uid",
+      "username": "uid",
+      "displayName": "displayName",
+      "email": "mail",
+      "externalId": "uid"
+    },
+    "server":{
+      "url": "ldap://0.0.0.0:1389",
+      "searchBase": "dc=example,dc=org",
+      "searchFilter": "(uid={{username}})"
+    }
+  }
+}

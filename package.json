@@ -10,12 +10,11 @@
   ],
   "scripts": {
     "start": "./setup.sh -sd",
-    "test": "python tests/test_fabcar.py"
+    "test": "./tests/fullRun.sh"
   },
   "main": "packages/fabric-rest/server/server.js",
-  "dependencies": {
-    "loopback-connector": "^3.0.0",
-    "fabric-client": "^1.0.0"
+  "devDependencies": {
+    "ldapjs": "^1.0.1"
   },
   "repository": {
     "type": "gerrit",

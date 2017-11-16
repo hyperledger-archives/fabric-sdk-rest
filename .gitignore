@@ -1,4 +1,7 @@
 node_modules/
 *.pyc
 datasources.json
-private/
+*.log
+tests/cookies.txt
+**/private/*.pem
+**/private/*.csr

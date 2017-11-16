@@ -11,7 +11,20 @@
   "properties": {},
   "validations": [],
   "relations": {},
-  "acls": [],
+  "acls": [
+    {
+      "accessType": "*",
+      "permission": "DENY",
+      "principalId": "$unauthenticated",
+      "principalType": "ROLE"
+    },
+    {
+      "accessType": "*",
+      "permission": "ALLOW",
+      "principalId": "$authenticated",
+      "principalType": "ROLE"
+    }
+],
   "methods": {},
   "hidden": ["id"]
 }
