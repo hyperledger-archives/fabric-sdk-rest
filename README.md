@@ -40,12 +40,12 @@ This table provides a rough guide to what has been implemented.
 
 
 ## Dependencies
-- `fabric-client` node module
 - Node v6.9.x
 - A Hyperledger Fabric v1.0 network to connect to
-  - `https://github.com/hyperledger/fabric-samples.git` _Optional_
-  - Clone this git repository to enable testing the REST server with the provided
-    configuration
+  - Optionally use `https://github.com/hyperledger/fabric-samples.git`
+- Hyperledger Fabric Docker images
+  - Follow the instructions in the "Download Platform-specific Binaries" section of the [Fabric samples documentation](http://hyperledger-fabric.readthedocs.io/en/latest/samples.html)
+
 
 
 ## Contributing
@@ -56,16 +56,11 @@ Please read our [contributing guide](CONTRIBUTING.md) for details.
 
 
 ## Developer Installation
-Install the prerequisites.
-
-To use the source version of the fabric loopback connector run `npm link` in the
-`loopback-connector-fabric` folder and run `npm link loopback-connector-fabric` in the
-`fabric-rest` folder. The following commands should be run in the packages folder
-
-```shell
-npm install loopback-connector-fabric
-npm install fabric-rest
-```
+1. Install the dependencies.
+2. Run `npm link` in the `packages/loopback-connector-fabric` directory.
+3. Run `npm link loopback-connector-fabric` in the `packages/fabric-rest` directory.
+4. Run `npm install` in the `packages/fabric-rest` directory.
+5. To allow the LDAP testing server to start, run `npm install` in the project root directory.
 
 
 ## Configuration
