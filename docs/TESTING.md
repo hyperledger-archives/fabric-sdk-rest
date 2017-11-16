@@ -208,4 +208,4 @@ the addresses and ports used are also correct.
 
 
 [explorer]: http://0.0.0.0:3000/explorer/
-[grpc]: https://github.com/grpc/grpc/blob/master/src/node/src/constants.js
+[grpc]: https://github.com/grpc/grpc-node/blob/master/packages/grpc-native-core/src/constants.js
