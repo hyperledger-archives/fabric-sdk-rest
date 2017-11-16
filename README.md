@@ -47,16 +47,8 @@ This table provides a rough guide to what has been implemented.
   - Follow the instructions in the "Download Platform-specific Binaries" section of the [Fabric samples documentation](http://hyperledger-fabric.readthedocs.io/en/latest/samples.html)
 
 
-
-## Contributing
-We welcome contributions to the Hyperledger Fabric SDK REST Project in
-many forms.
-
-Please read our [contributing guide](CONTRIBUTING.md) for details.
-
-
 ## Developer Installation
-1. Install the dependencies.
+1. Install the dependencies detailed above.
 2. Run `npm link` in the `packages/loopback-connector-fabric` directory.
 3. Run `npm link loopback-connector-fabric` in the `packages/fabric-rest` directory.
 4. Run `npm install` in the `packages/fabric-rest` directory.
@@ -64,7 +56,7 @@ Please read our [contributing guide](CONTRIBUTING.md) for details.
 
 
 ## Configuration
-For a simple configuration that works with `fabric-samples/fabcar` we have provided a
+For a simple configuration that works with the _Fabcar_ sample network, we have provided a
 `setup.sh` script. See the [Sample configuration](#sample-configuration) section for more details.
 
 **These configuration details will change once support for FAB-5363 is implemented**
@@ -128,174 +120,20 @@ combination of `alice:secret`. This should be passed on all URL
 invocations.
 
 
-## Testing the REST API
-The `tests` directory contains a python wrapper for the REST API, and modules to run
-tests against the REST API server for specific Fabric sample
-networks. The tests assume LDAP authentication, so the supplied LDAP
-server should be started.
+## Starting the server
+In the directory for fabric-client run the command `node .`.
+
+To see all command line options run `node . --help`.
 
 
-### Run all Tests Against a Supplied Sample Network
-To run all the tests run the `fullRun.sh` test script. This will:
-
-- Start the supplied LDAP server
-- Start up a supplied Hyperledger Fabric network
-- Start the SDK REST server
-- Run all tests
-- Run tests with TLS enabled
-
-If keys for a TLS-enabled REST server haven't already been generated
-or supplied, `fullRun.sh` will prompt for values while generating
-these files.
+## Security and Authentication Mechanisms
+See our documentation on [securing the REST server and configuring
+authentication mechanisms](docs/SECURITY.md).
 
 
-### Run Individual Tests
-If you start a network another way, for example by starting the
-_fabcar_ sample network yourself, run the tests individually, e.g.,
+## Testing the REST Server
+See our documentation on [testing the REST server](docs/TESTING.md).
 
-```bash
-python test_fabcar.py
-```
-
-This python test takes a `--help` parameter; specify `--hostname` or
-`--port` if the defaults of `localhost` and `3000` do not
-suffice. Option `--tls` enables TLS requests to the REST server.
-
-
-### Test Channel Creation
-To test creating a new channel, joining a peer, and installing and
-instantiating the fabcar chaincode, the automated test
-`test_channel_setup.py` requires some set up:
-
-- Set an environment variable for the location of the fabric-samples
-directory:
-
-  ```bash
-  export FABRIC_SAMPLES_DIR=xxxx
-  ```
-
-- Comment out the `docker exec` commands in the file
-  `fabric-samples/basic-network/start.sh`
-- Run that `start.sh` script to start the sample `basic-network`
-  without a channel defined
-
-Now the test can be run using the command `python
-test_channel_setup.py`. To rerun this test, first `start.sh` must be
-run to redefine the basic-network without any artifacts.
-
-
-## Fabric Examples: Input for Testing
-Before running these tests ensure that the fabcar sample network is
-running, for example using `docker ps`. If it is not use the
-`startFabric.sh` script in the fabcar directory to start it.
-
-
-### Fabcar
-Browse to the [Loopback Explorer][explorer] interface.
-
-
-#### Query ledger using chaincode for all cars
-Issue a `POST` request to `/fabric/1_0/channels/{channelName}/ledger` with the following
-values by default:
-
-`channel`
-: `mychannel`
-
-`chaincodeId`
-: `fabcar`
-
-Request body:
-```json
- {
-   "fcn": "queryAllCars",
-   "args": []
- }
- ```
-
-
-#### Query ledger using chaincode for one car
-Issue a `POST` request to `/fabric/1_0/channels/{channelName}/ledger` with the following
-values by default:
-
-`channel`
-: `mychannel`
-
-`chaincodeId`
-: `fabcar`
-
-Request body:
-```json
-{
-  "fcn": "queryCar",
-  "args": ["CAR4"]
-}
-```
-
-Expected Response (truncated), code `200`:
-```json
-{
-  "queryResult": [
-    {
-      "Key": "CAR0",
-      "Record": {
-        "colour": "blue",
-        "make": "Toyota",
-        "model": "Prius",
-        "owner": "Tomoko"
-      }
-    },
-    {
-      "Key": "CAR1",
-      "Record": {
-
-      }
-    }
-  ]
-}
-```
-
-<!-- ### Propose a transaction
-`channel`
-: `mychannel`
-
-Request body
-: `{"proposal":{"chaincodeId": "fabcar", "fcn": "createCar", "args": ["CAR10", "Chevy",
-  "Volt", "Red", "Nick"]}}`
-
-__Passing the response from this on to the transaction end point will not work at this
-time, it requires session management or new SDK functionality to be implemented__ -->
-
-
-#### End to End transaction
-`channel`
-: `mychannel`
-
-Request body:
-```json
-{
-    "proposalResponses":[],
-    "proposal": {
-      "chaincodeId": "fabcar",
-      "fcn":"createCar",
-      "args": ["CAR10", "Chevy", "Volt", "Red", "Nick"]
-    }
-}
-```
-
-#### Unexpected responses
-There could be several different causes for an unexpected response body.
-
-If a response is returned that contains a body similar to this:
-```json
-{
-  "status": 14,
-  "metadata":{   }
-}
-```
-then an error has occurred in the grpc communication layer. The status codes returned are available
-in the grpc source code (Apache-2.0 licensed at time of writing) here https://github.com/grpc/grpc/blob/master/src/node/src/constants.js
-
-For example a `"status": 14` means UNAVAILABLE and is caused by a problem with the REST server communicating with the peer or orderer. In this case check that the network is running (If the network is local `docker ps` will list the containers) and check that the addresses and ports used are also correct.
 
 ## Logging
 The logging used relies on the logger being set for fabric-sdk-node. The following
@@ -314,73 +152,13 @@ The following will send error, info and debug messages to a file, and just error
 to the console. `node . --hfc-logging
 '{"error":"console","debug":"/tmp/fabricRestDebug.log"}'`
 
-## Security
 
-## Enabling SSL
-By default, the server operates over HTTP. With the supplied option
-`-s` or `--https`, however, HTTPS can be enabled. To do this, you must
-first generate SSL keys. The server will look for these keys in the
-directory `packages/fabric-rest/server/private`. The following files
-are required:
+## Contributing
+We welcome contributions to the Hyperledger Fabric SDK REST Project in
+many forms.
 
-- `certificate.pem`
-- `certrequest.csr`
-- `privatekey.pem`
+Please read our [contributing guide](docs/CONTRIBUTING.md) for details.
 
-To create these files, create and change to this directory, then issue
-the following commands:
-
-```bash
-openssl genrsa -out privatekey.pem 1024
-openssl req -new -key privatekey.pem -out certrequest.csr
-openssl x509 -req -in certrequest.csr -signkey privatekey.pem -out certificate.pem
-```
-
-These commands will prompt for several questions. Generally, these
-questions can be left with their default values, if you're setting
-this up for testing purposes. Now, start the server with `node
-. --https` or `node . -s`. Note that if you connect to the server with
-a web browser, to view the `/explorer` interface for example, the
-browser may warn about using a self-signed certifiate. This is
-expected behaviour.
-
-The `setup.sh` helper script has support for SSL too. Use `setup.sh
--t` option to use HTTPS when running the server, as well as running
-the above commands to generate keys, if they don't already
-exist. Attempting to start the server requesting HTTPS secure
-transport while not having the correct certificates and private key
-will cause the server to fail.
-
-## Authentication Mechanisms
-
-By default, HTTP basic authentication is used to authenticate the
-user. User IDs and passwords can be configured in the `fabric-rest`
-package, in the file `server/db/users.js`. The default user and
-password combination is `alice:secret`.
-
-### LDAP
-
-LDAP authentication is also supported. To configure this function
-appropriately for your LDAP server, edit the file
-`server/providers.json.template` in the `fabric-rest` package, and
-remove the `.template` suffix. If this file is found on server
-startup, it will take precedence over HTTP basic authentication. The
-supplied values in `providers.json.template` are appropiate for
-running the LDAP test, which connects to an [ldapjs][] server. To run
-the LDAP server yourself while testing this mechanism manually, run
-
-```bash
-node authentication.js
-```
-
-in the `tests/authentication` directory. This will start the server on
-port `1389` by default, with a user `alice` whose password is
-`secret`.
-
-## Starting the server
-In the directory for fabric-client run the command `node .`.
-
-To see all command line options run `node . --help`.
 
 ## License
 <a rel="license"
