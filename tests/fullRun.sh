@@ -20,14 +20,8 @@ cd "${server_dir}/server"
 mkdir -p private
 cd private
 if [[ ! -f privatekey.pem ]]; then
-    printf "Files for TLS-enabled SDK REST server not found. Generating:\n\n"
-    openssl genrsa -out privatekey.pem 1024
-fi
-if [[ ! -f certrequest.csr ]]; then
-    openssl req -new -key privatekey.pem -out certrequest.csr
-fi
-if [[ ! -f certificate.pem ]]; then
-    openssl x509 -req -in certrequest.csr -signkey privatekey.pem -out certificate.pem
+    openssl req -x509 -newkey rsa:4096 -keyout privatekey.pem -out certificate.pem \
+            -days 365 -subj "/C=US/ST=Oregon/L=Portland/O=Company Name/OU=Org/CN=www.example.com" -nodes
 fi
 
 # Stop any currently-running Hyperledger Docker containers
