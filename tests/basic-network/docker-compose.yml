@@ -10,7 +10,7 @@ networks:
 
 services:
   ca.example.com:
-    image: hyperledger/fabric-ca:x86_64-1.0.0
+    image: hyperledger/fabric-ca:x86_64-1.0.2
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.example.com
@@ -26,7 +26,7 @@ services:
 
   orderer.example.com:
     container_name: orderer.example.com
-    image: hyperledger/fabric-orderer:x86_64-1.0.0
+    image: hyperledger/fabric-orderer:x86_64-1.0.2
     environment:
       - ORDERER_GENERAL_LOGLEVEL=debug
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
@@ -47,7 +47,7 @@ services:
 
   peer0.org1.example.com:
     container_name: peer0.org1.example.com
-    image: hyperledger/fabric-peer:x86_64-1.0.0
+    image: hyperledger/fabric-peer:x86_64-1.0.2
     environment:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - CORE_PEER_ID=peer0.org1.example.com
@@ -81,7 +81,7 @@ services:
 
   peer1.org1.example.com:
     container_name: peer1.org1.example.com
-    image: hyperledger/fabric-peer:x86_64-1.0.0
+    image: hyperledger/fabric-peer:x86_64-1.0.2
     environment:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - CORE_PEER_ID=peer1.org1.example.com
@@ -115,7 +115,7 @@ services:
 
   couchdb:
     container_name: couchdb
-    image: hyperledger/fabric-couchdb:x86_64-1.0.0
+    image: hyperledger/fabric-couchdb:x86_64-1.0.2
     ports:
       - 5984:5984
     networks:
@@ -123,7 +123,7 @@ services:
 
   couchdbPeer1:
     container_name: couchdbPeer1
-    image: hyperledger/fabric-couchdb:x86_64-1.0.0
+    image: hyperledger/fabric-couchdb:x86_64-1.0.2
     ports:
       - 6984:5984
     networks:
@@ -131,7 +131,7 @@ services:
 
   # cli:
   #   container_name: cli
-  #   image: hyperledger/fabric-tools:x86_64-1.0.0
+  #   image: hyperledger/fabric-tools:x86_64-1.0.2
   #   tty: true
   #   environment:
   #     - GOPATH=/opt/gopath

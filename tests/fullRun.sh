@@ -120,7 +120,7 @@ fi
 # Stop the REST server
 printf "Switching REST SDK server to use TLS\n"
 printf "Stopping REST SDK server, PID: ${rest_server_pid}\n"
-kill -15 ${rest_server_pid}
+kill -2 ${rest_server_pid}
 printf "Wait 3 seconds to allow REST server to stop\n"
 sleep 3
 
@@ -150,7 +150,7 @@ fi
 
 # Stop the REST and LDAP servers
 printf "Stopping REST SDK server, PID: ${rest_server_pid}\n"
-kill -15 "$rest_server_pid"
+kill -2 "$rest_server_pid"
 printf "Stopping LDAP server, PID: ${ldapjs_pid}\n"
 kill -2 "$ldapjs_pid"
 
@@ -158,6 +158,11 @@ cd "${tests_dir}"
 if [[ -f "$cookies_file" ]]; then
     rm "$cookies_file"
 fi
+
+sleep 1
+printf "\nFabric network container summary\n\n"
+# Show containers running in network, so easier to spot network's version
+docker ps --format "table {{.Names}}\t{{.Image}}"
 
 # cd ${tests_dir}/basic-network
 # # Stop the network
