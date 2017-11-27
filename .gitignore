@@ -3,5 +3,4 @@ node_modules/
 datasources.json
 *.log
 tests/cookies.txt
-**/private/*.pem
-**/private/*.csr
+**/private/

@@ -14,7 +14,14 @@
 project_dir="$(cd "$( dirname "${BASH_SOURCE[0]}" )/../../" && pwd)/fabric-sdk-rest"
 server_dir="${project_dir}/packages/fabric-rest"
 tests_dir="${project_dir}/tests"
+providers_file="${server_dir}/server/providers.json"
 cookies_file="cookies.txt"
+
+# If a providers.json file is already there, save it for later: could have been created by the user
+if [[ -f "$providers_file" ]]; then
+    printf "Saving existing providers.json file to restore later\n"
+    mv "$providers_file" "${providers_file}.saved"
+fi
 
 cd "${server_dir}/server"
 mkdir -p private
@@ -102,6 +109,39 @@ fi
 #
 
 
+#
+# Switch the REST SDK server from no auth to LDAP authentication
+#
+
+
+# Stop the REST server
+printf "Switching REST SDK server to use LDAP authentication\n"
+printf "Stopping REST SDK server, PID: ${rest_server_pid}\n"
+kill -2 ${rest_server_pid}
+printf "Wait 3 seconds to allow REST server to stop\n"
+sleep 3
+
+cd "${server_dir}"
+
+# Ensure the providers file exists, and not just the template
+if [[ ! -f "$providers_file" && -f "${providers_file}.template" ]]; then
+    printf "Creating providers file from template for LDAP auth\n"
+    cp "${providers_file}.template" "$providers_file"
+else
+    printf "Exiting: no providers.json file (or its original template) found in fabric-rest/server directory\n"
+    exit 1
+fi
+
+# Start the REST server in it's own process with debug on
+node . --hfc-logging "{\"info\":\"${tests_dir}/logs/fullRun_$(date +%s).log\",\"debug\":\"${tests_dir}/logs/fullRun_$(date +%s).log\"}" &
+# Save server's process id
+rest_server_pid=$!
+printf "Starting REST server with LDAP authentication configured, PID: ${rest_server_pid}\n"
+printf "Wait 5 seconds to allow REST server to start up\n"
+sleep 5
+
+cd "${tests_dir}"
+
 # Set up NODE_PATH to be able to start ldap server and run auth tests
 export NODE_PATH=../packages/fabric-rest/node_modules
 ./test_authentication.sh
@@ -109,6 +149,13 @@ if [[ $? -eq 0 ]]; then # Error response was found
   result_test3="PASSED"
 else
   result_test3="FAILED"
+fi
+
+
+# Remove the providers file if it exists
+if [[ -f "$providers_file" ]]; then
+    printf "Removing providers file\n"
+    rm "$providers_file"
 fi
 
 
@@ -154,9 +201,20 @@ kill -2 "$rest_server_pid"
 printf "Stopping LDAP server, PID: ${ldapjs_pid}\n"
 kill -2 "$ldapjs_pid"
 
+
+#
+# Clean up
+#
+
+
 cd "${tests_dir}"
 if [[ -f "$cookies_file" ]]; then
     rm "$cookies_file"
+fi
+
+if [[ -f "${providers_file}.saved" ]]; then
+    printf "Restoring saved providers.json file\n"
+    mv "${providers_file}.saved" "$providers_file"
 fi
 
 sleep 1

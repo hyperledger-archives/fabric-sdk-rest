@@ -1,7 +1,10 @@
 # Securing the REST Server
-The REST server supports HTTPS, and a number of authentication
-mechanisms.
+By default, the REST server responds to requests via HTTP, with no
+authentication.
 
+HTTPS (TLS), and a number of authentication mechanisms can be
+configured. A template file is pre-configured for an LDAPjs server to
+aid authentication testing.
 
 ## Enabling HTTPS
 By default, the server operates over HTTP. With the supplied option

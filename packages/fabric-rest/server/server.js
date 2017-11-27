@@ -62,7 +62,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var passport = require('passport');
 var Strategy = require('passport-http').BasicStrategy;
-var wallet = require('./wallet');
 
 var app = module.exports = loopback();
 var passportConfigurator = new PassportConfigurator(app);
@@ -94,23 +93,13 @@ app.start = function() {
     userCredentialModel: app.models.userCredential
   });
 
-  // Read providers.json file if it exists, or revert to HTTP basic auth
+  // Read providers.json file if it exists, or revert to no security
   var passportConfig = {};
   try {
     passportConfig = require('./providers.json');
+    app.enableAuth();
   } catch (err) {
-    passport.use(new Strategy(function(username, password, cb) {
-      wallet.validateUser(app, username, password, cb);
-    }));
-    var router = app.loopback.Router();
-    router.get('/', app.loopback.status());
-    app.use(passport.authenticate('basic', { session: false }),
-            function(req, resp, next) {
-              User.login(req.user, 'user', function (err, token) {
-                if (err) console.log(err);
-              });
-              next();
-            });
+    console.log("Warning: no authentication enabled.");
   }
 
   for (var s in passportConfig) {
@@ -120,10 +109,24 @@ app.start = function() {
   }
   var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
 
-  app.get('/auth/logout', function(req, res, next) {
-    req.logout();
-    res.end();
+  app.get('/', function(req, res, next) {
+    res.redirect('/explorer');
   });
+
+  app.get('/auth/logout', function (req, res, next) {
+    return Promise.resolve()
+      .then(() => {
+        if (req.accessToken) {
+          return app.models.user.logout(req.accessToken.id);
+        }
+      })
+      .then(() => {
+        req.logout();
+        res.clearCookie('access_token');
+        res.clearCookie('userId');
+        res.redirect('/explorer');
+      });
+  });    
 
   var port =( argv.port === undefined ? app.get('port') : argv.port);
   if ( isNaN(port) || port < 0 || port > 65535 ) {

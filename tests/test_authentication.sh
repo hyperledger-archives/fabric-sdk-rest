@@ -13,11 +13,6 @@ providers_file="../packages/fabric-rest/server/providers.json"
 cookies_file="cookies.txt"
 log_file="auth_test.log"
 
-# Ensure the providers file exists, and not just the template
-if [[ ! -f "$providers_file" ]]; then
-    cp "${providers_file}.template" "$providers_file"
-fi
-
 failed_tests=0
 
 # Get the channels, which should fail (JSON payload, error.statusCode=401,
