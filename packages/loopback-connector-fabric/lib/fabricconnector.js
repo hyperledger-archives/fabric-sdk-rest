@@ -676,7 +676,6 @@ class HFCSDKConnector extends Connector {
       var aPeer = new Peer(peerInfo.url,peerInfo.opts);
 
       joinChannelRequest.targets = [aPeer];
-      //joinChannelRequest.block TODO does SDK set this? It isn't clear so try without first.
       joinChannelRequest.txId = theClient.newTransactionID();
       joinChannelRequest.block = genesisBlock;
       //5. Join the peer to the channel
