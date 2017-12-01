@@ -9,7 +9,6 @@
     "fabric-sdk-rest"
   ],
   "scripts": {
-    "start": "./setup.sh -sd",
     "test": "./tests/fullRun.sh"
   },
   "main": "packages/fabric-rest/server/server.js",

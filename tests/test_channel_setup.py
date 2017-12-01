@@ -20,6 +20,7 @@
 
 from sys import argv
 from fabric_rest import FabricRest
+import argparse
 import base64
 import os
 import time
@@ -111,15 +112,18 @@ class TestChannelSetup(unittest.TestCase):
     #     self.assertEqual(first_channel, "mychannel")
 
 if __name__ == "__main__":
-    if len(argv) > 1:
-        hostname = argv[1]
-        port = argv[2]
-    else:
-        hostname = "localhost"
-        port = "3000"
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--tls', '-t', help='Enable TLS', action='store_true', default=False)
+    parser.add_argument('--hostname', '-n', help='Hostname of SDK REST server to connect to', default='localhost')
+    parser.add_argument('--port', '-p', help='Port of SDK REST server to connect on', default='3000')
+    args = parser.parse_args()
 
-    restserver = FabricRest(hostname, port)
-
+    restserver = FabricRest(args.hostname, args.port, args.tls)
     print "Using TEST_NETWORK_DIR: " + os.getenv('TEST_NETWORK_DIR','./basic-network')
 
-    unittest.main()
+    runner = unittest.TextTestRunner(verbosity=1)
+    result = runner.run(unittest.makeSuite(TestChannelSetup))
+
+    # Exit with non-zero exit code if any tests failed.
+    if not result.wasSuccessful():
+        system.exit(1)

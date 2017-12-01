@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+#
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# Start the Hyperledger Fabric SDK REST server
+
+logging='{"debug":"console"}'
+
+_show_help() {
+    printf -- "Usage: fabric-rest-server [OPTIONS]\n\n"
+    printf -- "Options:\n"
+    printf -- "-t Use TLS\n"
+    printf -- "-p Specify a port to listen on\n"
+    printf -- "-d Set debug info on\n"
+    printf -- "-l Set debug logging options\n"
+    exit 12
+}
+
+while getopts :tp:dl:h opt; do
+    case "$opt" in
+        t)    use_tls=true
+              ;;
+        p)    port="$OPTARG"
+              ;;
+        d)    debug=true
+              ;;
+        l)    logging="$OPTARG"
+              ;;
+        h)    _show_help
+              ;;
+        '?')  printf -- "Invalid option $OPTARG. Try '-h' for help.\n" && exit 12
+              ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+if [[ -n $use_tls ]]; then
+    cliOptions="--tls"
+fi
+
+if [[ -n $port ]]; then
+    cliOptions="${cliOptions} --port ${port}"
+fi
+
+# Start the server
+if [[ -n $debug ]]; then
+    node . ${cliOptions} --hfc-logging "$logging" &
+else
+    node . ${cliOptions} &
+fi
+printf "$!" >| /tmp/.fabric-rest-server.pid

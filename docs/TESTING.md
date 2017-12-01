@@ -39,6 +39,22 @@ Test suite 3:  PASSED
 Test suite 4:  PASSED
 ```
 
+The port for the REST server to listen on, and the tests to connect
+to, can be specified with the `-p` parameter. In addition,
+`fullRun.sh` supports the following options:
+
+- `-f`: Force removal of 'hyperledger' Docker containers
+- `-k`: Don't kill the LDAP server or Fabric REST server
+
+The `-f` option can be used if you suspect other Hyperledger-related
+Docker containers and causing issues with the sample network.
+
+If you wish to run through all the tests to confirm a healthy system,
+but wish to keep using the started LDAP and SDK REST servers, the `-k`
+option will tell you their process IDs, but not issue the `kill`
+commands.
+
+Full help can be shown with `fullRun.sh -h`.
 
 ## Run Individual Tests
 If you start a network another way, for example by starting the

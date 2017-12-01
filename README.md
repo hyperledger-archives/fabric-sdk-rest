@@ -74,9 +74,9 @@ to reference the peer(s), orderer(s), and keystore, as well as to configure the
 To install and instantiate chaincode the server must be configured to run as a user with administrator access on the peer (setup.sh -a option), for standard work the server can be configured with any user that is known to the peer.
 
 
-### Sample configuration
+### Sample Configuration
 The settings in `datasources.json` (generated from the template) are used to configure
-the known hyperledger fabric network and channels to the REST server by using the
+the known Hyperledger Fabric network and channels to the REST server by using the
 capabilities provided by fabric-sdk-node. `datasources.json.template` along with
 `setup.sh` have been created to provide a simple way to configure the REST API server to
 work with `fabric-sample/fabcar` running in local Docker containers. It also contains
@@ -95,35 +95,40 @@ Running the basic-network from fabric-samples locally will start 4 containers.
 | CA (Org1)       | -                |
 
 
-## Running the REST API
-This step requires `datasources.json` to be configured, this can be done manually or using the `setup.sh` script, described later.
+## Running the REST API Server
+A setup script, `setup.sh`, is provided to configure the REST API
+Server. It can:
 
-From within the `fabric-rest` project folder open a terminal and run `node .`. The
-messages to the terminal will confirm when the LoopBack server is running. Try out the
-API manually using the [LoopBack API Explorer interface][explorer], for your given
-hostname and port.
+- Generate self-signed TLS keys for secure connections
+- Find user (including admin) keys for a given started Fabric network
+- Populate `datasources.json` from `datasources.json.template`
 
-`setup.sh` can be used to generate keys for the server, copy keys for a given started Fabric network, update
-`datasources.json` from the supplied template, and start the REST API server. Full help
-will be shown with `setup.sh -h`. The following command will start the REST API server as
-Admin in debug mode after updating `datasources.json`, and generating keys. Note that the
-Fabric network directory must be specified.
+Full help will be shown with `setup.sh -h`. The following command will
+configure the REST API server to use the Admin user by updating
+`datasources.json`, and generating keys. Note that the Fabric network
+directory must be specified:
 
 ```bash
-setup.sh -f ~/fabric-samples/basic-network/ -dukas
+setup.sh -f ~/fabric-samples/basic-network/ -ukat
 ```
 
-The port for the SDK REST server to listen on can be specified with
-the `-p` option. HTTP Basic authentication is provided using
-[Passport][] as standard, with a default username and password
-combination of `alice:secret`. This should be passed on all URL
-invocations.
+Once setup (either with the above script or manually defining the file
+`datasources.json`), the REST server can be started. To do this,
+invoke the script `./fabric-rest-server` from the `fabric-rest`
+package directory (in that location or symlinked elsewhere). The
+messages to the terminal will confirm when the LoopBack server is
+running.
+
+`fabric-rest-server` allows for a port to be specified for the server
+to listen on. Try out the API manually using the [LoopBack API
+Explorer interface][explorer], for your given hostname and port.
 
 
 ## Starting the server
-In the directory for fabric-client run the command `node .`.
+In the `fabric-rest` package directory run the command
+`./fabric-rest-server`.
 
-To see all command line options run `node . --help`.
+To see all command line options run `./fabric-rest-server -h`.
 
 
 ## Security and Authentication Mechanisms
@@ -140,17 +145,28 @@ The logging used relies on the logger being set for fabric-sdk-node. The followi
 assumes that the default Winston logger is used and the command to start the REST server
 is run from within the `fabric-rest` directory.
 
-To run with debug, error and info logging to the console start the fabric-client with
-`node . --hfc-logging '{"debug":"console"}'` This sends all log messages for debug and
-more important to that location.
+To run with debug, error and info logging to the console start the
+REST server with `fabric-rest-server -d`; this is equivalent to
+
+```bash
+fabric-rest-server -dl '{"debug":"console"}'
+```
+
+This sends all log messages for debug and more important to that location.
 
 The following configuration is bad as it will result in 3 error messages for each error
-and 2 info messages for each info being sent to the console.  `node . --hfc-logging
-'{"info":"console","error":"console","debug":"console"}'`
+and 2 info messages for each info being sent to the console.
 
-The following will send error, info and debug messages to a file, and just error messages
-to the console. `node . --hfc-logging
-'{"error":"console","debug":"/tmp/fabricRestDebug.log"}'`
+```bash
+fabric-rest-server -dl '{"info":"console","error":"console","debug":"console"}'
+```
+
+The following will send error, info and debug messages to a file, and
+just error messages to the console.
+
+```bash
+fabric-rest-server -dl '{"error":"console","debug":"/tmp/fabricRestDebug.log"}'
+```
 
 
 ## Contributing

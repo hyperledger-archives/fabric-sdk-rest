@@ -10,7 +10,7 @@
   ],
   "main": "server/server.js",
   "scripts": {
-    "start": "node ."
+    "start": "./fabric-rest-server"
   },
   "dependencies": {
     "compression": "^1.0.3",
