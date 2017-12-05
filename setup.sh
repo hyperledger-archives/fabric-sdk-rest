@@ -61,11 +61,9 @@ if [[ -n $update_keys ]]; then
     cd "${fabric_network_dir}/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore"
     privatekeyAdmin="$(ls *_sk)"
 
-    if [[ -n $debug ]]; then
-        printf -- "Fabric network directory: ${fabric_network_dir}\n"
-        printf -- "Private user key: $privatekeyUser\n"
-        printf -- "Private admin key: $privatekeyAdmin\n"
-    fi
+    printf -- "Fabric network directory: ${fabric_network_dir}\n"
+    printf -- "Private user key: $privatekeyUser\n"
+    printf -- "Private admin key: $privatekeyAdmin\n"
 fi
 
 

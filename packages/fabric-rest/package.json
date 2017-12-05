@@ -12,6 +12,9 @@
   "scripts": {
     "start": "./fabric-rest-server"
   },
+  "bin": {
+    "fabric-rest-server": "fabric-rest-server"
+  },
   "dependencies": {
     "compression": "^1.0.3",
     "connect-ensure-login": "^0.1.1",

@@ -56,7 +56,7 @@ shift $((OPTIND-1))
 # _start_fabric_rest_server -t
 _start_fabric_rest_server() {
     cd "${server_dir}"
-    ./fabric-rest-server -p "$port" -dl "{\"info\":\"${tests_dir}/logs/fullRun_$(date +%s).log\",\"debug\":\"${tests_dir}/logs/fullRun_$(date +%s).log\"}" $1
+    ./fabric-rest-server -p "$port" -l "{\"info\":\"${tests_dir}/logs/fullRun_$(date +%s).log\",\"debug\":\"${tests_dir}/logs/fullRun_$(date +%s).log\"}" $1
     # Save server's process id
     rest_server_pid=$(</tmp/.fabric-rest-server.pid)
     printf "Starting REST server, PID: ${rest_server_pid}\n"

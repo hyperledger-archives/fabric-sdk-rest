@@ -120,15 +120,20 @@ messages to the terminal will confirm when the LoopBack server is
 running.
 
 `fabric-rest-server` allows for a port to be specified for the server
-to listen on. Try out the API manually using the [LoopBack API
-Explorer interface][explorer], for your given hostname and port.
+to listen on with the `-p` option. Try out the API manually using the
+[LoopBack API Explorer interface][explorer], for your given hostname
+and port.
 
 
 ## Starting the server
 In the `fabric-rest` package directory run the command
 `./fabric-rest-server`.
 
-To see all command line options run `./fabric-rest-server -h`.
+By default the server will read the Fabric connection profile
+information (which peers to connect to, etc.) from
+`datasources.json`. An absolute file name to read can be specified
+with the `-s` option. To see all command line options run
+`./fabric-rest-server -h`.
 
 
 ## Security and Authentication Mechanisms
@@ -145,27 +150,30 @@ The logging used relies on the logger being set for fabric-sdk-node. The followi
 assumes that the default Winston logger is used and the command to start the REST server
 is run from within the `fabric-rest` directory.
 
-To run with debug, error and info logging to the console start the
-REST server with `fabric-rest-server -d`; this is equivalent to
-
-```bash
-fabric-rest-server -dl '{"debug":"console"}'
+To run with logging enabled for debugging purposes, start the REST
+server with `fabric-rest-server -d`. This is equivalent to
+ 
+ ```bash
+fabric-rest-server -l '{"debug":"console"}'
 ```
 
-This sends all log messages for debug and more important to that location.
+This sends all log messages of debug or greater importance to that
+location (in this case, the console). The `-l` option allows for an
+arbitrary logging configuration to be defined.
 
-The following configuration is bad as it will result in 3 error messages for each error
-and 2 info messages for each info being sent to the console.
+The following configuration is bad as it will result in 3 error
+messages for each error and 2 info messages for each info being sent
+to the console:
 
 ```bash
-fabric-rest-server -dl '{"info":"console","error":"console","debug":"console"}'
+fabric-rest-server -l '{"info":"console","error":"console","debug":"console"}'
 ```
 
 The following will send error, info and debug messages to a file, and
 just error messages to the console.
 
 ```bash
-fabric-rest-server -dl '{"error":"console","debug":"/tmp/fabricRestDebug.log"}'
+fabric-rest-server -l '{"error":"console","debug":"/tmp/fabricRestDebug.log"}'
 ```
 
 

@@ -12,22 +12,34 @@ logging='{"debug":"console"}'
 _show_help() {
     printf -- "Usage: fabric-rest-server [OPTIONS]\n\n"
     printf -- "Options:\n"
-    printf -- "-t Use TLS\n"
-    printf -- "-p Specify a port to listen on\n"
-    printf -- "-d Set debug info on\n"
-    printf -- "-l Set debug logging options\n"
+    printf -- "-d Enable default logging for debugging\n"
+    printf -- "-l Set logging options for debugging\n"
+    printf -- "-p The port to serve the REST API on\n"
+    printf -- "-c File containing the connection profile document\n"
+    printf -- "-s File containing the Passport authentication strategy configurations\n"
+    printf -- "-t Enable TLS security for the REST API\n"
+    printf -- "-e File containing the TLS certificate\n"
+    printf -- "-k File containing the TLS private key\n"
     exit 12
 }
 
-while getopts :tp:dl:h opt; do
+while getopts :tp:dl:c:s:e:k:h opt; do
     case "$opt" in
-        t)    use_tls=true
+        t)    cliOptions="${cliOptions} --tls"
               ;;
-        p)    port="$OPTARG"
+        p)    cliOptions="${cliOptions} --port ${OPTARG}"
               ;;
         d)    debug=true
               ;;
-        l)    logging="$OPTARG"
+        l)    debug=true; logging="$OPTARG"
+              ;;
+        c)    cliOptions="${cliOptions} -c ${OPTARG}"
+              ;;
+        s)    cliOptions="${cliOptions} -s ${OPTARG}"
+              ;;
+        e)    cliOptions="${cliOptions} -e ${OPTARG}"
+              ;;
+        k)    cliOptions="${cliOptions} -k ${OPTARG}"
               ;;
         h)    _show_help
               ;;
@@ -38,18 +50,11 @@ done
 
 shift $((OPTIND-1))
 
-if [[ -n $use_tls ]]; then
-    cliOptions="--tls"
-fi
-
-if [[ -n $port ]]; then
-    cliOptions="${cliOptions} --port ${port}"
+# Enable logging if -d or -l are passed
+if [[ -n $debug ]]; then
+    cliOptions="${cliOptions} --hfc-logging ${logging}"
 fi
 
 # Start the server
-if [[ -n $debug ]]; then
-    node . ${cliOptions} --hfc-logging "$logging" &
-else
-    node . ${cliOptions} &
-fi
+node . ${cliOptions} &
 printf "$!" >| /tmp/.fabric-rest-server.pid

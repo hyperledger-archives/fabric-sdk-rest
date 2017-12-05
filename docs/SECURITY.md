@@ -24,6 +24,10 @@ openssl req -x509 -newkey rsa:4096 -keyout privatekey.pem -out certificate.pem \
 -days 365 -subj "/C=US/ST=Oregon/L=Portland/O=Company Name/OU=Org/CN=www.example.com" -nodes
 ```
 
+Alternatively, certificate and private key file names can be specified
+on the command line with the `-e` and `-k` options,
+respectively. These file names should be absolute.
+
 Now, start the server with `node . --tls` or `node . -t`. Note that if
 you connect to the server with a web browser, to view the `/explorer`
 interface for example, the browser may warn about using a self-signed
@@ -36,9 +40,6 @@ exist. Attempting to start the server requesting HTTPS secure
 transport while not having the correct certificates and private key
 will cause the server to fail.
 
-You can point the server to specific TLS certificate and private key
-files using the `-c` and `-k` respectively.
-
 
 ## Authentication Mechanisms
 The REST server makes use of [Passport][] authentication strategies. LDAP
@@ -48,7 +49,14 @@ is the default; other strategies can be added.
 ### LDAP
 `server/providers.json` contains the information defining the
 strategies to be used by the server. The default LDAP configuration
-applies to the packaged LDAP server (an [ldapjs][] server).
+applies to the packaged LDAP server (an [ldapjs][]
+server). Alternatively, the `-s` option on the command line can be
+used to specify the absolute file name of a `providers.json` file to
+use. E.g.,
+
+```bash
+fabric-rest-server -s /my-providers-file.json
+```
 
 To use the packaged LDAP server for authentication, run
 

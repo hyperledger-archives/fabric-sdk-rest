@@ -18,14 +18,20 @@ const argv = require('yargs')
             .config({extends:'./server/config.json'})
             // Allow all variables to be set via ENV variables prefixed REST_
             .env('REST')
-            .option('P', {
+            .option('p', {
               alias: 'port',
               describe: 'The port to serve the REST API on',
               type: 'number'
             })
-            .option('p', {
-              alias: 'connectionProfileName',
-              describe: 'TODO (SDK v1.1 prereq) - The connection profile name',
+            .option('c', {
+              alias: 'connectionProfile',
+              describe: 'File containing the connection profile document',
+              default: path.join(__dirname, './datasources.json'),
+              type: 'string'
+            })
+            .option('s', {
+              alias: 'authenticationStrategy',
+              describe: 'File containing the Passport authentication strategy configurations',
               type: 'string'
             })
             .option('t', {
@@ -34,7 +40,7 @@ const argv = require('yargs')
               describe: 'Enable TLS security for the REST API',
               type: 'boolean'
             })
-            .option('c', {
+            .option('e', {
               alias: 'tlscert',
               describe: 'File containing the TLS certificate',
               default: path.join(__dirname, './private/certificate.pem'),
@@ -95,11 +101,16 @@ app.start = function() {
 
   // Read providers.json file if it exists, or revert to no security
   var passportConfig = {};
+
   try {
-    passportConfig = require('./providers.json');
+    passportConfig = require(argv.authenticationStrategy ? argv.authenticationStrategy : path.join(__dirname, './providers.json'));
     app.enableAuth();
   } catch (err) {
-    console.log("Warning: no authentication enabled.");
+    if (argv.authenticationStrategy) {
+      console.error("\nPassport authentication strategy configurations file '" + argv.authenticationStrategy + "' cannot be found. Exiting.");
+      process.exit(1);
+    }
+    console.log("\nWarning: no authentication enabled");
   }
 
   for (var s in passportConfig) {
@@ -126,7 +137,7 @@ app.start = function() {
         res.clearCookie('userId');
         res.redirect('/explorer');
       });
-  });    
+  });
 
   var port =( argv.port === undefined ? app.get('port') : argv.port);
   if ( isNaN(port) || port < 0 || port > 65535 ) {
@@ -176,6 +187,14 @@ app.start = function() {
       console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
     }
   });
+};
+
+// Allow environment variable overrides for the datasources.json file
+let dataSources = require(argv.connectionProfile);
+let models = require('./model-config.json');
+const bootOptions = {
+  models: models,
+  dataSources: dataSources
 };
 
 // Bootstrap the application, configure models, datasources and middleware.
