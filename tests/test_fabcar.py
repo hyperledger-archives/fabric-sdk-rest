@@ -58,6 +58,6 @@ if __name__ == "__main__":
     runner = unittest.TextTestRunner(verbosity=1)
     result = runner.run(unittest.makeSuite(TestFabCar))
 
-# Exit with non-zero exit code if any tests failed.
+    # Exit with non-zero exit code if any tests failed.
     if not result.wasSuccessful():
         system.exit(1)

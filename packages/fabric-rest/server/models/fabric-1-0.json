@@ -24,7 +24,7 @@
       "principalId": "$authenticated",
       "principalType": "ROLE"
     }
-],
+  ],
   "methods": {},
   "hidden": ["id"]
 }

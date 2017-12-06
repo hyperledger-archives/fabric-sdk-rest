@@ -18,14 +18,20 @@ const argv = require('yargs')
             .config({extends:'./server/config.json'})
             // Allow all variables to be set via ENV variables prefixed REST_
             .env('REST')
-            .option('P', {
+            .option('p', {
               alias: 'port',
               describe: 'The port to serve the REST API on',
               type: 'number'
             })
-            .option('p', {
-              alias: 'connectionProfileName',
-              describe: 'TODO (SDK v1.1 prereq) - The connection profile name',
+            .option('c', {
+              alias: 'connectionProfile',
+              describe: 'File containing the connection profile document',
+              default: path.join(__dirname, './datasources.json'),
+              type: 'string'
+            })
+            .option('s', {
+              alias: 'authenticationStrategy',
+              describe: 'File containing the Passport authentication strategy configurations',
               type: 'string'
             })
             .option('t', {
@@ -34,7 +40,7 @@ const argv = require('yargs')
               describe: 'Enable TLS security for the REST API',
               type: 'boolean'
             })
-            .option('c', {
+            .option('e', {
               alias: 'tlscert',
               describe: 'File containing the TLS certificate',
               default: path.join(__dirname, './private/certificate.pem'),
@@ -62,7 +68,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var passport = require('passport');
 var Strategy = require('passport-http').BasicStrategy;
-var wallet = require('./wallet');
 
 var app = module.exports = loopback();
 var passportConfigurator = new PassportConfigurator(app);
@@ -94,23 +99,18 @@ app.start = function() {
     userCredentialModel: app.models.userCredential
   });
 
-  // Read providers.json file if it exists, or revert to HTTP basic auth
+  // Read providers.json file if it exists, or revert to no security
   var passportConfig = {};
+
   try {
-    passportConfig = require('./providers.json');
+    passportConfig = require(argv.authenticationStrategy ? argv.authenticationStrategy : path.join(__dirname, './providers.json'));
+    app.enableAuth();
   } catch (err) {
-    passport.use(new Strategy(function(username, password, cb) {
-      wallet.validateUser(app, username, password, cb);
-    }));
-    var router = app.loopback.Router();
-    router.get('/', app.loopback.status());
-    app.use(passport.authenticate('basic', { session: false }),
-            function(req, resp, next) {
-              User.login(req.user, 'user', function (err, token) {
-                if (err) console.log(err);
-              });
-              next();
-            });
+    if (argv.authenticationStrategy) {
+      console.error("\nPassport authentication strategy configurations file '" + argv.authenticationStrategy + "' cannot be found. Exiting.");
+      process.exit(1);
+    }
+    console.log("\nWarning: no authentication enabled");
   }
 
   for (var s in passportConfig) {
@@ -120,9 +120,23 @@ app.start = function() {
   }
   var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
 
-  app.get('/auth/logout', function(req, res, next) {
-    req.logout();
-    res.end();
+  app.get('/', function(req, res, next) {
+    res.redirect('/explorer');
+  });
+
+  app.get('/auth/logout', function (req, res, next) {
+    return Promise.resolve()
+      .then(() => {
+        if (req.accessToken) {
+          return app.models.user.logout(req.accessToken.id);
+        }
+      })
+      .then(() => {
+        req.logout();
+        res.clearCookie('access_token');
+        res.clearCookie('userId');
+        res.redirect('/explorer');
+      });
   });
 
   var port =( argv.port === undefined ? app.get('port') : argv.port);
@@ -173,6 +187,14 @@ app.start = function() {
       console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
     }
   });
+};
+
+// Allow environment variable overrides for the datasources.json file
+let dataSources = require(argv.connectionProfile);
+let models = require('./model-config.json');
+const bootOptions = {
+  models: models,
+  dataSources: dataSources
 };
 
 // Bootstrap the application, configure models, datasources and middleware.

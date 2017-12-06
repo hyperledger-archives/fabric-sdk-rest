@@ -20,7 +20,6 @@
 
 from sys import argv
 from fabric_rest import FabricRest
-import argparse
 import base64
 import os
 import time
@@ -43,17 +42,34 @@ class TestChannelSetup(unittest.TestCase):
         self.assertEqual(create_result,"SUCCESS")
         time.sleep(5) #Allow orderer to finish this task before next tests run
 
-    def test_ab_join_channel(self):
+    def test_ab_join_channel_peer0(self):
         """Test joining peer0 to the new channel"""
         # Get fabric sample directory, default assumes fabric-samples checked
         # out into same root folder as this project
-        fs_dir = os.getenv('TEST_NETWORK_DIR','./basic-network')
-        pem_file_loc = fs_dir + '/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem'
+        fs_dir = os.getenv('TEST_NETWORK_DIR','./basic-network/')
+        pem_file_loc = fs_dir + 'crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
         pem_file = open(pem_file_loc, 'rb')
         #READ in PEM
         pem_for_peer = pem_file.read()
-        pem_for_peer = pem_for_peer.replace('\n','') #Strip newline chars from PEM.
-        peerData = "{\"url\": \"grpc://0.0.0.0:7051\",\"opts\":{\"pem\":\""+ pem_for_peer +"\",\"ssl-target-name-override\": \"peer0\"}}"
+        pem_for_peer = pem_for_peer.replace('\n','\\n') #Escape newline chars from PEM.
+        #print ">>> DEBUG:\n"+pem_for_peer
+        peerData = "{\"url\": \"grpcs://0.0.0.0:7051\",\"opts\":{\"pem\":\""+ pem_for_peer +"\",\"ssl-target-name-override\": \"peer0.org1.example.com\"}}"
+        pem_file.close()
+        join_result = restserver.join_channel("mychannel",peerData)["peerResponses"]["response"]["status"]
+        self.assertEqual(join_result,200)
+
+    def test_ab_join_channel_peer1(self):
+        """Test joining peer0 to the new channel"""
+        # Get fabric sample directory, default assumes fabric-samples checked
+        # out into same root folder as this project
+        fs_dir = os.getenv('TEST_NETWORK_DIR','./basic-network/')
+        pem_file_loc = fs_dir + 'crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt'
+        pem_file = open(pem_file_loc, 'rb')
+        #READ in PEM
+        pem_for_peer = pem_file.read()
+        pem_for_peer = pem_for_peer.replace('\n','\\n') #Escape newline chars from PEM.
+        #print ">>> DEBUG:\n"+pem_for_peer
+        peerData = "{\"url\": \"grpcs://0.0.0.0:8051\",\"opts\":{\"pem\":\""+ pem_for_peer +"\",\"ssl-target-name-override\": \"peer1.org1.example.com\"}}"
         pem_file.close()
         join_result = restserver.join_channel("mychannel",peerData)["peerResponses"]["response"]["status"]
         self.assertEqual(join_result,200)
@@ -74,7 +90,7 @@ class TestChannelSetup(unittest.TestCase):
         archiveFile = open('input/installFabcar.tar.gz', 'rb')
         archiveInb64 = base64.b64encode(archiveFile.read())
         archiveFile.close()
-        install_result = restserver.install_chaincode("fabcar","fabcar",archiveInb64,"1.0","%5B0%5D")["peerResponses"]
+        install_result = restserver.install_chaincode("fabcar","fabcar",archiveInb64,"1.0","%5B0,1%5D")["peerResponses"]
         time.sleep(5) # Allow chaincode install to complete
         #TODO check response
 
@@ -112,18 +128,15 @@ class TestChannelSetup(unittest.TestCase):
     #     self.assertEqual(first_channel, "mychannel")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--tls', '-t', help='Enable TLS', action='store_true', default=False)
-    parser.add_argument('--hostname', '-n', help='Hostname of SDK REST server to connect to', default='localhost')
-    parser.add_argument('--port', '-p', help='Port of SDK REST server to connect on', default='3000')
-    args = parser.parse_args()
+    if len(argv) > 1:
+        hostname = argv[1]
+        port = argv[2]
+    else:
+        hostname = "localhost"
+        port = "3000"
 
-    restserver = FabricRest(args.hostname, args.port, args.tls)
+    restserver = FabricRest(hostname, port)
+
     print "Using TEST_NETWORK_DIR: " + os.getenv('TEST_NETWORK_DIR','./basic-network')
 
-    runner = unittest.TextTestRunner(verbosity=1)
-    result = runner.run(unittest.makeSuite(TestChannelSetup))
-
-    # Exit with non-zero exit code if any tests failed.
-    if not result.wasSuccessful():
-        system.exit(1)
+    unittest.main()

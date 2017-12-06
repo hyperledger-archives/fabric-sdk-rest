@@ -1,6 +1,6 @@
 {
   "name": "fabric-sdk-rest",
-  "version": "1.0.0",
+  "version": "1.0.2-snapshot",
   "description": "Gerrit repository of the REST SDK for Hyperledger Fabric v1.0",
   "engines": {
     "node": ">=6.9.0"
@@ -9,7 +9,6 @@
     "fabric-sdk-rest"
   ],
   "scripts": {
-    "start": "./setup.sh -sd",
     "test": "./tests/fullRun.sh"
   },
   "main": "packages/fabric-rest/server/server.js",

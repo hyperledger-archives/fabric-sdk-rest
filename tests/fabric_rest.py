@@ -16,7 +16,7 @@ class FabricRest:
     """A thin wrapper around the Fabric REST API."""
     COOKIES_FILE="cookies.txt"
 
-    def __init__(self, hostname="localhost", port="3000", tls=False, authenticate=True):
+    def __init__(self, hostname="localhost", port="3000", tls=False, authenticate=False):
         self.hostname = hostname
         self.port = port
         self.tls = tls

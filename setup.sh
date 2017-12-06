@@ -5,25 +5,23 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-# Setup
+# Setup the Fabric SDK REST server:
 #
-# 1. Update data sources
-# 2. Run the server, with optional debug info to console
+# - Update data sources
+# - Generate files for TLS support
+# - Generate a populated datasources.json file
 #
 # E.g.,
-# ./setup.sh -f ~/fabric-samples/first-network -s
+# ./setup.sh -tukaf ~/fabric-samples/first-network
 
 
 _show_help() {
-    printf -- "Usage: setup.sh [OPTIONS]\n\n"
+    printf -- "Usage: setup.sh OPTIONS\n\n"
     printf -- "Options:\n"
-    printf -- "-s Start server\n"
-    printf -- "-t Use HTTPS\n"
-    printf -- "-p Specify a port to listen on\n"
-    printf -- "-d Set debug info on\n"
+    printf -- "-t Generate files for TLS support\n"
     printf -- "-u Update data sources\n"
     printf -- "-k Update keys\n"
-    printf -- "-f Fabic network dir\n"
+    printf -- "-f Fabric network dir\n"
     printf -- "-a Run as Admin, not User1\n"
     exit 12
 }
@@ -32,15 +30,9 @@ if [[ -z "$1" ]]; then
     _show_help
 fi
 
-while getopts :stp:dukf:ah opt; do
+while getopts :tukf:ah opt; do
     case "$opt" in
-        s)    start_server=true
-              ;;
         t)    use_https=true
-              ;;
-        p)    port="$OPTARG"
-              ;;
-        d)    debug=true
               ;;
         u)    update_data_sources=true
               ;;
@@ -61,22 +53,27 @@ shift $((OPTIND-1))
 
 project_dir="$(cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd)/fabric-sdk-rest"
 
-# Update private key in datasources.json
+
+# Determine the private keys for the normal and admin users
 if [[ -n $update_keys ]]; then
     cd "${fabric_network_dir}/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore"
     privatekeyUser="$(ls *_sk)"
     cd "${fabric_network_dir}/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore"
     privatekeyAdmin="$(ls *_sk)"
 
-    if [[ -n $debug ]]; then
-        printf -- "Fabric network directory: ${fabric_network_dir}\n"
-        printf -- "Private user key: $privatekeyUser\n"
-        printf -- "Private admin key: $privatekeyAdmin\n"
-    fi
+    printf -- "Fabric network directory: ${fabric_network_dir}\n"
+    printf -- "Private user key: $privatekeyUser\n"
+    printf -- "Private admin key: $privatekeyAdmin\n"
 fi
 
-cd "${project_dir}/packages/fabric-rest/server"
 
+# Make the fabric-rest-server script executable
+cd "${project_dir}/packages/fabric-rest/"
+chmod u+x ./fabric-rest-server
+
+
+# Generate files for TLS support
+cd "server"
 if [[ -n $use_https ]]; then
     mkdir -p private
     cd private
@@ -87,6 +84,8 @@ if [[ -n $use_https ]]; then
     cd ..
 fi
 
+
+# Generate a populated datasources.json file
 if [[ -n $update_data_sources ]]; then
     # Use ^ for sed command as / is in file paths
     if [[ -n $run_as_admin ]]; then
@@ -95,22 +94,5 @@ if [[ -n $update_data_sources ]]; then
     else
         sed -e "s/AUSER/fabricUser/" -e "s/XXXXXXXX/${privatekeyUser}/" -e "s/ADMIN1STORE/${privatekeyAdmin}/" \
             -e "s^FABSAMPLE^${fabric_network_dir}^" < datasources.json.template > datasources.json
-    fi
-fi
-
-if [[ -n $use_https ]]; then
-    cliOptions="--tls"
-fi
-
-if [[ -n $port ]]; then
-    cliOptions="${cliOptions} --port ${port}"
-fi
-
-if [[ -n $start_server ]]; then
-    cd ..
-    if [[ -n $debug ]]; then
-        node . ${cliOptions} --hfc-logging '{"debug":"console"}'
-    else
-        node . ${cliOptions}
     fi
 fi

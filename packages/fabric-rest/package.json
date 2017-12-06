@@ -1,6 +1,6 @@
 {
   "name": "fabric-rest",
-  "version": "1.0.0-snapshot",
+  "version": "1.0.2-snapshot",
   "keywords": [
     "LoopBack",
     "Hyperledger",
@@ -10,7 +10,10 @@
   ],
   "main": "server/server.js",
   "scripts": {
-    "start": "node ."
+    "start": "./fabric-rest-server"
+  },
+  "bin": {
+    "fabric-rest-server": "fabric-rest-server"
   },
   "dependencies": {
     "compression": "^1.0.3",
@@ -22,7 +25,7 @@
     "loopback": "^3.0.0",
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^4.0.0",
-    "loopback-connector-fabric": "^1.0.0-snapshot",
+    "loopback-connector-fabric": "^1.0.2-snapshot",
     "loopback-component-passport": "^3.4.1",
     "passport": "^0.2.2",
     "passport-http": "^0.3.0",

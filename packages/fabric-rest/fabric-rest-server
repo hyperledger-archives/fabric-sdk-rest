@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+#
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# Start the Hyperledger Fabric SDK REST server
+
+logging='{"debug":"console"}'
+
+_show_help() {
+    printf -- "Usage: fabric-rest-server [OPTIONS]\n\n"
+    printf -- "Options:\n"
+    printf -- "-d Enable default logging for debugging\n"
+    printf -- "-l Set logging options for debugging\n"
+    printf -- "-p The port to serve the REST API on\n"
+    printf -- "-c File containing the connection profile document\n"
+    printf -- "-s File containing the Passport authentication strategy configurations\n"
+    printf -- "-t Enable TLS security for the REST API\n"
+    printf -- "-e File containing the TLS certificate\n"
+    printf -- "-k File containing the TLS private key\n"
+    exit 12
+}
+
+while getopts :tp:dl:c:s:e:k:h opt; do
+    case "$opt" in
+        t)    cliOptions="${cliOptions} --tls"
+              ;;
+        p)    cliOptions="${cliOptions} --port ${OPTARG}"
+              ;;
+        d)    debug=true
+              ;;
+        l)    debug=true; logging="$OPTARG"
+              ;;
+        c)    cliOptions="${cliOptions} -c ${OPTARG}"
+              ;;
+        s)    cliOptions="${cliOptions} -s ${OPTARG}"
+              ;;
+        e)    cliOptions="${cliOptions} -e ${OPTARG}"
+              ;;
+        k)    cliOptions="${cliOptions} -k ${OPTARG}"
+              ;;
+        h)    _show_help
+              ;;
+        '?')  printf -- "Invalid option $OPTARG. Try '-h' for help.\n" && exit 12
+              ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+# Enable logging if -d or -l are passed
+if [[ -n $debug ]]; then
+    cliOptions="${cliOptions} --hfc-logging ${logging}"
+fi
+
+# Start the server
+node . ${cliOptions} &
+printf "$!" >| /tmp/.fabric-rest-server.pid

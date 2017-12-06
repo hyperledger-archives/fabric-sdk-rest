@@ -8,6 +8,7 @@
  const Peer = require('fabric-client/lib/Peer');
  const Orderer = require('fabric-client/lib/Orderer');
  const User = require('fabric-client/lib/User');
+ const EventHub = require('fabric-client/lib/EventHub');
 
  const fs = require('fs');
 
@@ -24,6 +25,48 @@ var logEntry = function(aLogger,aFunction){
   aLogger.debug(new Date().toISOString() + " >>> "+aFunction.name);
 }
 exports.logEntry = logEntry
+
+/**
+* Get a promise that will resolve when the {eh} has successfully processed
+* the {txId} named or rejects when !VALID or the connection timed out/failed.
+*
+* @param {EventHub} eh The EventHub to listen to events from.
+* @param {transactionID} transactionID The transaction ID to listen to an event from.
+* @returns {Promise} A promise that will resolve if a VALID response from the
+*  peer when successful or reject if it times out or rejects it.
+*/
+// var getTxEventPromise = function(eh,transactionID){
+//   return txPromise = new Promise((resolve, reject) => {
+//     // Connect to the eh
+//     eh.connect();
+//
+//     //TODO Set a time out?
+//
+//     // Call registerTxEvent
+//     eh.registerTxEvent(transactionID, (tx, code) => {
+//         //On successful event response
+//         eh.unregisterTxEvent(transactionID);
+//         eh.disconnect();
+//
+//         if (code !== 'VALID') {
+//           logger.error('Transaction ' + transactionID + ' was invalid, code = ' + code);
+//           reject(code);
+//         } else {
+//           logger.info('Transaction ' + transactionID + ' has been committed on peer ' +
+//                       eh.getPeerAddr());
+//           resolve();
+//         }
+//       }, (err) => {
+//         //On error with EventHub
+//         eh.unregisterTxEvent(transactionId);
+//         logger.error('Transaction listener for '+ transactionID +' has been ' +
+//                   'deregistered with ' + err + ' for peer ' + eh.getPeerAddr());
+//         reject(err);
+//       }
+//     );
+//   });
+// }
+// exports.getTxEventPromise = getTxEventPromise
 
 /**
 * Check proposalResponses and return number that failed.
@@ -143,10 +186,18 @@ exports.getClientWithChannels = function(settings){
 exports.getPeer = function(settings){
   if(settings.peers !== undefined && settings.peers !== null){
     //Get org from datasources.json
+    //logger.debug("getPeer() - entry");
     var orgIndex = settings.peers[0].orgIndex;
     let opts = {};
-    // Set the PEM to be the org's CACertFile
-    opts.pem = fs.readFileSync(settings.orgs[orgIndex].CACertFile,'utf-8');
+    if(settings.peers[0].tls_cacerts){
+      // If tls cert for peer set use that
+      //logger.debug("getPeer() - Using pem file: "+settings.peers[0].tls_cacerts);
+      opts.pem = fs.readFileSync(settings.peers[0].tls_cacerts,'utf-8');
+    } else {
+      // Set the PEM to be the org's CACertFile
+      //logger.debug("getPeer() - Using pem file: "+settings.orgs[orgIndex].CACertFile);
+      opts.pem = fs.readFileSync(settings.orgs[orgIndex].CACertFile,'utf-8');
+    }
     //console.log(opts.pem);
     //TODO Do the following better!
     if(settings.peers[0].hostname!== undefined && settings.peers[0].hostname !== null){
@@ -197,8 +248,13 @@ var getPeers = function(settings,peersIndex){
       //Get org from datasources.json
       var orgIndex = aPeer.orgIndex;
       let opts = {};
-      // Set the PEM to be the org's CACertFile
-      opts.pem = fs.readFileSync(settings.orgs[orgIndex].CACertFile,'utf-8');
+      if(aPeer.tls_cacerts){
+        // If tls cert for peer set use that
+        opts.pem = fs.readFileSync(aPeer.tls_cacerts,'utf-8');
+      } else {
+        // Set the PEM to be the org's CACertFile
+        opts.pem = fs.readFileSync(settings.orgs[orgIndex].CACertFile,'utf-8');
+      }
 
       if(aPeer.hostname!== undefined && aPeer.hostname !== null){
         //Set ssl-target-name-override to let tls work in test environment
@@ -321,7 +377,13 @@ exports.getOrderer = function(settings){
   if(settings.orderers !== undefined && settings.orderers !== null){
     logger.debug("Orderer is " + settings.orderers[0].url);
     let opts = {};
-    opts.pem = fs.readFileSync(settings.orderers[0].CACertFile,'utf-8');
+    if(settings.orderers[0].tls_cacerts){
+      // If tls cert for orderer set use that
+      opts.pem = fs.readFileSync(settings.orderers[0].tls_cacerts,'utf-8');
+    } else {
+      // Set the PEM to be the org's CACertFile
+      opts.pem = fs.readFileSync(settings.orderers[0].CACertFile,'utf-8');
+    }
     //opts.pem = fs.readFileSync(settings.fabricCA.publicCertFile,'utf-8');
     //TODO Do the following better!
     //Set ssl-target-name-override to let it work in test environment
@@ -351,8 +413,13 @@ var getOrderers = function(settings){
     var resultArray = new Array(settings.orderers.length);
     settings.orderers.forEach( function(anOrd,index){
       let opts = {};
-      // Set the PEM to be the org's CACertFile
-      opts.pem = fs.readFileSync(anOrd.CACertFile,'utf-8');
+      if(anOrd.tls_cacerts){
+        // If tls cert for orderer set use that
+        opts.pem = fs.readFileSync(anOrd.tls_cacerts,'utf-8');
+      } else {
+        // Set the PEM to be the org's CACertFile
+        opts.pem = fs.readFileSync(anOrd.CACertFile,'utf-8');
+      }
 
       if(anOrd.hostname!== undefined && anOrd.hostname !== null){
         //Set ssl-target-name-override to let tls work in test environment
