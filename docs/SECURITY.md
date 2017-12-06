@@ -71,6 +71,12 @@ port `1389` by default, with a user `alice` whose password is
 To configure the LDAP strategy for your own LDAP server, edit the file
 `server/providers.json` in the `fabric-rest` package.
 
+If the server runs with no authentication---that is, the default
+`providers.json` is not found and none is specified on the command
+line with the `-s` option---a warning will be issued on server
+start. If a providers file is named with the `-s` option but this file
+isn't found, an error will be given and the server process will end.
+
 
 ### Using Other Strategies
 Many other strategies are available; to use another strategy, install
