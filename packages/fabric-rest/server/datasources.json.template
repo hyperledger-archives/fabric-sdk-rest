@@ -28,23 +28,12 @@
       { "name":"org1", "CACertFile":"FABSAMPLE/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem"},
       { "name":"org2", "CACertFile":"FABSAMPLE/crypto-config/peerOrganizations/org2.example.com/ca/ca.org2.example.com-cert.pem"}
     ],
-    "COMMENT_peers" : "Configured array is for use with the fabric-sample when running it in a local docker set up. eventURL and publicCertFile not currently used.",
+    "COMMENT_peers_and_orderers" : "Configured array is for use with the fabric-sample when running it in a local docker set up. If peers and orderers are configured to use TLS change grpc to grpcs in urls. eventURL and publicCertFile not currently used.",
     "peers": [
       { "requestURL":"grpc://0.0.0.0:7051", "eventURL":"grpc://0.0.0.0:7053", "orgIndex":"0", "publicCertFile":"FABSAMPLE/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp/signcerts/peer0.org1.example.com-cert.pem", "hostname":"peer0" }
     ],
-    "COMMENT_peers_secure" : "UNUSED. This is a copy of the above with grpcs URLs. Replace peers content with this if grpcs urls are needed.",
-    "peers-secure": [
-      { "requestURL":"grpcs://0.0.0.0:7051", "eventURL":"grpcs://0.0.0.0:7053", "orgIndex":"0", "publicCertFile":"FABSAMPLE/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp/signcerts/peer0.org1.example.com-cert.pem", "hostname":"peer0" },
-      { "requestURL":"grpcs://0.0.0.0:8051", "eventURL":"grpcs://0.0.0.0:8053", "orgIndex":"0", "publicCertFile":"FABSAMPLE/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/msp/signcerts/peer1.org1.example.com-cert.pem", "hostname":"peer1" },
-      { "requestURL":"grpcs://0.0.0.0:9051", "eventURL":"grpcs://0.0.0.0:9053", "orgIndex":"1", "publicCertFile":"FABSAMPLE/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org2.example.com/msp/signcerts/peer0.org2.example.com-cert.pem", "hostname":"peer0" },
-      { "requestURL":"grpcs://0.0.0.0:10051", "eventURL":"grpcs://0.0.0.0:10053", "orgIndex":"1", "publicCertFile":"FABSAMPLE/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org2.example.com/msp/signcerts/peer1.org2.example.com-cert.pem", "hostname":"peer1" }
-    ],
     "orderers": [
       { "url":"grpc://0.0.0.0:7050", "CACertFile":"FABSAMPLE/crypto-config/ordererOrganizations/example.com/ca/ca.example.com-cert.pem", "publicCertFile": "FABSAMPLE/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/signcerts/orderer.example.com-cert.pem", "hostname":"orderer"}
-    ],
-    "COMMENT_orderers_secure" : "UNUSED. This is a copy of the above with grpcs URLs. Replace orderers content with this if grpcs urls are needed.",
-    "orderers-secure": [
-      { "url":"grpcs://0.0.0.0:7050", "CACertFile":"FABSAMPLE/crypto-config/ordererOrganizations/example.com/ca/ca.example.com-cert.pem", "publicCertFile": "FABSAMPLE/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/signcerts/orderer.example.com-cert.pem", "hostname":"orderer"}
     ],
     "COMMENT_channels":"fabric-sdk-node Client class requires channel information to be configured during bootstrap.",
     "channels": [
