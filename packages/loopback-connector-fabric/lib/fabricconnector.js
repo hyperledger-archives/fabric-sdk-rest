@@ -95,7 +95,7 @@ class HFCSDKConnector extends Connector {
       return Promise.resolve(resp);
     }).catch((err)=>{
       logger.debug("postChaincodes() - Error caught");
-      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
+      if(err instanceof Error && !err.statusCode) err.statusCode = 500;
       return Promise.reject(err);
     });
   }
@@ -149,7 +149,7 @@ class HFCSDKConnector extends Connector {
       return Promise.resolve(response);
     }).catch((err)=>{
       logger.debug("getChaincodesId() - Error caught");
-      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
+      if(err instanceof Error && !err.statusCode) err.statusCode = 500;
       return Promise.reject(err);
     });
   }
@@ -218,7 +218,7 @@ class HFCSDKConnector extends Connector {
       return Promise.resolve(response);
     }).catch((err)=>{
       logger.debug("postChannelsChannelName() - Error caught");
-      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
+      if(err instanceof Error && !err.statusCode) err.statusCode = 500;
       return Promise.reject(err);
     });
   }
@@ -284,7 +284,7 @@ class HFCSDKConnector extends Connector {
       return Promise.resolve(response);
     }).catch((err)=>{
       logger.debug("postChannelsChannelName() - Error caught");
-      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
+      if(err instanceof Error && !err.statusCode) err.statusCode = 500;
       return Promise.reject(err);
     });
   }
@@ -345,7 +345,7 @@ class HFCSDKConnector extends Connector {
       return Promise.resolve(ordererResponse);
     }).catch((err)=>{
       logger.debug("postChannelsChannelNameChaincodes() - Error caught");
-      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
+      if(err instanceof Error && !err.statusCode) err.statusCode = 500;
       return Promise.reject(err);
     });
   }
@@ -432,7 +432,7 @@ class HFCSDKConnector extends Connector {
       return Promise.resolve(ordererResponse);
     }).catch((err)=>{
       logger.debug("putChannelsChannelNameChaincodes() - Error caught");
-      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
+      if(err instanceof Error && !err.statusCode) err.statusCode = 500;
       return Promise.reject(err);
     });
 
@@ -481,7 +481,7 @@ class HFCSDKConnector extends Connector {
       return Common.sendTxProposal(theChannel,endorseRequest);
     }).catch((err)=>{
       logger.debug("postChannelsChannelNameEndorse() - Error caught");
-      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
+      if(err instanceof Error && !err.statusCode) err.statusCode = 500;
       return Promise.reject(err);
     });
 
@@ -565,7 +565,7 @@ class HFCSDKConnector extends Connector {
       }
     }).catch((err)=>{
       logger.debug("postChannelsChannelNameTransactions() - Error caught");
-      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
+      if(err instanceof Error && !err.statusCode) err.statusCode = 500;
       return Promise.reject(err);
     });
 
@@ -636,7 +636,7 @@ class HFCSDKConnector extends Connector {
       response.queryInfo = channelInfo;
       return Promise.resolve( response );
     }).catch((err)=>{
-      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
+      if(err instanceof Error && !err.statusCode) err.statusCode = 500;
       return Promise.reject(err);
     });
   }
@@ -696,7 +696,7 @@ class HFCSDKConnector extends Connector {
         return Promise.reject(err);
       }
     }).catch((err)=>{
-      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
+      if(err instanceof Error && !err.statusCode) err.statusCode = 500;
       return Promise.reject(err);
     });
   }
@@ -733,7 +733,7 @@ class HFCSDKConnector extends Connector {
       }
       return Promise.resolve( response );
     }).catch((err)=>{
-      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
+      if(err instanceof Error && !err.statusCode) err.statusCode = 500;
       return Promise.reject(err);
     });
   }
@@ -762,7 +762,7 @@ class HFCSDKConnector extends Connector {
       response = installedChaincodes; //Indirection not needed here.
       return Promise.resolve( response );
     }).catch((err)=>{
-      if(err instanceof Error && !err.statusCode) err.statusCode = 501;
+      if(err instanceof Error && !err.statusCode) err.statusCode = 500;
       return Promise.reject(err);
     });
   }
