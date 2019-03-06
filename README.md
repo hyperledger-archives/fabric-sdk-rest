@@ -1,11 +1,15 @@
 # Hyperledger Fabric SDK REST Server
 
 
+**This project is no longer maintained.**
+
+
 ## Overview
-**This project is a work in progress** The Hyperledger Fabric REST API server is provided
-by two node.js modules. The first defines a loopback connector for Hyperledger Fabric and
-the second defines how to expose those capabilities over REST. The connector uses the
-capabilities provided by fabric-sdk-node to interact with Hyperledger Fabric.
+Hyperledger Fabric REST API server is provided by two node.js
+modules. The first defines a loopback connector for Hyperledger Fabric
+and the second defines how to expose those capabilities over REST. The
+connector uses the capabilities provided by fabric-sdk-node to
+interact with Hyperledger Fabric.
 
 It is intended to provide the capabilities for [FAB-156][].
 
