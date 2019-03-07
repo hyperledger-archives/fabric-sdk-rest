@@ -109,6 +109,9 @@ remote:   https://gerrit.hyperledger.org/r/12345 improve-contributor-docs
 You'll be notified by email (to the email address on the commit) once
 a code review has occurred.
 
+## Legal Stuff
+**Note:** All contributions to this project must follow the [Hyperledger Fabric legal requirements](https://hyperledger-fabric.readthedocs.io/en/latest/CONTRIBUTING.html#legal-stuff)
+
 
 ## More Information
 For more general information, including what makes a good change
